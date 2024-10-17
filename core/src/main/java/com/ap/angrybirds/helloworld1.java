@@ -1,4 +1,4 @@
-package com.ap.angrybirds.lwjgl3;
+package com.ap.angrybirds;
 
 public class helloworld1 {
     //sassfqwk;fljflis
