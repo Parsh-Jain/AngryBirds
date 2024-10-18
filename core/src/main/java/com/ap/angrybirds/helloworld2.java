@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class helloworld2 extends ApplicationAdapter {
     SpriteBatch batch;
     BitmapFont font;
-    //sfsffkjabfKABFIOA
+    //sfsffkjabfKABFIOAbb
 
     @Override
     public void create () {
