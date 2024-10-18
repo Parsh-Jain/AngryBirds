@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.ap.angrybirds.Main;
 import com.ap.angrybirds.helloworld1;
+import com.ap.angrybirds.helloworld2;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {

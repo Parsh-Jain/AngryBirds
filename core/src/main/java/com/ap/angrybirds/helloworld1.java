@@ -18,7 +18,7 @@ public class helloworld1 extends ApplicationAdapter{
     Texture image;
     Batch batch;
 
-    float speedX = 130;
+    float speedX = 170;
 
     float rectX;
     float rectY;
@@ -44,18 +44,32 @@ public class helloworld1 extends ApplicationAdapter{
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if(width<400){
-            width += speedX * Gdx.graphics.getDeltaTime();;
-        }
-
-
         batch.begin();
         sprite.draw(batch);
         batch.end();
 
+        //loading bar
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.15f, 0.1f, 0.1f, 1);
-        shapeRenderer.arc(Gdx.graphics.getWidth()/2-220,270,20,1,180);
+        shapeRenderer.setColor(0f, 0f, 0f, 1);
+        shapeRenderer.arc(Gdx.graphics.getWidth() / 2 - 200, 290, 30, 90, 180); // Outer arc (radius 32)
+        shapeRenderer.arc(Gdx.graphics.getWidth() / 2 + 200, 290, 30, 270, 180); // Outer arc (radius 32)
+        shapeRenderer.rect(rectX, rectY+40, 400,10);
+        shapeRenderer.rect(rectX, rectY-10, 400,10);
+        shapeRenderer.end();
+
+
+        if(width<400){
+            width += speedX * Gdx.graphics.getDeltaTime();;
+        }else{
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(0.9f, 0.9f, 0.9f, 1);
+            shapeRenderer.arc(Gdx.graphics.getWidth()/2+200,290,20,270,180);
+            shapeRenderer.end();
+        }
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.9f, 0.9f, 0.9f, 1);
+        shapeRenderer.arc(Gdx.graphics.getWidth()/2-200,290,20,90,180);
         shapeRenderer.rect(rectX, rectY, width, 40);
         shapeRenderer.end();
     }
