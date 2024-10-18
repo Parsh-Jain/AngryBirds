@@ -31,7 +31,6 @@ public class helloworld1 extends ApplicationAdapter{
         sprite = new Sprite(image);
         sprite.setScale(0.8f);
         sprite.setPosition(Gdx.graphics.getWidth()/2-image.getWidth()/2, Gdx.graphics.getHeight()/2-image.getHeight()/2);
-//        sprite.getBoundingRectangle();
         sprite.setAlpha(0.8f);
         rectX = Gdx.graphics.getWidth()/2-200;
         rectY = 270;
