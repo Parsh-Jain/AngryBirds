@@ -2,9 +2,7 @@ package com.ap.angrybirds.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.ap.angrybirds.Main;
-import com.ap.angrybirds.helloworld1;
-import com.ap.angrybirds.helloworld2;
+import com.ap.angrybirds.LoadingPage;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
@@ -14,7 +12,7 @@ public class Lwjgl3Launcher {
     }
 
     private static Lwjgl3Application createApplication() {
-        return new Lwjgl3Application(new helloworld1(), getDefaultConfiguration());
+        return new Lwjgl3Application(new LoadingPage(), getDefaultConfiguration());
     }
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
