@@ -21,6 +21,13 @@ public class HomeScreen extends ApplicationAdapter {
     Texture Back;
     Texture PlayerCoin;
     Texture AngryLevelText;
+    Texture RedAngryBird;
+    Texture YellowAngryBird;
+    Texture BasicButton;
+    Texture BasicSelection;
+    Texture View;
+    Texture AngryStory;
+    Texture AngryHighlights;
 
 
     @Override
@@ -34,6 +41,15 @@ public class HomeScreen extends ApplicationAdapter {
         Back=new Texture("Back.png");
         PlayerCoin=new Texture("Player Coin.png");
         AngryLevelText=new Texture("AngryLevel Text.png");
+        RedAngryBird=new Texture("RedAngryBird.png");
+        YellowAngryBird=new Texture("YellowAngryBird.png");
+        BasicButton=new Texture("BasicButton.png");
+        BasicSelection=new Texture("BasicSelection.png");
+        View=new Texture("View.png");
+        AngryStory=new Texture("AngryStory.png");
+        AngryHighlights=new Texture("AngryHighlights.png");
+
+
 
         //Transparency
         batch.enableBlending();
@@ -47,10 +63,22 @@ public class HomeScreen extends ApplicationAdapter {
         batch.draw(AngryLevel,Gdx.graphics.getWidth()/2-165,Gdx.graphics.getHeight()/2-200,400,550);
         batch.draw(Back,100,100,150,150);
         batch.draw(Setting,Gdx.graphics.getWidth()-250,100,150,150);
-        batch.draw(PlayerName,Gdx.graphics.getWidth()-315,850,300,150);
+        batch.draw(PlayerName,Gdx.graphics.getWidth()-425,850,350,150);
         batch.draw(PlayerCoin,100,850,150,150);
         batch.draw(PlayButton,Gdx.graphics.getWidth()/2-90,345,225,85);
         batch.draw(AngryLevelText,Gdx.graphics.getWidth()/2-95,785,250,50);
+        batch.draw(BasicSelection,200,300,400,550);
+        batch.draw(BasicSelection,1400,300,400,550);
+        batch.draw(RedAngryBird,290,500,200,200);
+        batch.draw(YellowAngryBird,1475,490,250,250);
+        batch.draw(BasicButton,275,315,225,85);
+        batch.draw(BasicButton,1490,315,225,85);
+        batch.draw(View,340,330,120,50);
+        batch.draw(View,1560,330,120,50);
+        batch.draw(AngryStory,280,750,250,50);
+        batch.draw(AngryHighlights,1480,750,250,50);
+
+
         batch.end();
 
 
