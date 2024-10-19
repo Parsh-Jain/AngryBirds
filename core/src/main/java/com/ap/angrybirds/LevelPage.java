@@ -24,7 +24,7 @@ public class LevelPage extends ApplicationAdapter {
 
     public void create(){
         batch = new SpriteBatch();
-        background = new Texture(Gdx.files.internal("LevelPageBackground.png"));
+        background = new Texture(Gdx.files.internal("Levelpage.png"));
         level1 = new Texture(Gdx.files.internal("Level1.png"));
         level2 = new Texture(Gdx.files.internal("Level2.png"));
         level3 = new Texture(Gdx.files.internal("Level3.png"));
