@@ -1,6 +1,7 @@
 package com.ap.angrybirds.lwjgl3;
 
 import com.ap.angrybirds.HomeScreen;
+import com.ap.angrybirds.LevelPage;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.ap.angrybirds.LoadingPage;
@@ -13,7 +14,7 @@ public class Lwjgl3Launcher {
     }
 
     private static Lwjgl3Application createApplication() {
-        return new Lwjgl3Application(new HomeScreen(), getDefaultConfiguration());
+        return new Lwjgl3Application(new LevelPage(), getDefaultConfiguration());
     }
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
