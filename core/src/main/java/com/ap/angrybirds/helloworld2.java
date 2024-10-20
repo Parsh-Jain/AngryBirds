@@ -14,12 +14,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class helloworld2 extends ApplicationAdapter {
     SpriteBatch batch;
     BitmapFont font;
-    //sfsffkjabfKABFIOAbb
+    Texture image;
 
     @Override
     public void create () {
         batch = new SpriteBatch();
         font = new BitmapFont();
+        image = new Texture("1.jpg");
     }
 
     @Override
@@ -28,7 +29,7 @@ public class helloworld2 extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        font.draw(batch, "Happy Coding!", Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+        batch.draw(image, 0, 0);
         batch.end();
     }
 
@@ -36,5 +37,6 @@ public class helloworld2 extends ApplicationAdapter {
     public void dispose () {
         batch.dispose();
         font.dispose();
+        image.dispose();
     }
 }
