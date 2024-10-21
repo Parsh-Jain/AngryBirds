@@ -30,7 +30,7 @@ public class HomeScreen extends ScreenAdapter {
     Texture BasicSelection;
     Texture View;
     Texture AngryStory;
-    Texture AngryHighlights;
+    Texture LoadGame;
     Rectangle Play_Button,SettingButton,BackButton,PlayerCoinButton,ViewButton1,ViewButton2;
 
 
@@ -61,7 +61,7 @@ public class HomeScreen extends ScreenAdapter {
         BasicSelection = new Texture("BasicSelection.png");
         View = new Texture("View.png");
         AngryStory = new Texture("AngryStory.png");
-        AngryHighlights = new Texture("AngryHighlights.png");
+        LoadGame = new Texture("Load Game.png");
         Play_Button = new Rectangle(worldWidth/2-72,355,225,85);
         SettingButton = new Rectangle(worldWidth-250,100,150,150);
         BackButton = new Rectangle(100,100,150,150);
@@ -109,7 +109,7 @@ public class HomeScreen extends ScreenAdapter {
         batch.draw(View, 340, 330, 120, 50);
         batch.draw(View, worldWidth - 360, 330, 120, 50);
         batch.draw(AngryStory, 280, 750, 250, 50);
-        batch.draw(AngryHighlights, worldWidth - 440, 750, 250, 50);
+        batch.draw(LoadGame, worldWidth - 440, 750, 250, 50);
 
         batch.end();
         if(Gdx.input.isTouched()){
@@ -141,6 +141,6 @@ public class HomeScreen extends ScreenAdapter {
         BasicSelection.dispose();
         View.dispose();
         AngryStory.dispose();
-        AngryHighlights.dispose();
+        LoadGame.dispose();
     }
 }
