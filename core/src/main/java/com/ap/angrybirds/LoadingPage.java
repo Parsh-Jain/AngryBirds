@@ -2,6 +2,7 @@ package com.ap.angrybirds;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -9,8 +10,16 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import javax.script.ScriptEngineManager;
+import java.util.jar.Manifest;
 
-public class LoadingPage extends ApplicationAdapter{
+
+public class LoadingPage extends ScreenAdapter {
+
+    Main main;
+    public LoadingPage(Main main){
+        this.main = main;
+    }
     ShapeRenderer shapeRenderer;
     Sprite sprite;
     Texture image;
