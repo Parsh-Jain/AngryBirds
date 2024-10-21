@@ -2,6 +2,7 @@ package com.ap.angrybirds;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,7 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 
-public class LevelPage extends ApplicationAdapter {
+public class LevelPage extends ScreenAdapter {
+    Main main;
     SpriteBatch batch;
     Texture background;
     Texture level1;
@@ -21,6 +23,10 @@ public class LevelPage extends ApplicationAdapter {
     Texture Back;
     Texture PlayerName;
     Texture PlayerCoin;
+
+    public LevelPage(Main main) {
+        this.main = main;
+    }
 
     public void create(){
         batch = new SpriteBatch();

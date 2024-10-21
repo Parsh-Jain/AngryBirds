@@ -39,7 +39,7 @@ public class LoadingPage extends ScreenAdapter {
     float worldHeight = 1080; // Define the world height
 
     @Override
-    public void create () {
+    public void show () {
         // Create a camera with world size and set up the viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
@@ -65,7 +65,7 @@ public class LoadingPage extends ScreenAdapter {
     float width = 0;
 
     @Override
-    public void render () {
+    public void render (float delta) {
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
