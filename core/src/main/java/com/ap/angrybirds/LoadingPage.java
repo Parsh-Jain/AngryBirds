@@ -39,7 +39,7 @@ public class LoadingPage extends ScreenAdapter {
     float worldHeight = 1080; // Define the world height
 
     @Override
-    public void create () {
+    public void show () {
         // Create a camera with world size and set up the viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
@@ -60,6 +60,9 @@ public class LoadingPage extends ScreenAdapter {
         // Set the rectangle (loading bar) position using world coordinates
         rectX = worldWidth / 2 - 200;
         rectY = 100;
+
+
+
     }
 
     float width = 0;
