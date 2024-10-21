@@ -2,14 +2,19 @@ package com.ap.angrybirds;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class HomeScreen extends ApplicationAdapter {
+import java.awt.*;
+
+public class HomeScreen extends ScreenAdapter {
+    Main main;
     SpriteBatch batch;
     Texture background;
     Texture AngryLevel;
@@ -26,15 +31,21 @@ public class HomeScreen extends ApplicationAdapter {
     Texture View;
     Texture AngryStory;
     Texture AngryHighlights;
+    Rectangle Play_Button,SettingButton,BackButton,PlayerCoinButton,ViewButton1,ViewButton2;
+
+
 
     OrthographicCamera camera;
     Viewport viewport;
 
-    float worldWidth = 1920;
-    float worldHeight = 1080;
+    int worldWidth = 1920;
+    int worldHeight = 1080;
+    public HomeScreen(Main main){
+        this.main = main;
+    }
 
     @Override
-    public void create() {
+    public void show() {
         batch = new SpriteBatch();
         background = new Texture("homeScreen background.jpg");
         AngryLevel = new Texture("Angry Level.png");
@@ -51,6 +62,12 @@ public class HomeScreen extends ApplicationAdapter {
         View = new Texture("View.png");
         AngryStory = new Texture("AngryStory.png");
         AngryHighlights = new Texture("AngryHighlights.png");
+        Play_Button = new Rectangle(worldWidth/2-72,355,225,85);
+        SettingButton = new Rectangle(worldWidth-250,100,150,150);
+        BackButton = new Rectangle(100,100,150,150);
+        PlayerCoinButton = new Rectangle(100,850,150,150);
+        ViewButton1 = new Rectangle(340,330,120,50);
+        ViewButton2 = new Rectangle(worldWidth-360,330,120,50);
 
         // Create camera and viewport with fixed world dimensions
         camera = new OrthographicCamera();
@@ -59,11 +76,11 @@ public class HomeScreen extends ApplicationAdapter {
         camera.position.set(worldWidth / 2, worldHeight / 2, 0);
         camera.update();
 
-        // Enable blending for transparency
-        batch.enableBlending();
+//        // Enable blending for transparency
+//        batch.enableBlending();
     }
-
-    public void render() {
+    @Override
+    public void render(float delta) {
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -71,8 +88,8 @@ public class HomeScreen extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+//        Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         // Update all draw positions to world coordinates
         batch.draw(background, 0, 0, worldWidth, worldHeight);
@@ -95,6 +112,14 @@ public class HomeScreen extends ApplicationAdapter {
         batch.draw(AngryHighlights, worldWidth - 440, 750, 250, 50);
 
         batch.end();
+        if(Gdx.input.isTouched()){
+            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
+            viewport.unproject(touchPos);
+            if(Play_Button.contains(touchPos.x,touchPos.y)){
+                main.setScreen(new LevelPage(main));
+            }
+
+        }
     }
 
     @Override
