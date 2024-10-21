@@ -2,41 +2,35 @@ package com.ap.angrybirds;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 
 public class helloworld2 extends ApplicationAdapter {
-    SpriteBatch batch;
-    BitmapFont font;
-    Texture image;
+    ShapeRenderer shapeRenderer;
 
     @Override
-    public void create () {
-        batch = new SpriteBatch();
-        font = new BitmapFont();
-        image = new Texture("1.jpg");
+    public void create() {
+        shapeRenderer = new ShapeRenderer();
     }
 
     @Override
-    public void render () {
+    public void render() {
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        batch.begin();
-        batch.draw(image, 0, 0);
-        batch.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (int i = 0; i < 20000; i++) {
+            shapeRenderer.setColor(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1);
+            shapeRenderer.circle(MathUtils.random(Gdx.graphics.getWidth()), MathUtils.random(Gdx.graphics.getHeight()), 25);
+        }
+        shapeRenderer.end();
+
+        System.out.println(Gdx.graphics.getFramesPerSecond());
     }
 
     @Override
-    public void dispose () {
-        batch.dispose();
-        font.dispose();
-        image.dispose();
+    public void dispose() {
+        shapeRenderer.dispose();
     }
 }
