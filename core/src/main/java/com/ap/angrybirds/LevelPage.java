@@ -27,7 +27,6 @@ public class LevelPage extends ScreenAdapter {
     public LevelPage(Main main) {
         this.main = main;
     }
-
     @Override
     public void show(){
         batch = new SpriteBatch();
@@ -43,7 +42,6 @@ public class LevelPage extends ScreenAdapter {
 
 
     }
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

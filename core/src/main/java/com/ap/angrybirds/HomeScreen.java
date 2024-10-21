@@ -113,13 +113,13 @@ public class HomeScreen extends ScreenAdapter {
 
         batch.end();
         if(Gdx.input.isTouched()){
-            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
-            viewport.unproject(touchPos);
-            if(Play_Button.contains(touchPos.x,touchPos.y)){
+           Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
+          viewport.unproject(touchPos);
+           if(Play_Button.contains(touchPos.x,touchPos.y)){
                 main.setScreen(new LevelPage(main));
             }
 
-        }
+       }
     }
 
     @Override
