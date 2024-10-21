@@ -4,11 +4,14 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import javax.script.ScriptEngineManager;
 import java.util.jar.Manifest;
@@ -24,23 +27,39 @@ public class LoadingPage extends ScreenAdapter {
     Sprite sprite;
     Texture image;
     Batch batch;
+    OrthographicCamera camera;
+    Viewport viewport;
 
     float speedX = 170;
 
     float rectX;
     float rectY;
 
+    float worldWidth = 1920; // Define the world width
+    float worldHeight = 1080; // Define the world height
+
     @Override
     public void create () {
-        shapeRenderer  = new ShapeRenderer();
+        // Create a camera with world size and set up the viewport
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(worldWidth, worldHeight, camera);
+        viewport.apply();
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        camera.update();
+
+        shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         image = new Texture("angryb.png");
         sprite = new Sprite(image);
+
+        // Convert pixel-based sprite positioning to world coordinates
         sprite.setScale(0.8f);
-        sprite.setPosition(Gdx.graphics.getWidth()/2-image.getWidth()/2, Gdx.graphics.getHeight()/2-image.getHeight()/2);
+        sprite.setPosition(worldWidth / 2 - sprite.getWidth() / 2, worldHeight / 2 - sprite.getHeight() / 2);
         sprite.setAlpha(0.8f);
-        rectX = Gdx.graphics.getWidth()/2-200;
-        rectY = 270;
+
+        // Set the rectangle (loading bar) position using world coordinates
+        rectX = worldWidth / 2 - 200;
+        rectY = 100;
     }
 
     float width = 0;
@@ -50,34 +69,46 @@ public class LoadingPage extends ScreenAdapter {
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // Update camera and apply it to the batch
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
         batch.begin();
         sprite.draw(batch);
         batch.end();
 
-        //loading bar
+        // Draw loading bar using world coordinates
+        shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
         shapeRenderer.setColor(0f, 0f, 0f, 1);
-        shapeRenderer.arc(Gdx.graphics.getWidth() / 2 - 200, 290, 30, 90, 180); // Outer arc (radius 32)
-        shapeRenderer.arc(Gdx.graphics.getWidth() / 2 + 200, 290, 30, 270, 180); // Outer arc (radius 32)
-        shapeRenderer.rect(rectX, rectY+40, 400,10);
-        shapeRenderer.rect(rectX, rectY-10, 400,10);
+        shapeRenderer.arc(worldWidth / 2 - 200, rectY+20, 30, 90, 180); // Outer arc (left)
+        shapeRenderer.arc(worldWidth / 2 + 200, rectY+20, 30, 270, 180); // Outer arc (right)
+        shapeRenderer.rect(rectX, rectY + 40, 400, 10); // Top rectangle of loading bar
+        shapeRenderer.rect(rectX, rectY - 10, 400, 10); // Bottom rectangle of loading bar
         shapeRenderer.end();
 
-
-        if(width<400){
-            width += speedX * Gdx.graphics.getDeltaTime();;
-        }else{
+        if (width < 400) {
+            width += speedX * Gdx.graphics.getDeltaTime();
+        } else {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(0.9f, 0.9f, 0.9f, 1);
-            shapeRenderer.arc(Gdx.graphics.getWidth()/2+200,290,20,270,180);
+            shapeRenderer.arc(worldWidth / 2 + 200, rectY+20, 20, 270, 180); // Right inner arc after loading completion
             shapeRenderer.end();
         }
 
+        // Draw the actual loading progress bar using the `width`
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.9f, 0.9f, 0.9f, 1);
-        shapeRenderer.arc(Gdx.graphics.getWidth()/2-200,290,20,90,180);
-        shapeRenderer.rect(rectX, rectY, width, 40);
+        shapeRenderer.arc(worldWidth / 2 - 200, rectY+20, 20, 90, 180); // Left inner arc
+        shapeRenderer.rect(rectX, rectY, width, 40); // Progress rectangle
         shapeRenderer.end();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        // Adjust viewport on resize to maintain aspect ratio
+        viewport.update(width, height);
     }
 
     @Override
