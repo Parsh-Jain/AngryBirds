@@ -34,6 +34,7 @@ public class LoadingPage extends ScreenAdapter {
 
     float rectX;
     float rectY;
+    float timer;
 
     float worldWidth = 1920; // Define the world width
     float worldHeight = 1080; // Define the world height
@@ -61,7 +62,7 @@ public class LoadingPage extends ScreenAdapter {
         rectX = worldWidth / 2 - 200;
         rectY = 100;
 
-
+        timer = 0;
 
     }
 
@@ -106,6 +107,12 @@ public class LoadingPage extends ScreenAdapter {
         shapeRenderer.arc(worldWidth / 2 - 200, rectY+20, 20, 90, 180); // Left inner arc
         shapeRenderer.rect(rectX, rectY, width, 40); // Progress rectangle
         shapeRenderer.end();
+
+        timer += delta;
+
+        if (timer > 2.358) {
+            main.setScreen(new HomeScreen(main));  // Change to the next screen
+        }
     }
 
     @Override
