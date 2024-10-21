@@ -30,7 +30,7 @@ public class LevelPage extends ScreenAdapter {
     @Override
     public void show(){
         batch = new SpriteBatch();
-        background = new Texture(Gdx.files.internal("Levelpage.png"));
+        background = new Texture(Gdx.files.internal("LevelpageBackground.png"));
         level1 = new Texture(Gdx.files.internal("Level1.png"));
         level2 = new Texture(Gdx.files.internal("Level2.png"));
         level3 = new Texture(Gdx.files.internal("Level3.png"));
