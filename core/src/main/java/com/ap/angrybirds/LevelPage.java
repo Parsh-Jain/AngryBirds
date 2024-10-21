@@ -27,8 +27,8 @@ public class LevelPage extends ScreenAdapter {
     public LevelPage(Main main) {
         this.main = main;
     }
-
-    public void create(){
+    @Override
+    public void show(){
         batch = new SpriteBatch();
         background = new Texture(Gdx.files.internal("Levelpage.png"));
         level1 = new Texture(Gdx.files.internal("Level1.png"));
@@ -42,7 +42,8 @@ public class LevelPage extends ScreenAdapter {
 
 
     }
-    public void render(){
+    @Override
+    public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.draw(background, 0, 0);
