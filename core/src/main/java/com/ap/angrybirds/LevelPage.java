@@ -1,16 +1,15 @@
 package com.ap.angrybirds;
-import com.badlogic.gdx.ApplicationAdapter;
+
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LevelPage extends ScreenAdapter {
     Main main;
@@ -23,12 +22,20 @@ public class LevelPage extends ScreenAdapter {
     Texture Back;
     Texture PlayerName;
     Texture PlayerCoin;
+    Rectangle BackButton;
+
+    // Declare Camera and Viewport
+    OrthographicCamera camera;
+    Viewport viewport;
+    int worldWidth = 1920; // Adjust world width and height according to your game's design
+    int worldHeight = 1080;
 
     public LevelPage(Main main) {
         this.main = main;
     }
+
     @Override
-    public void show(){
+    public void show() {
         batch = new SpriteBatch();
         background = new Texture(Gdx.files.internal("Levelpage.png"));
         level1 = new Texture(Gdx.files.internal("Level1.png"));
@@ -38,23 +45,63 @@ public class LevelPage extends ScreenAdapter {
         Back = new Texture(Gdx.files.internal("Back.png"));
         PlayerName = new Texture(Gdx.files.internal("Player Name.png"));
         PlayerCoin = new Texture(Gdx.files.internal("Player Coin.png"));
+        BackButton = new Rectangle(100, 50, 150, 150);
 
+        // Create OrthographicCamera and FitViewport
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(worldWidth, worldHeight, camera);
+        viewport.apply();
 
-
+        // Position the camera in the middle of the screen
+        camera.position.set(worldWidth / 2, worldHeight / 2, 0);
+        camera.update();
     }
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Update camera and set projection matrix
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
         batch.begin();
-        batch.draw(background, 0, 0);
+        batch.draw(background, 0, 0, worldWidth, worldHeight); // Make sure to scale for world size
         batch.draw(level1, 230, 525, 125, 125);
         batch.draw(level2, 500, 525, 125, 125);
-        batch.draw(level3, 770, 645, 125, 125);
+        batch.draw(level3, 740, 770, 125, 125);
         batch.draw(Back, 100, 50, 150, 150);
-        batch.draw(Setting,1650,50,150,150);
-        batch.draw(PlayerName,1450,900,450,150);
-        batch.draw(PlayerCoin,100,900,150,150);
+        batch.draw(Setting, 1650, 50, 150, 150);
+        batch.draw(PlayerName, 1450, 900, 450, 150);
+        batch.draw(PlayerCoin, 100, 900, 150, 150);
         batch.end();
+
+        if (Gdx.input.isTouched()) {
+            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos); // Convert screen coordinates to world coordinates
+            if (BackButton.contains(touchPos.x, touchPos.y)) {
+                main.setScreen(new HomeScreen(main));
+            }
+        }
     }
 
+    @Override
+    public void resize(int width, int height) {
+        // Update viewport on resize
+        viewport.update(width, height);
+        camera.position.set(worldWidth / 2, worldHeight / 2, 0); // Re-center the camera
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        background.dispose();
+        level1.dispose();
+        level2.dispose();
+        level3.dispose();
+        Setting.dispose();
+        Back.dispose();
+        PlayerName.dispose();
+        PlayerCoin.dispose();
+    }
 }
