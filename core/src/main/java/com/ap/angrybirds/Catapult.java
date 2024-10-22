@@ -9,7 +9,7 @@ public class Catapult extends Actor {
 
     public Catapult(Texture CatapultTexture) {
         this.CatapultTexture = CatapultTexture;
-        setSize(100, 100);  // Default size
+        setSize(300, 300);  // Default size
     }
 
     @Override

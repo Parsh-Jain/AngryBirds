@@ -2,10 +2,10 @@ package com.ap.angrybirds;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class RedBird extends Bird{
-    public RedBird(Texture birdTexture) {
-        super(new Texture("RedAngryBird.png"));
-        setSize(75,75);
+public class YellowBird extends Bird{
+    public YellowBird(Texture birdTexture) {
+        super(new Texture("YellowAngryBird.png"));
+        setSize(80,80);
     }
     @Override
     public void act(float delta) {
