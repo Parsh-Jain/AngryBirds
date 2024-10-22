@@ -23,6 +23,9 @@ public class LevelPage extends ScreenAdapter {
     Texture PlayerName;
     Texture PlayerCoin;
     Rectangle BackButton;
+    Rectangle Level1Button;
+    Rectangle Level2Button;
+    Rectangle Level3Button;
 
     // Declare Camera and Viewport
     OrthographicCamera camera;
@@ -46,6 +49,9 @@ public class LevelPage extends ScreenAdapter {
         PlayerName = new Texture(Gdx.files.internal("Player Name.png"));
         PlayerCoin = new Texture(Gdx.files.internal("Player Coin.png"));
         BackButton = new Rectangle(100, 50, 150, 150);
+        Level1Button = new Rectangle(230, 525, 125, 125);
+        Level2Button = new Rectangle(500, 525, 125, 125);
+        Level3Button = new Rectangle(740, 770, 125, 125);
 
         // Create OrthographicCamera and FitViewport
         camera = new OrthographicCamera();
@@ -81,6 +87,9 @@ public class LevelPage extends ScreenAdapter {
             viewport.unproject(touchPos); // Convert screen coordinates to world coordinates
             if (BackButton.contains(touchPos.x, touchPos.y)) {
                 main.setScreen(new HomeScreen(main));
+            }
+            if(Level1Button.contains(touchPos.x, touchPos.y)) {
+                main.setScreen(new Level1Screen(main));
             }
         }
     }
