@@ -8,11 +8,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LoseEndScreen extends ScreenAdapter {
-
+    Main main;
+    public LoseEndScreen(Main main) {
+        this.main = main;
+    }
     SpriteBatch batch;
     Texture background;
     Texture retry;
@@ -60,6 +64,16 @@ public class LoseEndScreen extends ScreenAdapter {
         batch.draw(retry, retryButton.x, retryButton.y, retryButton.width, retryButton.height); // Retry button
         batch.draw(back, backButton.x, backButton.y, backButton.width, backButton.height);      // Back button
         batch.end();
+        if(Gdx.input.isTouched()){
+            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
+            viewport.unproject(touchPos);
+            if(retryButton.contains(touchPos.x,touchPos.y)){
+                main.setScreen(new Level1Screen(main));
+            }
+            else if(backButton.contains(touchPos.x,touchPos.y)){
+                main.setScreen(new LevelPage(main));
+            }
+        }
     }
 
     @Override

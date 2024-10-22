@@ -1,22 +1,29 @@
 package com.ap.angrybirds;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.awt.*;
 
 public class Level1Screen extends ScreenAdapter {
     private Stage stage;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
-    private ImageButton pauseButton;
+    private Rectangle pauseButton;
+    private Rectangle endbutton;
 
 
     private RedBird redBird;
@@ -36,6 +43,8 @@ public class Level1Screen extends ScreenAdapter {
     private WoodObstacles woodObstacle13e;
     private WoodObstacles woodObstacle14;
     private Catapult catapult;
+    private Texture pauseButtonTexture;
+    private Texture endbuttonTexture;
     private Texture RedBirdTexture;
     private Texture YellowBirdTexture;
     private Texture BlueBirdTexture;
@@ -70,7 +79,10 @@ public class Level1Screen extends ScreenAdapter {
 
         // Load the textures
         BackgroundTexture = new Texture("GameScreenBackground.png");
-
+        pauseButtonTexture = new Texture("PauseButton.png");
+        endbuttonTexture = new Texture("EndLevelButton.png");
+        pauseButton=new Rectangle(50,900,100,100);
+        endbutton=new Rectangle(1700,50,200,100);
         RedBirdTexture = new Texture(Gdx.files.internal("RedAngryBird.png"));
         YellowBirdTexture = new Texture(Gdx.files.internal("YellowAngryBird.png"));
         BlueBirdTexture=new Texture(Gdx.files.internal("BlueAngryBird.png"));
@@ -171,7 +183,24 @@ public class Level1Screen extends ScreenAdapter {
         // Draw the background image using SpriteBatch
         batch.begin();
         batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+        batch.draw(pauseButtonTexture,50,900,100,100);
+        batch.draw(endbuttonTexture,1700,50,200,100);
         batch.end();
+        if(Gdx.input.isTouched()){
+            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
+            viewport.unproject(touchPos);
+            if(pauseButton.contains(touchPos.x,touchPos.y)){
+                main.setScreen(new LevelPage(main));
+            }
+            else if (endbutton.contains(touchPos.x,touchPos.y)) {
+                main.setScreen(new LoseEndScreen(main));
+
+            }
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                main.setScreen(new SuccessfulEndScreen(main));
+            }
+
+        }
 
 
 
