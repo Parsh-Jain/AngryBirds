@@ -35,7 +35,7 @@ public class LoseEndScreen extends ApplicationAdapter {
     @Override
     public void render(){
         batch.begin();
-        batch.draw(background, 0, 0);
+        batch.draw(background, 50, 50);
         batch.draw(Retry,100,100,150,150);
         batch.draw(Back,500,100,300,300);
         batch.end();
