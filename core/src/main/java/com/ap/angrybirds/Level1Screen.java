@@ -79,7 +79,10 @@ public class Level1Screen extends ScreenAdapter {
 
         // Load the textures
         BackgroundTexture = new Texture("GameScreenBackground.png");
-
+        pauseButtonTexture=new Texture("PauseButton.png");
+        endbuttonTexture=new Texture("EndLevelButton.png");
+        pauseButton=new Rectangle(50,900,100,100);
+        endbutton=new Rectangle(1700,50,200,100);
         RedBirdTexture = new Texture("RedAngryBird.png");
         YellowBirdTexture = new Texture("YellowAngryBird.png");
         BlueBirdTexture=new Texture("BlueAngryBird.png");
@@ -188,15 +191,12 @@ public class Level1Screen extends ScreenAdapter {
             viewport.unproject(touchPos);
             if(pauseButton.contains(touchPos.x,touchPos.y)){
                 main.setScreen(new LevelPage(main));
-            }
-            else if (endbutton.contains(touchPos.x,touchPos.y)) {
-                main.setScreen(new LoseEndScreen(main));
-
-            }
-            else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
-            }
 
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                main.setScreen(new LoseEndScreen(main));
+            }
         }
 
 
@@ -215,6 +215,8 @@ public class Level1Screen extends ScreenAdapter {
     public void dispose() {
         stage.dispose();
         redBird.dispose();
+        pauseButtonTexture.dispose();
+        endbuttonTexture.dispose();
         yellowBird.dispose();
         blueBird.dispose();
         blackBird.dispose();
@@ -232,6 +234,6 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle14.dispose();
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
-        batch.dispose();  // Don't forget to dispose the SpriteBatch
+        batch.dispose();
     }
 }
