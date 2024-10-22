@@ -62,7 +62,6 @@ public class SuccessfulEndScreen extends ScreenAdapter {
         batch.draw(text, 755, 65,400,80);
         batch.end();
 
-        System.out.println("X:"+ Gdx.input.getX() + " Y: "+ Gdx.input.getY());
 
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
