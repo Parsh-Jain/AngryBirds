@@ -33,8 +33,6 @@ public class HomeScreen extends ScreenAdapter {
     Texture LoadGame;
     Rectangle Play_Button,SettingButton,BackButton,PlayerCoinButton,ViewButton1,ViewButton2;
 
-
-
     OrthographicCamera camera;
     Viewport viewport;
 
@@ -110,8 +108,8 @@ public class HomeScreen extends ScreenAdapter {
         batch.draw(View, worldWidth - 360, 330, 120, 50);
         batch.draw(AngryStory, 280, 750, 250, 50);
         batch.draw(LoadGame, worldWidth - 440, 750, 250, 50);
-
         batch.end();
+
         if(Gdx.input.isTouched()){
            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
           viewport.unproject(touchPos);
