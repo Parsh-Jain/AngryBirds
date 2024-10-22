@@ -31,8 +31,8 @@ public class LoseEndScreen extends ApplicationAdapter {
         background = new Texture("LosingPage.jpg");
         retry = new Texture("retry.png");
         back = new Texture("Back.png");
-        retryButton = new Rectangle(100, 100, 150, 150);
-        backButton = new Rectangle(500, 100, 300, 300);
+        retryButton = new Rectangle(770, 120, 367, 150);
+        backButton = new Rectangle(80, 140, 140, 140);
 
         // Set up the camera with the world size and apply the viewport
         camera = new OrthographicCamera();
@@ -51,6 +51,7 @@ public class LoseEndScreen extends ApplicationAdapter {
         // Update the camera and apply it to the batch
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+        System.out.println("X:"+ Gdx.input.getX() + " Y:"+ Gdx.input.getY());
 
         // Render the background and buttons
         batch.begin();
