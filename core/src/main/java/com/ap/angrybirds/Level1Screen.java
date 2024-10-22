@@ -20,20 +20,35 @@ public class Level1Screen extends ScreenAdapter {
     private YellowBird yellowBird;
     private BlueBird blueBird;
     private BlackBird blackBird;
-    private MafiaPig mafiaPig;
-    private WoodObstacles woodObstacle9;
-    private WoodObstacles woodObstacle10;
-    private WoodObstacles woodObstacle13;
+    private MafiaPig mafiaPig1;
+    private MafiaPig mafiaPig2;
+    private MafiaPig mafiaPig3;
+    private MafiaPig mafiaPig4;
+    private WoodObstacles woodObstacle9a;
+    private WoodObstacles woodObstacle9b;
+    private WoodObstacles woodObstacle13a;
+    private WoodObstacles woodObstacle13b;
+    private WoodObstacles woodObstacle13c;
+    private WoodObstacles woodObstacle13d;
+    private WoodObstacles woodObstacle13e;
+    private WoodObstacles woodObstacle14;
     private Catapult catapult;
-
     private Texture RedBirdTexture;
     private Texture YellowBirdTexture;
     private Texture BlueBirdTexture;
     private Texture BlackBirdTexture;
-    private Texture MafiaPigTexture;
-    private Texture WoodObstacleTexture9;
-    private Texture WoodObstacleTexture10;
-    private Texture WoodObstacleTexture13;
+    private Texture MafiaPig1Texture;
+    private Texture MafiaPig2Texture;
+    private Texture MafiaPig3Texture;
+    private Texture MafiaPig4Texture;
+    private Texture WoodObstacleTexture9a;
+    private Texture WoodObstacleTexture9b;
+    private Texture WoodObstacleTexture13a;
+    private Texture WoodObstacleTexture13b;
+    private Texture WoodObstacleTexture13c;
+    private Texture WoodObstacleTexture13d;
+    private Texture WoodObstacleTexture13e;
+    private Texture WoodObstacleTexture14;
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
 
@@ -57,10 +72,18 @@ public class Level1Screen extends ScreenAdapter {
         YellowBirdTexture = new Texture(Gdx.files.internal("YellowAngryBird.png"));
         BlueBirdTexture=new Texture(Gdx.files.internal("BlueAngryBird.png"));
         BlackBirdTexture=new Texture(Gdx.files.internal("BlackAngryBird.png"));
-        MafiaPigTexture = new Texture(Gdx.files.internal("MafiaPig.png"));
-        WoodObstacleTexture9 = new Texture(Gdx.files.internal("9.png"));
-        WoodObstacleTexture10 = new Texture(Gdx.files.internal("10.png"));
-        WoodObstacleTexture13 = new Texture(Gdx.files.internal("13.png"));
+        MafiaPig1Texture = new Texture(Gdx.files.internal("MafiaPig.png"));
+        MafiaPig2Texture=new Texture(Gdx.files.internal("MafiaPig.png"));
+        MafiaPig3Texture=new Texture(Gdx.files.internal("MafiaPig.png"));
+        MafiaPig4Texture=new Texture(Gdx.files.internal("MafiaPig.png"));
+        WoodObstacleTexture9a = new Texture(Gdx.files.internal("9.png"));
+        WoodObstacleTexture9b = new Texture(Gdx.files.internal("9.png"));
+        WoodObstacleTexture13a = new Texture(Gdx.files.internal("13.png"));
+        WoodObstacleTexture13b = new Texture(Gdx.files.internal("13.png"));
+        WoodObstacleTexture13c = new Texture(Gdx.files.internal("13.png"));
+        WoodObstacleTexture13d = new Texture(Gdx.files.internal("13.png"));
+        WoodObstacleTexture13e = new Texture(Gdx.files.internal("13.png"));
+        WoodObstacleTexture14 = new Texture(Gdx.files.internal("Block.png"));
 
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
 
@@ -79,20 +102,53 @@ public class Level1Screen extends ScreenAdapter {
         stage.addActor(blueBird);
 
         // Initialize and add Mafia Pig to the stage
-        mafiaPig = new MafiaPig(MafiaPigTexture);
-        mafiaPig.setPosition(1400, 183);  // Set Mafia Pig near the right
-        stage.addActor(mafiaPig);
+        mafiaPig1 = new MafiaPig(MafiaPig1Texture);
+        mafiaPig1.setPosition(1400, 183);  // Set Mafia Pig near the right
+        stage.addActor(mafiaPig1);
+        mafiaPig2 = new MafiaPig(MafiaPig2Texture);
+        mafiaPig2.setPosition(1400, 183);  // Set Mafia Pig near the right
+        stage.addActor(mafiaPig2);
+        mafiaPig3 = new MafiaPig(MafiaPig3Texture);
+        mafiaPig3.setPosition(1400, 183);  // Set Mafia Pig near the right
+        stage.addActor(mafiaPig3);
+        mafiaPig4 = new MafiaPig(MafiaPig4Texture);
+        mafiaPig4.setPosition(1400, 183);  // Set Mafia Pig near the right
+        stage.addActor(mafiaPig4);
 
         // Initialize and add Wood Obstacle to the stage
-        woodObstacle9 = new WoodObstacles(WoodObstacleTexture9);
-        woodObstacle9.setPosition(1000, 150);  // Place Wood Obstacle between bird and pig
-        stage.addActor(woodObstacle9);
-        woodObstacle10 = new WoodObstacles(WoodObstacleTexture10);
-        woodObstacle10.setPosition(1000, 150);  // Place Wood Obstacle between bird and pig
-        stage.addActor(woodObstacle10);
-        woodObstacle13 = new WoodObstacles(WoodObstacleTexture13);
-        woodObstacle13.setPosition(1000, 150);  // Place Wood Obstacle between bird and pig
-        stage.addActor(woodObstacle13);
+        woodObstacle9a = new WoodObstacles(WoodObstacleTexture9a);
+        woodObstacle9a.setPosition(1000, 150);  // Place Wood Obstacle between bird and pig
+        woodObstacle9a.setSize(40,150);
+        stage.addActor(woodObstacle9a);
+        woodObstacle9b = new WoodObstacles(WoodObstacleTexture9b);
+        woodObstacle9b.setPosition(1000, 200);  // Place Wood Obstacle between bird and pig
+        woodObstacle9b.setSize(40,150);
+        stage.addActor(woodObstacle9b);
+        woodObstacle13a = new WoodObstacles(WoodObstacleTexture13a);
+        woodObstacle13a.setPosition(1400, 150);  // Place Wood Obstacle between bird and pig
+        woodObstacle13a.setSize(40,300);
+        stage.addActor(woodObstacle13a);
+        woodObstacle13b = new WoodObstacles(WoodObstacleTexture13b);
+        woodObstacle13b.setPosition(1400, 200);  // Place Wood Obstacle between bird and pig
+        woodObstacle13b.setSize(40,300);
+        stage.addActor(woodObstacle13b);
+        woodObstacle13c = new WoodObstacles(WoodObstacleTexture13c);
+        woodObstacle13c.setPosition(1400, 250);  // Place Wood Obstacle between bird and pig
+        woodObstacle13c.setSize(40,300);
+        stage.addActor(woodObstacle13c);
+        woodObstacle13d = new WoodObstacles(WoodObstacleTexture13d);
+        woodObstacle13d.setPosition(1400, 300);  // Place Wood Obstacle between bird and pig
+        woodObstacle13d.setSize(40,300);
+        stage.addActor(woodObstacle13d);
+        woodObstacle13e = new WoodObstacles(WoodObstacleTexture13e);
+        woodObstacle13e.setPosition(1400, 350);  // Place Wood Obstacle between bird and pig
+        woodObstacle13e.setSize(40,300);
+        stage.addActor(woodObstacle13e);
+
+        woodObstacle14 = new WoodObstacles(WoodObstacleTexture14);
+        woodObstacle14.setPosition(1400, 400);  // Place Wood Obstacle between bird and pig
+        woodObstacle14.setSize(140,140);
+        stage.addActor(woodObstacle14);
 
 
         // Initialize and add Catapult to the stage
@@ -131,10 +187,18 @@ public class Level1Screen extends ScreenAdapter {
         yellowBird.dispose();
         blueBird.dispose();
         blackBird.dispose();
-        mafiaPig.dispose();
-        woodObstacle9.dispose();
-        woodObstacle10.dispose();
-        woodObstacle13.dispose();
+        mafiaPig1.dispose();
+        mafiaPig2.dispose();
+        mafiaPig3.dispose();
+        mafiaPig4.dispose();
+        woodObstacle9a.dispose();
+        woodObstacle9b.dispose();
+        woodObstacle13a.dispose();
+        woodObstacle13b.dispose();
+        woodObstacle13c.dispose();
+        woodObstacle13d.dispose();
+        woodObstacle13e.dispose();
+        woodObstacle14.dispose();
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
         batch.dispose();  // Don't forget to dispose the SpriteBatch
