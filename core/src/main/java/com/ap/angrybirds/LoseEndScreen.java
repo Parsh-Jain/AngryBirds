@@ -2,6 +2,7 @@ package com.ap.angrybirds;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class LoseEndScreen extends ApplicationAdapter {
+public class LoseEndScreen extends ScreenAdapter {
 
     SpriteBatch batch;
     Texture background;
@@ -26,13 +27,13 @@ public class LoseEndScreen extends ApplicationAdapter {
     float worldHeight = 1080;
 
     @Override
-    public void create() {
+    public void show() {
         batch = new SpriteBatch();
         background = new Texture("LosingPage.jpg");
         retry = new Texture("retry.png");
         back = new Texture("Back.png");
-        retryButton = new Rectangle(100, 100, 150, 150);
-        backButton = new Rectangle(500, 100, 300, 300);
+        retryButton = new Rectangle(770, 120, 367, 150);
+        backButton = new Rectangle(80, 140, 140, 140);
 
         // Set up the camera with the world size and apply the viewport
         camera = new OrthographicCamera();
@@ -43,7 +44,7 @@ public class LoseEndScreen extends ApplicationAdapter {
     }
 
     @Override
-    public void render() {
+    public void render(float delta) {
         // Clear the screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -51,6 +52,7 @@ public class LoseEndScreen extends ApplicationAdapter {
         // Update the camera and apply it to the batch
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+
 
         // Render the background and buttons
         batch.begin();
