@@ -79,26 +79,23 @@ public class Level1Screen extends ScreenAdapter {
 
         // Load the textures
         BackgroundTexture = new Texture("GameScreenBackground.png");
-        pauseButtonTexture = new Texture("PauseButton.png");
-        endbuttonTexture = new Texture("EndLevelButton.png");
-        pauseButton=new Rectangle(50,900,100,100);
-        endbutton=new Rectangle(1700,50,200,100);
-        RedBirdTexture = new Texture(Gdx.files.internal("RedAngryBird.png"));
-        YellowBirdTexture = new Texture(Gdx.files.internal("YellowAngryBird.png"));
-        BlueBirdTexture=new Texture(Gdx.files.internal("BlueAngryBird.png"));
-        BlackBirdTexture=new Texture(Gdx.files.internal("BlackAngryBird.png"));
-        MafiaPig1Texture = new Texture(Gdx.files.internal("MafiaPig.png"));
-        MafiaPig2Texture=new Texture(Gdx.files.internal("MafiaPig.png"));
-        MafiaPig3Texture=new Texture(Gdx.files.internal("MafiaPig.png"));
-        MafiaPig4Texture=new Texture(Gdx.files.internal("MafiaPig.png"));
-        WoodObstacleTexture9a = new Texture(Gdx.files.internal("9.png"));
-        WoodObstacleTexture9b = new Texture(Gdx.files.internal("9.png"));
-        WoodObstacleTexture13a = new Texture(Gdx.files.internal("13.png"));
-        WoodObstacleTexture13b = new Texture(Gdx.files.internal("13.png"));
-        WoodObstacleTexture13c = new Texture(Gdx.files.internal("13.png"));
-        WoodObstacleTexture13d = new Texture(Gdx.files.internal("13.png"));
-        WoodObstacleTexture13e = new Texture(Gdx.files.internal("13.png"));
-        WoodObstacleTexture14 = new Texture(Gdx.files.internal("Block.png"));
+
+        RedBirdTexture = new Texture("RedAngryBird.png");
+        YellowBirdTexture = new Texture("YellowAngryBird.png");
+        BlueBirdTexture=new Texture("BlueAngryBird.png");
+        BlackBirdTexture=new Texture("BlackAngryBird.png");
+        MafiaPig1Texture = new Texture("MafiaPig.png");
+        MafiaPig2Texture=new Texture("MafiaPig.png");
+        MafiaPig3Texture=new Texture("MafiaPig.png");
+        MafiaPig4Texture=new Texture("MafiaPig.png");
+        WoodObstacleTexture9a = new Texture("9.png");
+        WoodObstacleTexture9b = new Texture("9.png");
+        WoodObstacleTexture13a = new Texture("13.png");
+        WoodObstacleTexture13b = new Texture("13.png");
+        WoodObstacleTexture13c = new Texture("13.png");
+        WoodObstacleTexture13d = new Texture("13.png");
+        WoodObstacleTexture13e = new Texture("13.png");
+        WoodObstacleTexture14 = new Texture("Block.png");
 
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
 
