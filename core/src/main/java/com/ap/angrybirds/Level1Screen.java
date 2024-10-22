@@ -170,6 +170,8 @@ public class Level1Screen extends ScreenAdapter {
         batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         batch.end();
 
+
+
         // Update the stage and render all actors (red bird, pig, obstacles, etc.)
         stage.act(delta);
         stage.draw();

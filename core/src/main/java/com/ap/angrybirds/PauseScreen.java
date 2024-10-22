@@ -17,4 +17,7 @@ public class PauseScreen extends ApplicationAdapter {
     OrthographicCamera camera;
     Viewport viewport;
 
+    Texture background;
+    Texture wood_nameplate;
+
 }
