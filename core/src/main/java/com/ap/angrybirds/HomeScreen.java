@@ -117,7 +117,7 @@ public class HomeScreen extends ScreenAdapter {
                 main.setScreen(new LevelPage(main));
             }
            if(BackButton.contains(touchPos.x,touchPos.y)){
-               Gdx.app.exit();
+               Gdx.app.exit(); // exiting the program
 
            }
        }
