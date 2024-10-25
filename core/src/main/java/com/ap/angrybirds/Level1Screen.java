@@ -61,7 +61,10 @@ public class Level1Screen extends ScreenAdapter {
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
     private Texture DulledBackground;
+
     private boolean isPaused;
+    private boolean isPauseButtonVisible = true;
+
     private Texture resumeButtontexture;
     private Texture restartLevelTexture;
     private Texture musicButtonTexture;
@@ -198,14 +201,16 @@ public class Level1Screen extends ScreenAdapter {
         batch.begin();
         if(!isPaused){
             batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-            batch.draw(pauseButtonTexture,50,900,100,100);
+            if (isPauseButtonVisible) {
+                batch.draw(pauseButtonTexture, 50, 900, 100, 100);
+            }
 
         }else{
             batch.draw(DulledBackground,0,0);
             batch.draw(resumeButtontexture, 50,900,100,100);
             batch.draw(restartLevelTexture,50, 750, 100, 100);
             batch.draw(musicButtonTexture, 50, 600,100,100);
-            batch.draw(soundButtonTexture,50,400, 100, 100);
+            batch.draw(soundButtonTexture,50,452, 100, 100);
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
         batch.end();
@@ -215,19 +220,23 @@ public class Level1Screen extends ScreenAdapter {
             viewport.unproject(touchPos);
             if(pauseButton.contains(touchPos.x,touchPos.y)){
                 isPaused = true;
+                isPauseButtonVisible = false;
+                render(0);
+                return;
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
-
-            }if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                main.setScreen(new LoseEndScreen(main));
             }
-
-            if(resumeButton.contains(touchPos.x,touchPos.y)){
-                //isPaused = false;
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                main.setScreen(new LoseEndScreen(main));
+            }else if(resumeButton.contains(touchPos.x,touchPos.y)){
+                isPaused = false;
             }
         }
 
-        //if()
+//        if(Gdx.input.isTouched()){
+//            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
+//            viewport.unproject(touchPos);
+//        }
 
 
         // Update the stage and render all actors (red bird, pig, obstacles, etc.)
