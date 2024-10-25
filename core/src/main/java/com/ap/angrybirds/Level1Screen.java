@@ -36,11 +36,8 @@ public class Level1Screen extends ScreenAdapter {
     private MafiaPig mafiaPig4;
     private WoodObstacles woodObstacle9a;
     private WoodObstacles woodObstacle9b;
-    private WoodObstacles woodObstacle13a;
-    private WoodObstacles woodObstacle13b;
     private WoodObstacles woodObstacle13c;
     private WoodObstacles woodObstacle13d;
-    private WoodObstacles woodObstacle13e;
     private WoodObstacles woodObstacle14;
     private Catapult catapult;
     private Texture pauseButtonTexture;
@@ -55,11 +52,8 @@ public class Level1Screen extends ScreenAdapter {
     private Texture MafiaPig4Texture;
     private Texture WoodObstacleTexture9a;
     private Texture WoodObstacleTexture9b;
-    private Texture WoodObstacleTexture13a;
-    private Texture WoodObstacleTexture13b;
     private Texture WoodObstacleTexture13_Ha;
     private Texture WoodObstacleTexture13_Hb;
-    private Texture WoodObstacleTexture13e;
     private Texture WoodObstacleTexture14;
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
@@ -93,11 +87,8 @@ public class Level1Screen extends ScreenAdapter {
         MafiaPig4Texture=new Texture("MafiaPig.png");
         WoodObstacleTexture9a = new Texture("9.png");
         WoodObstacleTexture9b = new Texture("9.png");
-        WoodObstacleTexture13a = new Texture("13.png");
-        WoodObstacleTexture13b = new Texture("13.png");
         WoodObstacleTexture13_Ha = new Texture("13_H.png");
         WoodObstacleTexture13_Hb = new Texture("13_H.png");
-        WoodObstacleTexture13e = new Texture("13.png");
         WoodObstacleTexture14 = new Texture("Block.png");
 
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
@@ -129,32 +120,6 @@ public class Level1Screen extends ScreenAdapter {
         mafiaPig4 = new MafiaPig(MafiaPig4Texture);
         mafiaPig4.setPosition(1490, 220);  // Set Mafia Pig near the right
         stage.addActor(mafiaPig4);
-
-        // Initialize and add Wood Obstacle to the stage
-//        woodObstacle9a = new WoodObstacles(WoodObstacleTexture9a);
-//        woodObstacle9a.setPosition(1000, 150);  // Place Wood Obstacle between bird and pig
-//        woodObstacle9a.setSize(40,150);
-//        stage.addActor(woodObstacle9a);
-//        woodObstacle9b = new WoodObstacles(WoodObstacleTexture9b);
-//        woodObstacle9b.setPosition(1000, 200);  // Place Wood Obstacle between bird and pig
-//        woodObstacle9b.setSize(40,150);
-//        stage.addActor(woodObstacle9b);
-//        woodObstacle13a = new WoodObstacles(WoodObstacleTexture13a);
-//        woodObstacle13a.setPosition(1608, 200);  // Place Wood Obstacle between bird and pig
-//        woodObstacle13a.setSize(40,350);
-//        stage.addActor(woodObstacle13a);
-//        woodObstacle13b = new WoodObstacles(WoodObstacleTexture13b);
-//        woodObstacle13b.setPosition(1258, 200);  // Place Wood Obstacle between bird and pig
-//        woodObstacle13b.setSize(40,350);
-//        stage.addActor(woodObstacle13b);
-//        woodObstacle13c = new WoodObstacles(WoodObstacleTexture13_Ha);
-//        woodObstacle13c.setPosition(1258, 550);  // Place Wood Obstacle between bird and pig
-//        woodObstacle13c.setSize(350,40);
-//        stage.addActor(woodObstacle13c);
-//        woodObstacle13d = new WoodObstacles(WoodObstacleTexture13_Hb);
-//        woodObstacle13d.setPosition(1258, 200);  // Place Wood Obstacle between bird and pig
-//        woodObstacle13d.setSize(350,40);
-//        stage.addActor(woodObstacle13d);
 
 
         woodObstacle13c = new WoodObstacles(WoodObstacleTexture13_Ha);
@@ -234,7 +199,6 @@ public class Level1Screen extends ScreenAdapter {
         stage.act(delta);
         stage.draw();
 
-        System.out.println("X:"+ Gdx.input.getX() + " Y:"+ Gdx.input.getY());
     }
 
     @Override
@@ -257,11 +221,8 @@ public class Level1Screen extends ScreenAdapter {
         mafiaPig4.dispose();
         woodObstacle9a.dispose();
         woodObstacle9b.dispose();
-        woodObstacle13a.dispose();
-        woodObstacle13b.dispose();
         woodObstacle13c.dispose();
         woodObstacle13d.dispose();
-        woodObstacle13e.dispose();
         woodObstacle14.dispose();
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
