@@ -192,7 +192,7 @@ public class Level1Screen extends ScreenAdapter {
 
         }else{
             batch.draw(DulledBackground,0,0);
-            batch.draw();
+            //batch.draw();
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
         batch.end();
