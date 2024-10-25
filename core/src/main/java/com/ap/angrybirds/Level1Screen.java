@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
+import java.sql.ResultSetMetaData;
 
 public class Level1Screen extends ScreenAdapter {
     private Stage stage;
@@ -24,6 +25,7 @@ public class Level1Screen extends ScreenAdapter {
     private Main main;
     private Rectangle pauseButton;
     private Rectangle endbutton;
+    private Rectangle resumeButton;
 
 
     private RedBird redBird;
@@ -57,6 +59,9 @@ public class Level1Screen extends ScreenAdapter {
     private Texture WoodObstacleTexture14;
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
+    private Texture DulledBackground;
+    private boolean isPaused;
+    private Texture resumeButtontexture;
 
     private SpriteBatch batch; // SpriteBatch to draw the background
 
@@ -73,10 +78,13 @@ public class Level1Screen extends ScreenAdapter {
 
         // Load the textures
         BackgroundTexture = new Texture("GameScreenBackground.png");
+        DulledBackground = new Texture("DulledBackground.png");
         pauseButtonTexture=new Texture("PauseButton.png");
-        endbuttonTexture=new Texture("EndLevelButton.png");
         pauseButton=new Rectangle(50,900,100,100);
+        endbuttonTexture=new Texture("EndLevelButton.png");
         endbutton=new Rectangle(1700,50,200,100);
+        resumeButtontexture = new Texture("Resume.png");
+        resumeButton = new Rectangle(500,900,100,100);
         RedBirdTexture = new Texture("RedAngryBird.png");
         YellowBirdTexture = new Texture("YellowAngryBird.png");
         BlueBirdTexture=new Texture("BlueAngryBird.png");
@@ -167,6 +175,8 @@ public class Level1Screen extends ScreenAdapter {
 
         // Set the input processor for handling input events
         Gdx.input.setInputProcessor(stage);
+
+        isPaused = false;
     }
 
     @Override
@@ -176,15 +186,23 @@ public class Level1Screen extends ScreenAdapter {
 
         // Draw the background image using SpriteBatch
         batch.begin();
-        batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-        batch.draw(pauseButtonTexture,50,900,100,100);
+        if(!isPaused){
+            batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(pauseButtonTexture,50,900,100,100);
+
+        }else{
+            batch.draw(DulledBackground,0,0);
+            //batch.draw();
+        }
         batch.draw(endbuttonTexture,1700,50,200,100);
         batch.end();
+
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
             if(pauseButton.contains(touchPos.x,touchPos.y)){
-                main.setScreen(new LevelPage(main));
+                isPaused = true;
+
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
 
