@@ -2,6 +2,7 @@ package com.ap.angrybirds;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LevelPage extends ScreenAdapter {
     Main main;
+    Music BackGroundMusic;
     SpriteBatch batch;
     Texture background;
     Texture level1;
@@ -40,6 +42,11 @@ public class LevelPage extends ScreenAdapter {
     @Override
     public void show() {
         batch = new SpriteBatch();
+        BackGroundMusic=Gdx.audio.newMusic(Gdx.files.internal("LevelMenuBackgroundMusic.mp3"));
+        BackGroundMusic.setLooping(true);
+        BackGroundMusic.setLooping(true);
+        BackGroundMusic.setVolume(1);
+        BackGroundMusic.play();
         background = new Texture(Gdx.files.internal("LevelpageBackground.png"));
         level1 = new Texture(Gdx.files.internal("Level1.png"));
         level2 = new Texture(Gdx.files.internal("Level2.png"));
@@ -100,10 +107,17 @@ public class LevelPage extends ScreenAdapter {
         viewport.update(width, height);
         camera.position.set(worldWidth / 2, worldHeight / 2, 0); // Re-center the camera
     }
+    @Override
+    public void hide(){
+        if(BackGroundMusic!=null){
+            BackGroundMusic.stop();
+        }
+    }
 
     @Override
     public void dispose() {
         batch.dispose();
+        BackGroundMusic.dispose();
         background.dispose();
         level1.dispose();
         level2.dispose();
