@@ -26,6 +26,7 @@ public class Level1Screen extends ScreenAdapter {
     private Rectangle pauseButton;
     private Rectangle endbutton;
     private Rectangle resumeButton;
+    private Rectangle restartLevelButton;
 
 
     private RedBird redBird;
@@ -62,6 +63,9 @@ public class Level1Screen extends ScreenAdapter {
     private Texture DulledBackground;
     private boolean isPaused;
     private Texture resumeButtontexture;
+    private Texture restartLevelTexture;
+    private Texture musicButtonTexture;
+    private Texture soundButtonTexture;
 
     private SpriteBatch batch; // SpriteBatch to draw the background
 
@@ -84,7 +88,13 @@ public class Level1Screen extends ScreenAdapter {
         endbuttonTexture=new Texture("EndLevelButton.png");
         endbutton=new Rectangle(1700,50,200,100);
         resumeButtontexture = new Texture("Resume.png");
-        resumeButton = new Rectangle(500,900,100,100);
+        resumeButton = new Rectangle(50,900,100,100);
+        restartLevelTexture = new Texture("RestartLevel.png");
+        restartLevelButton = new Rectangle(50,700,100,100);
+
+        musicButtonTexture=new Texture("music.png");
+        soundButtonTexture=new Texture("sound.png");
+
         RedBirdTexture = new Texture("RedAngryBird.png");
         YellowBirdTexture = new Texture("YellowAngryBird.png");
         BlueBirdTexture=new Texture("BlueAngryBird.png");
@@ -192,7 +202,10 @@ public class Level1Screen extends ScreenAdapter {
 
         }else{
             batch.draw(DulledBackground,0,0);
-            //batch.draw();
+            batch.draw(resumeButtontexture, 50,900,100,100);
+            batch.draw(restartLevelTexture,50, 750, 100, 100);
+            batch.draw(musicButtonTexture, 50, 600,100,100);
+            batch.draw(soundButtonTexture,50,400, 100, 100);
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
         batch.end();
@@ -202,15 +215,19 @@ public class Level1Screen extends ScreenAdapter {
             viewport.unproject(touchPos);
             if(pauseButton.contains(touchPos.x,touchPos.y)){
                 isPaused = true;
-
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
 
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            }if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                 main.setScreen(new LoseEndScreen(main));
+            }
+
+            if(resumeButton.contains(touchPos.x,touchPos.y)){
+                //isPaused = false;
             }
         }
 
+        //if()
 
 
         // Update the stage and render all actors (red bird, pig, obstacles, etc.)
