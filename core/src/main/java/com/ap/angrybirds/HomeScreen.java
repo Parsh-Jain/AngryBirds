@@ -116,6 +116,10 @@ public class HomeScreen extends ScreenAdapter {
            if(Play_Button.contains(touchPos.x,touchPos.y)){
                 main.setScreen(new LevelPage(main));
             }
+           if(BackButton.contains(touchPos.x,touchPos.y)){
+               Gdx.app.exit();
+
+           }
        }
     }
 
