@@ -31,7 +31,8 @@ public class HomeScreen extends ScreenAdapter {
     Texture View;
     Texture AngryStory;
     Texture LoadGame;
-    Rectangle Play_Button,SettingButton,BackButton,PlayerCoinButton,ViewButton1,ViewButton2;
+    Texture Exit;
+    Rectangle Play_Button,SettingButton,BackButton,PlayerCoinButton,ViewButton1,ViewButton2,ExitButton;
 
     OrthographicCamera camera;
     Viewport viewport;
@@ -51,6 +52,7 @@ public class HomeScreen extends ScreenAdapter {
         PlayerName = new Texture("Player Name.png");
         Setting = new Texture("Setting.png");
         Back = new Texture("Back.png");
+        Exit = new Texture("Exit.png");
         PlayerCoin = new Texture("Player Coin.png");
         AngryLevelText = new Texture("AngryLevel Text.png");
         RedAngryBird = new Texture("RedAngryBird.png");
@@ -62,10 +64,11 @@ public class HomeScreen extends ScreenAdapter {
         LoadGame = new Texture("Load Game.png");
         Play_Button = new Rectangle(worldWidth/2-72,355,225,85);
         SettingButton = new Rectangle(worldWidth-250,100,150,150);
-        BackButton = new Rectangle(100,100,150,150);
+//        BackButton = new Rectangle(100,100,150,150);
         PlayerCoinButton = new Rectangle(100,850,150,150);
         ViewButton1 = new Rectangle(340,330,120,50);
         ViewButton2 = new Rectangle(worldWidth-360,330,120,50);
+        ExitButton = new Rectangle(100,130,200,100);
 
         // Create camera and viewport with fixed world dimensions
         camera = new OrthographicCamera();
@@ -92,7 +95,7 @@ public class HomeScreen extends ScreenAdapter {
         // Update all draw positions to world coordinates
         batch.draw(background, 0, 0, worldWidth, worldHeight);
         batch.draw(AngryLevel, worldWidth / 2 - 165, worldHeight / 2 - 200, 400, 550);
-        batch.draw(Back, 100, 100, 150, 150);
+//        batch.draw(Back, 100, 100, 150, 150);
         batch.draw(Setting, worldWidth - 250, 100, 150, 150);
         batch.draw(PlayerName, worldWidth - 425, 850, 350, 150);
         batch.draw(PlayerCoin, 100, 850, 150, 150);
@@ -108,6 +111,8 @@ public class HomeScreen extends ScreenAdapter {
         batch.draw(View, worldWidth - 360, 330, 120, 50);
         batch.draw(AngryStory, 280, 750, 250, 50);
         batch.draw(LoadGame, worldWidth - 440, 750, 250, 50);
+        batch.draw(BasicButton,100,130,200,100);
+        batch.draw(Exit,130,160,150,40);
         batch.end();
 
         if(Gdx.input.isTouched()){
@@ -116,7 +121,7 @@ public class HomeScreen extends ScreenAdapter {
            if(Play_Button.contains(touchPos.x,touchPos.y)){
                 main.setScreen(new LevelPage(main));
             }
-           if(BackButton.contains(touchPos.x,touchPos.y)){
+           if(ExitButton.contains(touchPos.x,touchPos.y)){
                Gdx.app.exit(); // exiting the program
 
            }
