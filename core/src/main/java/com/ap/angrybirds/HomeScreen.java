@@ -3,6 +3,7 @@ package com.ap.angrybirds;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,6 +16,7 @@ import java.awt.*;
 
 public class HomeScreen extends ScreenAdapter {
     Main main;
+    Music BackGroundMusic;;
     SpriteBatch batch;
     Texture background;
     Texture AngryLevel;
@@ -46,6 +48,11 @@ public class HomeScreen extends ScreenAdapter {
     @Override
     public void show() {
         batch = new SpriteBatch();
+        BackGroundMusic=Gdx.audio.newMusic(Gdx.files.internal("AngryBirdTheme.mp3"));
+        BackGroundMusic.setLooping(true);
+        BackGroundMusic.setLooping(true);
+        BackGroundMusic.setVolume(1);
+        BackGroundMusic.play();
         background = new Texture("homeScreen background.jpg");
         AngryLevel = new Texture("Angry Level.png");
         PlayButton = new Texture("Play.png");
@@ -132,10 +139,17 @@ public class HomeScreen extends ScreenAdapter {
     public void resize(int width, int height) {
         viewport.update(width, height);
     }
+    @Override
+    public void hide(){
+        if(BackGroundMusic!=null){
+            BackGroundMusic.stop();
+        }
+    }
 
     @Override
     public void dispose() {
         batch.dispose();
+        BackGroundMusic.dispose();
         background.dispose();
         AngryLevel.dispose();
         PlayButton.dispose();
