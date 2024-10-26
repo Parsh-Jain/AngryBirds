@@ -22,6 +22,7 @@ public class Level1Screen extends ScreenAdapter {
     private Rectangle endbutton;
     private Rectangle resumeButton;
     private Rectangle restartLevelButton;
+    private Rectangle EndButton2;
     Music BackgroundMusic;
     private RedBird redBird;
     private YellowBird yellowBird;
@@ -60,6 +61,7 @@ public class Level1Screen extends ScreenAdapter {
     private Texture restartLevelTexture;
     private Texture musicButtonTexture;
     private Texture soundButtonTexture;
+    private Texture EndButton2Texture;
     private SpriteBatch batch; // SpriteBatch to draw the background
     public Level1Screen(Main main) {
         this.main = main;
@@ -79,6 +81,8 @@ public class Level1Screen extends ScreenAdapter {
         pauseButton=new Rectangle(50,900,100,100);
         endbuttonTexture=new Texture("EndLevelButton.png");
         endbutton=new Rectangle(1700,50,200,100);
+        EndButton2Texture=new Texture("EndLevelButton.png");
+        EndButton2=new Rectangle(20,50,200,100);
         resumeButtontexture = new Texture("Resume.png");
         resumeButton = new Rectangle(800,480,250,250);
         restartLevelTexture = new Texture("RestartLevel.png");
@@ -176,6 +180,7 @@ public class Level1Screen extends ScreenAdapter {
             batch.draw(soundButtonTexture,50,390, 100, 100);
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
+        batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
@@ -184,6 +189,9 @@ public class Level1Screen extends ScreenAdapter {
                 isPaused = true;
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
+            }
+            else if(EndButton2.contains(touchPos.x,touchPos.y)){
+                main.setScreen(new LoseEndScreen(main));
             }
             else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                 main.setScreen(new LoseEndScreen(main));
@@ -225,6 +233,7 @@ public class Level1Screen extends ScreenAdapter {
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
         BackgroundMusic.dispose();
+        EndButton2Texture.dispose();
         batch.dispose();
     }
 }
