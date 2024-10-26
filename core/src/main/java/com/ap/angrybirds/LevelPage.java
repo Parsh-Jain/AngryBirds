@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 public class LevelPage extends ScreenAdapter {
     Main main;
     Music BackGroundMusic;
@@ -28,17 +27,13 @@ public class LevelPage extends ScreenAdapter {
     Rectangle Level1Button;
     Rectangle Level2Button;
     Rectangle Level3Button;
-
-    // Declare Camera and Viewport
     OrthographicCamera camera;
     Viewport viewport;
-    int worldWidth = 1920; // Adjust world width and height according to your game's design
+    int worldWidth = 1920;
     int worldHeight = 1080;
-
     public LevelPage(Main main) {
         this.main = main;
     }
-
     @Override
     public void show() {
         batch = new SpriteBatch();
@@ -59,27 +54,19 @@ public class LevelPage extends ScreenAdapter {
         Level1Button = new Rectangle(230, 525, 125, 125);
         Level2Button = new Rectangle(500, 525, 125, 125);
         Level3Button = new Rectangle(740, 770, 125, 125);
-
-        // Create OrthographicCamera and FitViewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
         viewport.apply();
-
-        // Position the camera in the middle of the screen
         camera.position.set(worldWidth / 2, worldHeight / 2, 0);
         camera.update();
     }
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // Update camera and set projection matrix
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-
         batch.begin();
-        batch.draw(background, 0, 0, worldWidth, worldHeight); // Make sure to scale for world size
+        batch.draw(background, 0, 0, worldWidth, worldHeight);
         batch.draw(level1, 230, 525, 125, 125);
         batch.draw(level2, 500, 525, 125, 125);
         batch.draw(level3, 740, 770, 125, 125);
@@ -88,10 +75,9 @@ public class LevelPage extends ScreenAdapter {
         batch.draw(PlayerName, 1450, 900, 450, 150);
         batch.draw(PlayerCoin, 100, 900, 150, 150);
         batch.end();
-
         if (Gdx.input.isTouched()) {
             Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos); // Convert screen coordinates to world coordinates
+            viewport.unproject(touchPos);
             if (BackButton.contains(touchPos.x, touchPos.y)) {
                 main.setScreen(new HomeScreen(main));
             }
@@ -100,12 +86,11 @@ public class LevelPage extends ScreenAdapter {
             }
         }
     }
-
     @Override
     public void resize(int width, int height) {
         // Update viewport on resize
         viewport.update(width, height);
-        camera.position.set(worldWidth / 2, worldHeight / 2, 0); // Re-center the camera
+        camera.position.set(worldWidth / 2, worldHeight / 2, 0);
     }
     @Override
     public void hide(){
@@ -113,7 +98,6 @@ public class LevelPage extends ScreenAdapter {
             BackGroundMusic.stop();
         }
     }
-
     @Override
     public void dispose() {
         batch.dispose();
