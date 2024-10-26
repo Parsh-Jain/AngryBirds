@@ -72,7 +72,6 @@ public class LoadingPage extends ScreenAdapter {
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Update camera and apply it to the batch
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
@@ -80,7 +79,7 @@ public class LoadingPage extends ScreenAdapter {
         sprite.draw(batch);
         batch.end();
 
-        // Draw loading bar using world coordinates
+
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -102,7 +101,7 @@ public class LoadingPage extends ScreenAdapter {
 
         // Draw the actual loading progress bar using the `width`
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0.9f, 0.9f, 0.9f, 1);
+        shapeRenderer.setColor(1f, 1f, 1f, 1);
         shapeRenderer.arc(worldWidth / 2 - 200, rectY+20, 20, 90, 180); // Left inner arc
         shapeRenderer.rect(rectX, rectY, width, 40); // Progress rectangle
         shapeRenderer.end();
