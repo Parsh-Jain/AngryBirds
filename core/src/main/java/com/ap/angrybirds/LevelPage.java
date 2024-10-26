@@ -55,7 +55,7 @@ public class LevelPage extends ScreenAdapter {
         Back = new Texture(Gdx.files.internal("Back.png"));
         PlayerName = new Texture(Gdx.files.internal("Player Name.png"));
         PlayerCoin = new Texture(Gdx.files.internal("Player Coin.png"));
-        BackButton = new Rectangle(100, 50, 150, 150);
+        BackButton = new Rectangle(100, 30, 125, 125);
         Level1Button = new Rectangle(230, 525, 125, 125);
         Level2Button = new Rectangle(500, 525, 125, 125);
         Level3Button = new Rectangle(740, 770, 125, 125);
@@ -83,7 +83,7 @@ public class LevelPage extends ScreenAdapter {
         batch.draw(level1, 230, 525, 125, 125);
         batch.draw(level2, 500, 525, 125, 125);
         batch.draw(level3, 740, 770, 125, 125);
-        batch.draw(Back, 100, 50, 150, 150);
+        batch.draw(Back, 100, 40, 125, 125);
         batch.draw(Setting, 1650, 50, 150, 150);
         batch.draw(PlayerName, 1450, 900, 450, 150);
         batch.draw(PlayerCoin, 100, 900, 150, 150);

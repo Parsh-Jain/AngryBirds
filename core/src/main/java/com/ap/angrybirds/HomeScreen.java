@@ -75,7 +75,7 @@ public class HomeScreen extends ScreenAdapter {
         PlayerCoinButton = new Rectangle(100,850,150,150);
         ViewButton1 = new Rectangle(340,330,120,50);
         ViewButton2 = new Rectangle(worldWidth-360,330,120,50);
-        ExitButton = new Rectangle(100,130,200,100);
+        ExitButton = new Rectangle(130,180,150,50);
 
         // Create camera and viewport with fixed world dimensions
         camera = new OrthographicCamera();
@@ -118,8 +118,8 @@ public class HomeScreen extends ScreenAdapter {
         batch.draw(View, worldWidth - 360, 330, 120, 50);
         batch.draw(AngryStory, 280, 750, 250, 50);
         batch.draw(LoadGame, worldWidth - 440, 750, 250, 50);
-        batch.draw(BasicButton,100,130,200,100);
-        batch.draw(Exit,130,160,150,40);
+        batch.draw(BasicButton,100,140,200,100);
+        batch.draw(Exit,130,170,150,40);
         batch.end();
 
         if(Gdx.input.isTouched()){
