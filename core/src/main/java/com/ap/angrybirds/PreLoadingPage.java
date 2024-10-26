@@ -74,7 +74,9 @@ public class PreLoadingPage extends ScreenAdapter {
         // Draw "Please press Enter" message if toggle is on
         if (showPressEnter) {
             batch.begin();
-            main.font.draw(batch, "Please press Enter to start!", worldWidth / 2 - 100, 100);
+            main.font.getData().setScale(2f);
+            main.font.draw(batch, "Please press Enter to start!", worldWidth / 2 - 200, 100);
+//            main.font.getData().setScale(1.0f);
             batch.end();
         }
 

@@ -1,6 +1,5 @@
 package com.ap.angrybirds;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,16 +12,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import javax.script.ScriptEngineManager;
-import java.util.jar.Manifest;
-
-
 public class LoadingPage extends ScreenAdapter {
 
     Main main;
-    public LoadingPage(Main main){
-        this.main = main;
-    }
     ShapeRenderer shapeRenderer;
     Sprite sprite;
     Texture image;
@@ -30,97 +22,79 @@ public class LoadingPage extends ScreenAdapter {
     OrthographicCamera camera;
     Viewport viewport;
 
-    float speedX = 170;
-
-    float rectX;
-    float rectY;
+    float worldWidth = 1920;
+    float worldHeight = 1080;
+    float lineWidth = 0; // Initial width of the loading line
+    float maxLineWidth; // Maximum line width (screen width)
+    float loadingPercentage = 0; // Starting percentage
     float timer;
 
-    float worldWidth = 1920; // Define the world width
-    float worldHeight = 1080; // Define the world height
+    public LoadingPage(Main main) {
+        this.main = main;
+    }
 
     @Override
-    public void show () {
-        // Create a camera with world size and set up the viewport
+    public void show() {
+        // Set up the camera and viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
         viewport.apply();
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
+        // Initialize renderers and textures
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         image = new Texture("loadingpage.jpg");
         sprite = new Sprite(image);
-
-        // Convert pixel-based sprite positioning to world coordinates
         sprite.setPosition(worldWidth / 2 - sprite.getWidth() / 2, worldHeight / 2 - sprite.getHeight() / 2);
-        //sprite.setAlpha(0.9f);
 
-        // Set the rectangle (loading bar) position using world coordinates
-        rectX = worldWidth / 2 - 200;
-        rectY = 90;
-
+        // Set maximum line width based on screen width
+        maxLineWidth = worldWidth;
         timer = 0;
-
     }
 
-    float width = 0;
-
     @Override
-    public void render (float delta) {
+    public void render(float delta) {
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // Draw background image
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-
         batch.begin();
         sprite.draw(batch);
         batch.end();
 
+        // Update line width and loading percentage
+        lineWidth += (maxLineWidth / 4) * delta; // Slower speed for loading line
+        loadingPercentage = Math.min((lineWidth / maxLineWidth) * 100, 100); // Percentage
 
+        // Draw the loading line at a lower y-axis position
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        shapeRenderer.setColor(0f, 0f, 0f, 1);
-        shapeRenderer.arc(worldWidth / 2 - 200, rectY+20, 30, 90, 180); // Outer arc (left)
-        shapeRenderer.arc(worldWidth / 2 + 200, rectY+20, 30, 270, 180); // Outer arc (right)
-        shapeRenderer.rect(rectX, rectY + 40, 400, 10); // Top rectangle of loading bar
-        shapeRenderer.rect(rectX, rectY - 10, 400, 10); // Bottom rectangle of loading bar
+        shapeRenderer.setColor(1, 1, 1, 1);
+        shapeRenderer.rect(0, 100, lineWidth, 20); // Move line lower by adjusting y position
         shapeRenderer.end();
 
-        if (width < 400) {
-            width += speedX * Gdx.graphics.getDeltaTime();
-        } else {
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(0.9f, 0.9f, 0.9f, 1);
-            shapeRenderer.arc(worldWidth / 2 + 200, rectY+20, 20, 270, 180); // Right inner arc after loading completion
-            shapeRenderer.end();
-        }
+        // Draw the percentage text
+        batch.begin();
+        main.font.draw(batch, (int) loadingPercentage + "%", worldWidth / 2 - 25, 150); // Adjusted text position for new line height
+        batch.end();
 
-        // Draw the actual loading progress bar using the `width`
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 1f, 1f, 1);
-        shapeRenderer.arc(worldWidth / 2 - 200, rectY+20, 20, 90, 180); // Left inner arc
-        shapeRenderer.rect(rectX, rectY, width, 40); // Progress rectangle
-        shapeRenderer.end();
-
-        timer += delta;
-
-        if (timer > 2.358) {
-            main.setScreen(new HomeScreen(main));  // Change to the next screen
+        // Check if loading is complete
+        if (loadingPercentage >= 100) {
+            main.setScreen(new HomeScreen(main));  // Move to the next screen
         }
     }
 
     @Override
     public void resize(int width, int height) {
-        // Adjust viewport on resize to maintain aspect ratio
         viewport.update(width, height);
     }
 
     @Override
-    public void dispose () {
+    public void dispose() {
         shapeRenderer.dispose();
         image.dispose();
         batch.dispose();
