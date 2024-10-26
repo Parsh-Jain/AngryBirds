@@ -28,6 +28,7 @@ public class LevelPage extends ScreenAdapter {
     Rectangle Level1Button;
     Rectangle Level2Button;
     Rectangle Level3Button;
+    Rectangle SettingButton;
 
     // Declare Camera and Viewport
     OrthographicCamera camera;
@@ -59,6 +60,7 @@ public class LevelPage extends ScreenAdapter {
         Level1Button = new Rectangle(230, 525, 125, 125);
         Level2Button = new Rectangle(500, 525, 125, 125);
         Level3Button = new Rectangle(740, 770, 125, 125);
+        SettingButton = new Rectangle(1650, 50, 150, 150);
 
         // Create OrthographicCamera and FitViewport
         camera = new OrthographicCamera();
@@ -97,6 +99,8 @@ public class LevelPage extends ScreenAdapter {
             }
             if(Level1Button.contains(touchPos.x, touchPos.y)) {
                 main.setScreen(new Level1Screen(main));
+            }else if(SettingButton.contains(touchPos.x,touchPos.y)){
+                main.setScreen(new Settings(main));
             }
         }
     }

@@ -70,7 +70,7 @@ public class HomeScreen extends ScreenAdapter {
         AngryStory = new Texture("AngryStory.png");
         LoadGame = new Texture("Load Game.png");
         Play_Button = new Rectangle(worldWidth/2-72,355,225,85);
-        SettingButton = new Rectangle(worldWidth-250,100,150,150);
+        SettingButton = new Rectangle(1650, 50, 150, 150);
 //        BackButton = new Rectangle(100,100,150,150);
         PlayerCoinButton = new Rectangle(100,850,150,150);
         ViewButton1 = new Rectangle(340,330,120,50);
@@ -103,7 +103,7 @@ public class HomeScreen extends ScreenAdapter {
         batch.draw(background, 0, 0, worldWidth, worldHeight);
         batch.draw(AngryLevel, worldWidth / 2 - 165, worldHeight / 2 - 200, 400, 550);
 //        batch.draw(Back, 100, 100, 150, 150);
-        batch.draw(Setting, worldWidth - 250, 100, 150, 150);
+        batch.draw(Setting, 1650, 50, 150, 150);
         batch.draw(PlayerName, worldWidth - 425, 850, 350, 150);
         batch.draw(PlayerCoin, 100, 850, 150, 150);
         batch.draw(PlayButton, worldWidth / 2 - 72, 355, 225, 85);
@@ -128,9 +128,10 @@ public class HomeScreen extends ScreenAdapter {
            if(Play_Button.contains(touchPos.x,touchPos.y)){
                 main.setScreen(new LevelPage(main));
             }
-           if(ExitButton.contains(touchPos.x,touchPos.y)){
+           else if(ExitButton.contains(touchPos.x,touchPos.y)){
                Gdx.app.exit(); // exiting the program
-
+           }else if(SettingButton.contains(touchPos.x,touchPos.y)){
+               main.setScreen(new Settings(main));
            }
        }
     }

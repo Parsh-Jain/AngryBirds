@@ -15,19 +15,29 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Settings extends ScreenAdapter {
+    Main main;
     private Texture Background;
     private Texture settingsBackground;
+    private Texture Background2;
 
     private OrthographicCamera camera;
     private Viewport viewport;
     private SpriteBatch batch;
 
+    public Settings(Main main) {
+        this.main = main;
+    }
+
     public void show(){
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
+        viewport.apply();
+        camera.position.set(1920 / 2, 1080 / 2, 0);
+        camera.update();
+
         batch = new SpriteBatch();  // Initialize the batch
 
-        Background = new Texture("Background.png");
+        Background = new Texture("settingsBackground.jpg");
         settingsBackground = new Texture("settingBox.png");
     }
 
@@ -38,10 +48,17 @@ public class Settings extends ScreenAdapter {
 
         batch.begin();
         batch.draw(Background, 0, 0);
-        batch.draw(settingsBackground, 100, 100);
+        //batch.draw(Background2, 0, 0);
+        batch.draw(settingsBackground, 400, 80, 1200,1000);
+
         batch.end();
 
-        System.out.println("X: " + Gdx.graphics.getWidth() + " Y: " + Gdx.graphics.getHeight());
+        System.out.println("X: " + Gdx.input.getX() + " Y: " + Gdx.input.getY());
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
     }
 
     public void dispose(){
