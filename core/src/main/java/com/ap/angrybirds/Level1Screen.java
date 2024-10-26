@@ -63,7 +63,7 @@ public class Level1Screen extends ScreenAdapter {
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
     private Texture DulledBackground;
-    private Texture gameLogo;
+//    private Texture gameLogo;
 
     private boolean isPaused;
 
@@ -98,8 +98,8 @@ public class Level1Screen extends ScreenAdapter {
         resumeButtontexture = new Texture("Resume.png");
         resumeButton = new Rectangle(800,480,250,250);
         restartLevelTexture = new Texture("RestartLevel.png");
-        restartLevelButton = new Rectangle(50,700,100,100);
-        gameLogo = new Texture("GameLogo.png");
+        restartLevelButton = new Rectangle(50,660,100,100);
+//        gameLogo = new Texture("GameLogo.png");
 
         musicButtonTexture=new Texture("music.png");
         soundButtonTexture=new Texture("sound.png");
@@ -213,10 +213,10 @@ public class Level1Screen extends ScreenAdapter {
         }else{
             batch.draw(DulledBackground,0,0);
             batch.draw(resumeButtontexture, 800,480,250,250);
-            batch.draw(restartLevelTexture,50, 750, 100, 100);
-            batch.draw(musicButtonTexture, 50, 600,100,100);
-            batch.draw(soundButtonTexture,50,450, 100, 100);
-            batch.draw(gameLogo, 30, 900,150,120);
+            batch.draw(restartLevelTexture,50, 660, 100, 100);
+            batch.draw(musicButtonTexture, 50, 525,100,100);
+            batch.draw(soundButtonTexture,50,390, 100, 100);
+//            batch.draw(gameLogo, 30, 900,150,120);
             //render(0);
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
@@ -230,7 +230,7 @@ public class Level1Screen extends ScreenAdapter {
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
             }
-            else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                 main.setScreen(new LoseEndScreen(main));
             }else if(resumeButton.contains(touchPos.x,touchPos.y)){
                 isPaused = false;
