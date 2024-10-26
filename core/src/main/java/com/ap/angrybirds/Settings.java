@@ -45,6 +45,7 @@ public class Settings extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+        //
 
         batch.begin();
         batch.draw(Background, 0, 0);
