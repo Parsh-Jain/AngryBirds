@@ -61,9 +61,9 @@ public class Level1Screen extends ScreenAdapter {
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
     private Texture DulledBackground;
+    private Texture gameLogo;
 
     private boolean isPaused;
-    private boolean isPauseButtonVisible = true;
 
     private Texture resumeButtontexture;
     private Texture restartLevelTexture;
@@ -91,9 +91,10 @@ public class Level1Screen extends ScreenAdapter {
         endbuttonTexture=new Texture("EndLevelButton.png");
         endbutton=new Rectangle(1700,50,200,100);
         resumeButtontexture = new Texture("Resume.png");
-        resumeButton = new Rectangle(50,900,100,100);
+        resumeButton = new Rectangle(800,480,250,250);
         restartLevelTexture = new Texture("RestartLevel.png");
         restartLevelButton = new Rectangle(50,700,100,100);
+        gameLogo = new Texture("GameLogo.png");
 
         musicButtonTexture=new Texture("music.png");
         soundButtonTexture=new Texture("sound.png");
@@ -201,16 +202,17 @@ public class Level1Screen extends ScreenAdapter {
         batch.begin();
         if(!isPaused){
             batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-            if (isPauseButtonVisible) {
-                batch.draw(pauseButtonTexture, 50, 900, 100, 100);
-            }
+            batch.draw(pauseButtonTexture, 50, 900, 100, 100);
 
+            //render(0);
         }else{
             batch.draw(DulledBackground,0,0);
-            batch.draw(resumeButtontexture, 50,900,100,100);
+            batch.draw(resumeButtontexture, 800,480,250,250);
             batch.draw(restartLevelTexture,50, 750, 100, 100);
             batch.draw(musicButtonTexture, 50, 600,100,100);
-            batch.draw(soundButtonTexture,50,452, 100, 100);
+            batch.draw(soundButtonTexture,50,450, 100, 100);
+            batch.draw(gameLogo, 30, 900,150,120);
+            //render(0);
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
         batch.end();
@@ -220,9 +222,6 @@ public class Level1Screen extends ScreenAdapter {
             viewport.unproject(touchPos);
             if(pauseButton.contains(touchPos.x,touchPos.y)){
                 isPaused = true;
-                isPauseButtonVisible = false;
-                render(0);
-                return;
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
             }
@@ -242,6 +241,8 @@ public class Level1Screen extends ScreenAdapter {
         // Update the stage and render all actors (red bird, pig, obstacles, etc.)
         stage.act(delta);
         stage.draw();
+
+        //System.out.println("X:" + Gdx.input.getX() + " Y:" + Gdx.input.getY());
 
     }
 
