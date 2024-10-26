@@ -98,7 +98,7 @@ public class Level1Screen extends ScreenAdapter {
         resumeButtontexture = new Texture("Resume.png");
         resumeButton = new Rectangle(800,480,250,250);
         restartLevelTexture = new Texture("RestartLevel.png");
-        restartLevelButton = new Rectangle(50,660,100,100);
+        restartLevelButton = new Rectangle(50,690,100,100);
 //        gameLogo = new Texture("GameLogo.png");
 
         musicButtonTexture=new Texture("music.png");
@@ -213,9 +213,9 @@ public class Level1Screen extends ScreenAdapter {
         }else{
             batch.draw(DulledBackground,0,0);
             batch.draw(resumeButtontexture, 800,480,250,250);
-            batch.draw(restartLevelTexture,50, 660, 100, 100);
+            batch.draw(restartLevelTexture,50, 690, 100, 100);
             batch.draw(musicButtonTexture, 50, 525,100,100);
-            batch.draw(soundButtonTexture,50,390, 100, 100);
+            batch.draw(soundButtonTexture,50,360, 100, 100);
 //            batch.draw(gameLogo, 30, 900,150,120);
             //render(0);
         }
