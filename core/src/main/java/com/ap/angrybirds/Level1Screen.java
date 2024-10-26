@@ -240,7 +240,7 @@ public class Level1Screen extends ScreenAdapter {
 //        if(Gdx.input.isTouched()){
 //            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
 //            viewport.unproject(touchPos);
-//        }
+//        } hh
 
 
         // Update the stage and render all actors (red bird, pig, obstacles, etc.)
