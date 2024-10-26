@@ -9,16 +9,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import java.awt.*;
-import java.sql.ResultSetMetaData;
-
 public class Level1Screen extends ScreenAdapter {
     private Stage stage;
     private OrthographicCamera camera;
@@ -63,8 +57,6 @@ public class Level1Screen extends ScreenAdapter {
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
     private Texture DulledBackground;
-//    private Texture gameLogo;
-
     private boolean isPaused;
 
     private Texture resumeButtontexture;
@@ -87,8 +79,6 @@ public class Level1Screen extends ScreenAdapter {
         BackgroundMusic=Gdx.audio.newMusic(Gdx.files.internal("LevelScreen1BackgroundMusic.mp3"));// Initialize the batch
         BackgroundMusic.setVolume(1);
         BackgroundMusic.play();
-
-        // Load the textures
         BackgroundTexture = new Texture("GameScreenBackground.png");
         DulledBackground = new Texture("DulledBackground.png");
         pauseButtonTexture=new Texture("PauseButton.png");
@@ -98,12 +88,12 @@ public class Level1Screen extends ScreenAdapter {
         resumeButtontexture = new Texture("Resume.png");
         resumeButton = new Rectangle(800,480,250,250);
         restartLevelTexture = new Texture("RestartLevel.png");
+        restartLevelButton = new Rectangle(50,660,100,100);
         restartLevelButton = new Rectangle(50,690,100,100);
 //        gameLogo = new Texture("GameLogo.png");
 
         musicButtonTexture=new Texture("music.png");
         soundButtonTexture=new Texture("sound.png");
-
         RedBirdTexture = new Texture("RedAngryBird.png");
         YellowBirdTexture = new Texture("YellowAngryBird.png");
         BlueBirdTexture=new Texture("BlueAngryBird.png");
@@ -122,67 +112,67 @@ public class Level1Screen extends ScreenAdapter {
 
         // Initialize and add Red Bird to the stage
         redBird = new RedBird(RedBirdTexture);
-        redBird.setPosition(480, 450);  // Set the bird's starting position
+        redBird.setPosition(480, 450);
         stage.addActor(redBird);
         yellowBird = new YellowBird(YellowBirdTexture);
-        yellowBird.setPosition(190, 179);  // Set the bird's starting position
+        yellowBird.setPosition(190, 179);
         stage.addActor(yellowBird);
         blackBird = new BlackBird(BlackBirdTexture);
-        blackBird.setPosition(260, 181);  // Set the bird's starting position
+        blackBird.setPosition(260, 181);
         stage.addActor(blackBird);
         blueBird = new BlueBird(BlueBirdTexture);
-        blueBird.setPosition(330, 181);  // Set the bird's starting position
+        blueBird.setPosition(330, 181);
         stage.addActor(blueBird);
 
         // Initialize and add Mafia Pig to the stage
         mafiaPig1 = new MafiaPig(MafiaPig1Texture);
-        mafiaPig1.setPosition(1335, 220);  // Set Mafia Pig near the right
+        mafiaPig1.setPosition(1335, 220);
         stage.addActor(mafiaPig1);
         mafiaPig2 = new MafiaPig(MafiaPig2Texture);
-        mafiaPig2.setPosition(1415, 360);  // Set Mafia Pig near the right
+        mafiaPig2.setPosition(1415, 360);
         stage.addActor(mafiaPig2);
         mafiaPig3 = new MafiaPig(MafiaPig3Texture);
-        mafiaPig3.setPosition(1415, 580);  // Set Mafia Pig near the right
+        mafiaPig3.setPosition(1415, 580);
         stage.addActor(mafiaPig3);
         mafiaPig4 = new MafiaPig(MafiaPig4Texture);
-        mafiaPig4.setPosition(1490, 220);  // Set Mafia Pig near the right
+        mafiaPig4.setPosition(1490, 220);
         stage.addActor(mafiaPig4);
 
 
         woodObstacle13c = new WoodObstacles(WoodObstacleTexture13_Ha);
-        woodObstacle13c.setPosition(1258, 320);  // Place Wood Obstacle between bird and pig
+        woodObstacle13c.setPosition(1258, 320);
         woodObstacle13c.setSize(350,40);
         stage.addActor(woodObstacle13c);
         woodObstacle13d = new WoodObstacles(WoodObstacleTexture13_Hb);
-        woodObstacle13d.setPosition(1258, 185);  // Place Wood Obstacle between bird and pig
+        woodObstacle13d.setPosition(1258, 185);
         woodObstacle13d.setSize(350,40);
         stage.addActor(woodObstacle13d);
 
         woodObstacle9a = new WoodObstacles(WoodObstacleTexture9a);
-        woodObstacle9a.setPosition(1260, 185);  // Place Wood Obstacle between bird and pig
+        woodObstacle9a.setPosition(1260, 185);
         woodObstacle9a.setSize(40,175);
         stage.addActor(woodObstacle9a);
         woodObstacle9b = new WoodObstacles(WoodObstacleTexture9b);
-        woodObstacle9b.setPosition(1600, 185);  // Place Wood Obstacle between bird and pig
+        woodObstacle9b.setPosition(1600, 185);
         woodObstacle9b.setSize(40,175);
         stage.addActor(woodObstacle9b);
 
         woodObstacle9a = new WoodObstacles(WoodObstacleTexture9a);
-        woodObstacle9a.setPosition(1310, 350);  // Place Wood Obstacle between bird and pig
+        woodObstacle9a.setPosition(1310, 350);
         woodObstacle9a.setSize(40,175);
         stage.addActor(woodObstacle9a);
         woodObstacle9b = new WoodObstacles(WoodObstacleTexture9b);
-        woodObstacle9b.setPosition(1550, 350);  // Place Wood Obstacle between bird and pig
+        woodObstacle9b.setPosition(1550, 350);
         woodObstacle9b.setSize(40,175);
         stage.addActor(woodObstacle9b);
 
         woodObstacle13c = new WoodObstacles(WoodObstacleTexture13_Ha);
-        woodObstacle13c.setPosition(1278, 510);  // Place Wood Obstacle between bird and pig
+        woodObstacle13c.setPosition(1278, 510);
         woodObstacle13c.setSize(350,40);
         stage.addActor(woodObstacle13c);
 
         woodObstacle14 = new WoodObstacles(WoodObstacleTexture14);
-        woodObstacle14.setPosition(1368, 545);  // Place Wood Obstacle between bird and pig
+        woodObstacle14.setPosition(1368, 545);
         woodObstacle14.setSize(170,170);
         stage.addActor(woodObstacle14);
 
@@ -236,19 +226,8 @@ public class Level1Screen extends ScreenAdapter {
                 isPaused = false;
             }
         }
-
-//        if(Gdx.input.isTouched()){
-//            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
-//            viewport.unproject(touchPos);
-//        } hh
-
-
-        // Update the stage and render all actors (red bird, pig, obstacles, etc.)
         stage.act(delta);
         stage.draw();
-
-        //System.out.println("X:" + Gdx.input.getX() + " Y:" + Gdx.input.getY());
-
     }
     @Override
     public void hide(){
