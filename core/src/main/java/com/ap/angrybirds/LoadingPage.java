@@ -50,17 +50,16 @@ public class LoadingPage extends ScreenAdapter {
 
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
-        image = new Texture("angryb.png");
+        image = new Texture("loadingpage.jpg");
         sprite = new Sprite(image);
 
         // Convert pixel-based sprite positioning to world coordinates
-        sprite.setScale(0.8f);
         sprite.setPosition(worldWidth / 2 - sprite.getWidth() / 2, worldHeight / 2 - sprite.getHeight() / 2);
-        sprite.setAlpha(0.8f);
+        //sprite.setAlpha(0.9f);
 
         // Set the rectangle (loading bar) position using world coordinates
         rectX = worldWidth / 2 - 200;
-        rectY = 100;
+        rectY = 90;
 
         timer = 0;
 

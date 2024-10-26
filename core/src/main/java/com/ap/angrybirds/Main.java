@@ -32,7 +32,7 @@ public class Main extends Game {
         batch = new SpriteBatch();
         font = new BitmapFont();
         shapeRenderer = new ShapeRenderer();
-        setScreen(new LoadingPage(this));
+        setScreen(new PreLoadingPage(this));
 
 
     }

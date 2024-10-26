@@ -29,6 +29,28 @@ allprojects {
     }
   }
 }
+//// Desktop project build.gradle
+//project(":desktop") {
+//  apply plugin: "java"
+//
+//  // Setting encoding
+//  [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+//
+//  dependencies {
+//    implementation project(":core")
+//
+//    // Desktop-specific dependencies
+//    implementation "com.badlogic.gdx:gdx-backend-lwjgl3:$gdxVersion"
+//    implementation "com.badlogic.gdx:gdx-platform:$gdxVersion:natives-desktop"
+//    implementation "com.badlogic.gdx.video:gdx-video-lwjgl3:$gdxVideoVersion"
+//
+//    // Optional: GraalVM support
+//    if (project.hasProperty('enableGraalNative') && enableGraalNative == 'true') {
+//      implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
+//    }
+//  }
+//}
+
 
 configure(subprojects) {
   apply plugin: 'java-library'

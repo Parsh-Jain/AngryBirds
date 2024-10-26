@@ -3,6 +3,7 @@ package com.ap.angrybirds;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,6 +28,7 @@ public class Level1Screen extends ScreenAdapter {
     private Rectangle endbutton;
     private Rectangle resumeButton;
     private Rectangle restartLevelButton;
+    Music BackgroundMusic;
 
 
     private RedBird redBird;
@@ -81,7 +83,10 @@ public class Level1Screen extends ScreenAdapter {
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
         stage = new Stage(viewport);
-        batch = new SpriteBatch();  // Initialize the batch
+        batch = new SpriteBatch();
+        BackgroundMusic=Gdx.audio.newMusic(Gdx.files.internal("LevelScreen1BackgroundMusic.mp3"));// Initialize the batch
+        BackgroundMusic.setVolume(1);
+        BackgroundMusic.play();
 
         // Load the textures
         BackgroundTexture = new Texture("GameScreenBackground.png");
@@ -245,7 +250,12 @@ public class Level1Screen extends ScreenAdapter {
         //System.out.println("X:" + Gdx.input.getX() + " Y:" + Gdx.input.getY());
 
     }
-
+    @Override
+    public void hide(){
+        if(BackgroundMusic!=null){
+            BackgroundMusic.stop();
+        }
+    }
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
@@ -271,6 +281,7 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle14.dispose();
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
+        BackgroundMusic.dispose();
         batch.dispose();
     }
 }
