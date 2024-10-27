@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
 public class Level1Screen extends ScreenAdapter {
-    private Stage stage;
+    private Stage stage;  // Important Attributes
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
@@ -23,12 +23,9 @@ public class Level1Screen extends ScreenAdapter {
     private Rectangle resumeButton;
     private Rectangle restartLevelButton;
     private Rectangle EndButton2;
-//    Music BackgroundMusic;
     Music PauseButtonSound;
     Music ResumeButtonSound;
     Music EndButtonSound;
-
-
     private RedBird redBird;
     private YellowBird yellowBird;
     private BlueBird blueBird;
@@ -62,26 +59,22 @@ public class Level1Screen extends ScreenAdapter {
     private Texture CatapultTexture;
     private Texture DulledBackground;
     private boolean isPaused;
-
     private Texture resumeButtontexture;
     private Texture restartLevelTexture;
     private Texture musicButtonTexture;
     private Texture soundButtonTexture;
     private Texture EndButton2Texture;
-    private SpriteBatch batch; // SpriteBatch to draw the background
-    public Level1Screen(Main main) {
+    private SpriteBatch batch;
+    public Level1Screen(Main main) { // Constructor
         this.main = main;
     }
 
     @Override
-    public void show() {
+    public void show() { // Show method to creating all the attributes
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
         stage = new Stage(viewport);
         batch = new SpriteBatch();
-//        BackgroundMusic=Gdx.audio.newMusic(Gdx.files.internal("LevelScreen1BackgroundMusic.mp3"));// Initialize the batch
-//        BackgroundMusic.setVolume(1);
-//        BackgroundMusic.play();
         PauseButtonSound=Gdx.audio.newMusic(Gdx.files.internal("PauseButtonSound.mp3"));
         ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         EndButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
@@ -98,8 +91,6 @@ public class Level1Screen extends ScreenAdapter {
         restartLevelTexture = new Texture("RestartLevel.png");
         restartLevelButton = new Rectangle(50,660,100,100);
         restartLevelButton = new Rectangle(50,690,100,100);
-//        gameLogo = new Texture("GameLogo.png");
-
         musicButtonTexture=new Texture("music.png");
         soundButtonTexture=new Texture("sound.png");
         RedBirdTexture = new Texture("RedAngryBird.png");
@@ -115,7 +106,6 @@ public class Level1Screen extends ScreenAdapter {
         WoodObstacleTexture13_Ha = new Texture("13_H.png");
         WoodObstacleTexture13_Hb = new Texture("13_H.png");
         WoodObstacleTexture14 = new Texture("Block.png");
-
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
         redBird = new RedBird(RedBirdTexture);
         redBird.setPosition(480, 450);
@@ -141,8 +131,6 @@ public class Level1Screen extends ScreenAdapter {
         mafiaPig4 = new MafiaPig(MafiaPig4Texture);
         mafiaPig4.setPosition(1490, 220);
         stage.addActor(mafiaPig4);
-
-
         woodObstacle13c = new WoodObstacles(WoodObstacleTexture13_Ha);
         woodObstacle13c.setPosition(1258, 320);
         woodObstacle13c.setSize(350,40);
@@ -151,7 +139,6 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle13d.setPosition(1258, 185);
         woodObstacle13d.setSize(350,40);
         stage.addActor(woodObstacle13d);
-
         woodObstacle9a = new WoodObstacles(WoodObstacleTexture9a);
         woodObstacle9a.setPosition(1260, 185);
         woodObstacle9a.setSize(40,175);
@@ -160,7 +147,6 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle9b.setPosition(1600, 185);
         woodObstacle9b.setSize(40,175);
         stage.addActor(woodObstacle9b);
-
         woodObstacle9a = new WoodObstacles(WoodObstacleTexture9a);
         woodObstacle9a.setPosition(1310, 350);
         woodObstacle9a.setSize(40,175);
@@ -169,12 +155,10 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle9b.setPosition(1550, 350);
         woodObstacle9b.setSize(40,175);
         stage.addActor(woodObstacle9b);
-
         woodObstacle13c = new WoodObstacles(WoodObstacleTexture13_Ha);
         woodObstacle13c.setPosition(1278, 510);
         woodObstacle13c.setSize(350,40);
         stage.addActor(woodObstacle13c);
-
         woodObstacle14 = new WoodObstacles(WoodObstacleTexture14);
         woodObstacle14.setPosition(1368, 545);
         woodObstacle14.setSize(170,170);
@@ -187,27 +171,25 @@ public class Level1Screen extends ScreenAdapter {
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta) { //Rendering
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        if(!isPaused){
+        if(!isPaused){ // Checking if Pause Button is clicked
             batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(pauseButtonTexture, 50, 900, 100, 100);
 
-            //render(0);
-        }else{
+        }else{ // Drawing Pause Screen
             batch.draw(DulledBackground,0,0);
             batch.draw(resumeButtontexture, 800,480,250,250);
             batch.draw(restartLevelTexture,50, 690, 100, 100);
             batch.draw(musicButtonTexture, 50, 525,100,100);
             batch.draw(soundButtonTexture,50,360, 100, 100);
-//            batch.draw(gameLogo, 30, 900,150,120);
-            //render(0);
+
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
         batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
-
+        // Checking User input
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
@@ -232,19 +214,13 @@ public class Level1Screen extends ScreenAdapter {
         stage.act(delta);
         stage.draw();
     }
-//    @Override
-//    public void hide(){
-//        if(BackgroundMusic!=null){
-//            BackgroundMusic.stop();
-//        }
-//    }
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height) { // Rendering
         viewport.update(width, height, true);
     }
 
     @Override
-    public void dispose() {
+    public void dispose() { // Disposing
         stage.dispose();
         redBird.dispose();
         pauseButtonTexture.dispose();
@@ -263,7 +239,6 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle14.dispose();
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
-//        BackgroundMusic.dispose();
         EndButton2Texture.dispose();
         PauseButtonSound.dispose();
         ResumeButtonSound.dispose();
