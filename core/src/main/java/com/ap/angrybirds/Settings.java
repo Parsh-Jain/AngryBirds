@@ -57,7 +57,7 @@ public class Settings extends ScreenAdapter {
         info = new Texture("InfoButton.png");
         sound_word = new Texture("soundWord.png");
         music_word = new Texture("musicWord.png");
-//        infoText = new Texture("infoText.png");
+        infoText = new Texture("infoText.png");
         BackToHomePage = new Texture("BackToHomePage.png");
         BackToLevelMenu = new Texture("BackToLevelMenu.png");
         blueBox = new Texture("blueBox.png");
@@ -80,7 +80,7 @@ public class Settings extends ScreenAdapter {
         batch.draw(info, 1130, 655, 130,125);
         batch.draw(music_word, 710, 620, 127,33);
         batch.draw(sound_word, 920, 620, 127,33);
-//        batch.draw(infoText, 1130, 613, 127,40);
+        batch.draw(infoText, 1130, 613, 127,40);
         batch.draw(blueBox, 740, 436, 500, 100);
         batch.draw(blueBox, 740, 310, 500, 100);
         batch.draw(BackToHomePage, 715, 450, 550,85);
