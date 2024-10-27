@@ -1,6 +1,7 @@
 package com.ap.angrybirds;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,6 +21,8 @@ public class LoseEndScreen extends ScreenAdapter {
     Texture back;
     Rectangle retryButton;
     Rectangle backButton;
+    Music BackButtonSound;
+    Music RetryButtonSound;
 
     OrthographicCamera camera;
     Viewport viewport;
@@ -35,6 +38,8 @@ public class LoseEndScreen extends ScreenAdapter {
         back = new Texture("Back.png");
         retryButton = new Rectangle(770, 120, 367, 150);
         backButton = new Rectangle(80, 140, 140, 140);
+        BackButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
+        RetryButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
         viewport.apply();
@@ -58,10 +63,13 @@ public class LoseEndScreen extends ScreenAdapter {
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
             if(retryButton.contains(touchPos.x,touchPos.y)){
+                RetryButtonSound.play();
                 main.setScreen(new Level1Screen(main));
             }
             else if(backButton.contains(touchPos.x,touchPos.y)){
+                BackButtonSound.play();
                 main.setScreen(new LevelPage(main));
+
             }
         }
     }
@@ -73,6 +81,8 @@ public class LoseEndScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         batch.dispose();
+        BackButtonSound.dispose();
+        RetryButtonSound.dispose();
         background.dispose();
         retry.dispose();
         back.dispose();

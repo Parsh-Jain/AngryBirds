@@ -79,7 +79,7 @@ public class HomeScreen extends ScreenAdapter {
         ViewButton1 = new Rectangle(340,330,120,50);
         ViewButton2 = new Rectangle(worldWidth-360,330,120,50);
         ExitButton = new Rectangle(130,180,150,50);
-        ExitButtonSound=Gdx.audio.newMusic(Gdx.files.internal("ExitButtonSound.mp3"));
+        ExitButtonSound=Gdx.audio.newMusic(Gdx.files.internal("EnterButtonSound.mp3"));
         PlayButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         SettingButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
 

@@ -23,7 +23,10 @@ public class Level1Screen extends ScreenAdapter {
     private Rectangle resumeButton;
     private Rectangle restartLevelButton;
     private Rectangle EndButton2;
-    Music BackgroundMusic;
+//    Music BackgroundMusic;
+    Music PauseButtonSound;
+    Music ResumeButtonSound;
+    Music EndButtonSound;
 
 
     private RedBird redBird;
@@ -76,9 +79,12 @@ public class Level1Screen extends ScreenAdapter {
         viewport = new FitViewport(1920, 1080, camera);
         stage = new Stage(viewport);
         batch = new SpriteBatch();
-        BackgroundMusic=Gdx.audio.newMusic(Gdx.files.internal("LevelScreen1BackgroundMusic.mp3"));// Initialize the batch
-        BackgroundMusic.setVolume(1);
-        BackgroundMusic.play();
+//        BackgroundMusic=Gdx.audio.newMusic(Gdx.files.internal("LevelScreen1BackgroundMusic.mp3"));// Initialize the batch
+//        BackgroundMusic.setVolume(1);
+//        BackgroundMusic.play();
+        PauseButtonSound=Gdx.audio.newMusic(Gdx.files.internal("PauseButtonSound.mp3"));
+        ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
+        EndButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         BackgroundTexture = new Texture("GameScreenBackground.png");
         DulledBackground = new Texture("DulledBackground.png");
         pauseButtonTexture=new Texture("PauseButton.png");
@@ -206,28 +212,32 @@ public class Level1Screen extends ScreenAdapter {
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
             if(pauseButton.contains(touchPos.x,touchPos.y)){
+                PauseButtonSound.play();
                 isPaused = true;
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
+                EndButtonSound.play();
                 main.setScreen(new SuccessfulEndScreen(main));
             }
             else if(EndButton2.contains(touchPos.x,touchPos.y)){
+                EndButtonSound.play();
                 main.setScreen(new LoseEndScreen(main));
             }
             else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                 main.setScreen(new LoseEndScreen(main));
             }else if(resumeButton.contains(touchPos.x,touchPos.y)){
+                ResumeButtonSound.play();
                 isPaused = false;
             }
         }
         stage.act(delta);
         stage.draw();
     }
-    @Override
-    public void hide(){
-        if(BackgroundMusic!=null){
-            BackgroundMusic.stop();
-        }
-    }
+//    @Override
+//    public void hide(){
+//        if(BackgroundMusic!=null){
+//            BackgroundMusic.stop();
+//        }
+//    }
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
@@ -253,8 +263,11 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle14.dispose();
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
-        BackgroundMusic.dispose();
+//        BackgroundMusic.dispose();
         EndButton2Texture.dispose();
+        PauseButtonSound.dispose();
+        ResumeButtonSound.dispose();
+        EndButtonSound.dispose();
         batch.dispose();
     }
 }
