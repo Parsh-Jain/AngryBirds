@@ -39,8 +39,8 @@ public class LoseEndScreen extends ScreenAdapter {
         background = new Texture("LosingPage.jpg");
         retry = new Texture("retry.png");
         back = new Texture("Back.png");
-        retryButton = new Rectangle(770, 120, 367, 150);
-        backButton = new Rectangle(80, 140, 140, 140);
+        retryButton = new Rectangle(725, 0, 490, 220);
+        backButton = new Rectangle(80, 500, 140, 140);
         BackButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         RetryButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         camera = new OrthographicCamera();
@@ -75,6 +75,8 @@ public class LoseEndScreen extends ScreenAdapter {
 
             }
         }
+
+        System.out.println("X: "+Gdx.input.getX() + " Y: "+Gdx.input.getY());
     }
     @Override
     public void resize(int width, int height) {
