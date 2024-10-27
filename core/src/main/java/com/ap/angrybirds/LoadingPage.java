@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 public class LoadingPage extends ScreenAdapter {
-    Main main;
+    Main main; // Important Attributes
     ShapeRenderer shapeRenderer;
     Sprite sprite;
     Texture image;
@@ -29,7 +29,7 @@ public class LoadingPage extends ScreenAdapter {
         this.main = main;
     }
     @Override
-    public void show() {
+    public void show() { // Show method for creating all the Attributes
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
         viewport.apply();
@@ -43,9 +43,8 @@ public class LoadingPage extends ScreenAdapter {
         maxLineWidth = worldWidth;
         timer = 0;
     }
-
     @Override
-    public void render(float delta) {
+    public void render(float delta) { // Rendering
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
@@ -64,15 +63,15 @@ public class LoadingPage extends ScreenAdapter {
         main.font.draw(batch, (int) loadingPercentage + "%", worldWidth / 2 - 25, 150);
         batch.end();
         if (loadingPercentage >= 100) {
-            main.setScreen(new HomeScreen(main));
+            main.setScreen(new HomeScreen(main)); // switch to HomeScreen
         }
     }
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height) { // Resizing
         viewport.update(width, height);
     }
     @Override
-    public void dispose() {
+    public void dispose() { // Disposing
         shapeRenderer.dispose();
         image.dispose();
         batch.dispose();
