@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
 
 public class HomeScreen extends ScreenAdapter {
-    Main main;
+    Main main; // Important Attributes of type Main, Texture,Rectangle and Music
     Music BackGroundMusic;;
     SpriteBatch batch;
     Texture background;
@@ -46,10 +46,10 @@ public class HomeScreen extends ScreenAdapter {
     int worldHeight = 1080;
     public HomeScreen(Main main){
         this.main = main;
-    }
+    } // Constructor
 
     @Override
-    public void show() {
+    public void show() { // Show method to create all the Attributes
         batch = new SpriteBatch();
         BackGroundMusic=Gdx.audio.newMusic(Gdx.files.internal("AngryBirdTheme.mp3"));
         BackGroundMusic.setLooping(true);
@@ -74,7 +74,6 @@ public class HomeScreen extends ScreenAdapter {
         LoadGame = new Texture("Load Game.png");
         Play_Button = new Rectangle(worldWidth/2-72,355,225,85);
         SettingButton = new Rectangle(1650, 50, 150, 150);
-//        BackButton = new Rectangle(100,100,150,150);
         PlayerCoinButton = new Rectangle(100,850,150,150);
         ViewButton1 = new Rectangle(340,330,120,50);
         ViewButton2 = new Rectangle(worldWidth-360,330,120,50);
@@ -82,20 +81,14 @@ public class HomeScreen extends ScreenAdapter {
         ExitButtonSound=Gdx.audio.newMusic(Gdx.files.internal("EnterButtonSound.mp3"));
         PlayButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         SettingButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
-
-
-        // Create camera and viewport with fixed world dimensions
-        camera = new OrthographicCamera();
+        camera = new OrthographicCamera(); // Create camera and viewport with fixed world dimensions
         viewport = new FitViewport(worldWidth, worldHeight, camera);
         viewport.apply();
         camera.position.set(worldWidth / 2, worldHeight / 2, 0);
         camera.update();
-
-//        // Enable blending for transparency
-//        batch.enableBlending();
     }
     @Override
-    public void render(float delta) {
+    public void render(float delta) { //Rendering
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -103,13 +96,9 @@ public class HomeScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//        Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
         // Update all draw positions to world coordinates
         batch.draw(background, 0, 0, worldWidth, worldHeight);
         batch.draw(AngryLevel, worldWidth / 2 - 165, worldHeight / 2 - 200, 400, 550);
-//        batch.draw(Back, 100, 100, 150, 150);
         batch.draw(Setting, 1650, 50, 150, 150);
         batch.draw(PlayerName, worldWidth - 425, 850, 350, 150);
         batch.draw(PlayerCoin, 100, 850, 150, 150);
@@ -128,7 +117,7 @@ public class HomeScreen extends ScreenAdapter {
         batch.draw(BasicButton,100,140,200,100);
         batch.draw(Exit,130,170,150,40);
         batch.end();
-
+        // Checking User Inputs
         if(Gdx.input.isTouched()){
            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
           viewport.unproject(touchPos);
@@ -149,16 +138,16 @@ public class HomeScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-    }
+    } //Resizing
     @Override
-    public void hide(){
+    public void hide(){ // stopping Music
         if(BackGroundMusic!=null){
             BackGroundMusic.stop();
         }
     }
 
     @Override
-    public void dispose() {
+    public void dispose() { //Disposing all thing
         batch.dispose();
         BackGroundMusic.dispose();
         background.dispose();
