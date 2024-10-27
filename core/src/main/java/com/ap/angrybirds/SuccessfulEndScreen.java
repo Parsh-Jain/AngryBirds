@@ -3,6 +3,7 @@ package com.ap.angrybirds;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,6 +21,7 @@ public class SuccessfulEndScreen extends ScreenAdapter {
     Texture levelMenu;
     Texture text;
     Rectangle levelMenu_Button;
+    Music LevelButtonSound;
 
     OrthographicCamera camera;
     Viewport viewport;
@@ -39,6 +41,7 @@ public class SuccessfulEndScreen extends ScreenAdapter {
         text = new Texture("Level Menu.png");
         levelMenu = new Texture("BasicButton.png");
         levelMenu_Button = new Rectangle(690,45,520,122);
+        LevelButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
@@ -67,6 +70,7 @@ public class SuccessfulEndScreen extends ScreenAdapter {
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
             if(levelMenu_Button.contains(touchPos.x,touchPos.y)){
+                LevelButtonSound.play();
                 main.setScreen(new LevelPage(main));
             }
         }

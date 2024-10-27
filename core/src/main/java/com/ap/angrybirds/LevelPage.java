@@ -65,7 +65,7 @@ public class LevelPage extends ScreenAdapter {
         Level3Button = new Rectangle(740, 770, 125, 125);
         SettingButton = new Rectangle(1650, 50, 150, 150);
         BackButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
-        Level1ButtonSound=Gdx.audio.newMusic(Gdx.files.internal("EnterButtonSound.mp3"));
+        Level1ButtonSound=Gdx.audio.newMusic(Gdx.files.internal("ExitButtonSound.mp3"));
         SettingButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
 
         // Create OrthographicCamera and FitViewport
