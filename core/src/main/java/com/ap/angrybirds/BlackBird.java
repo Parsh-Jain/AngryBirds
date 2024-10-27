@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class BlackBird extends Bird{
     public BlackBird(Texture birdTexture) {
-        super(new Texture("BlackAngryBird.png"));
+        super(new Texture("BlackAngryBird.png")); //Accessing Constructor of Bird class
         setSize(75,75);
     }
     @Override
