@@ -22,6 +22,7 @@ public class Level1Screen extends ScreenAdapter {
     private Rectangle endbutton;
     private Rectangle resumeButton;
     private Rectangle restartLevelButton;
+    private Rectangle EndButton2;
     Music BackgroundMusic;
 
 
@@ -63,9 +64,8 @@ public class Level1Screen extends ScreenAdapter {
     private Texture restartLevelTexture;
     private Texture musicButtonTexture;
     private Texture soundButtonTexture;
-
+    private Texture EndButton2Texture;
     private SpriteBatch batch; // SpriteBatch to draw the background
-
     public Level1Screen(Main main) {
         this.main = main;
     }
@@ -85,6 +85,8 @@ public class Level1Screen extends ScreenAdapter {
         pauseButton=new Rectangle(50,900,100,100);
         endbuttonTexture=new Texture("EndLevelButton.png");
         endbutton=new Rectangle(1700,50,200,100);
+        EndButton2Texture=new Texture("EndLevelButton.png");
+        EndButton2=new Rectangle(20,50,200,100);
         resumeButtontexture = new Texture("Resume.png");
         resumeButton = new Rectangle(800,480,250,250);
         restartLevelTexture = new Texture("RestartLevel.png");
@@ -109,8 +111,6 @@ public class Level1Screen extends ScreenAdapter {
         WoodObstacleTexture14 = new Texture("Block.png");
 
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
-
-        // Initialize and add Red Bird to the stage
         redBird = new RedBird(RedBirdTexture);
         redBird.setPosition(480, 450);
         stage.addActor(redBird);
@@ -123,8 +123,6 @@ public class Level1Screen extends ScreenAdapter {
         blueBird = new BlueBird(BlueBirdTexture);
         blueBird.setPosition(330, 181);
         stage.addActor(blueBird);
-
-        // Initialize and add Mafia Pig to the stage
         mafiaPig1 = new MafiaPig(MafiaPig1Texture);
         mafiaPig1.setPosition(1335, 220);
         stage.addActor(mafiaPig1);
@@ -175,25 +173,16 @@ public class Level1Screen extends ScreenAdapter {
         woodObstacle14.setPosition(1368, 545);
         woodObstacle14.setSize(170,170);
         stage.addActor(woodObstacle14);
-
-
-        // Initialize and add Catapult to the stage
         catapult = new Catapult(CatapultTexture);
         catapult.setPosition(300, 183);
         stage.addActor(catapult);
-
-        // Set the input processor for handling input events
         Gdx.input.setInputProcessor(stage);
-
         isPaused = false;
     }
 
     @Override
     public void render(float delta) {
-        // Clear the screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // Draw the background image using SpriteBatch
         batch.begin();
         if(!isPaused){
             batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
@@ -210,6 +199,7 @@ public class Level1Screen extends ScreenAdapter {
             //render(0);
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
+        batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
 
         if(Gdx.input.isTouched()){
@@ -219,6 +209,9 @@ public class Level1Screen extends ScreenAdapter {
                 isPaused = true;
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 main.setScreen(new SuccessfulEndScreen(main));
+            }
+            else if(EndButton2.contains(touchPos.x,touchPos.y)){
+                main.setScreen(new LoseEndScreen(main));
             }
             else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                 main.setScreen(new LoseEndScreen(main));
@@ -261,7 +254,7 @@ public class Level1Screen extends ScreenAdapter {
         CatapultTexture.dispose();
         BackgroundTexture.dispose();
         BackgroundMusic.dispose();
+        EndButton2Texture.dispose();
         batch.dispose();
-
     }
 }
