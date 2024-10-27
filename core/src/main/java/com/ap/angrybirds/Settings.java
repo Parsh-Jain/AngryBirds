@@ -28,6 +28,7 @@ public class Settings extends ScreenAdapter {
         this.main = main;
     }
 
+
     public void show(){
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
