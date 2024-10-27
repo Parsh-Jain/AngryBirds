@@ -262,5 +262,6 @@ public class Level1Screen extends ScreenAdapter {
         BackgroundTexture.dispose();
         BackgroundMusic.dispose();
         batch.dispose();
+
     }
 }
