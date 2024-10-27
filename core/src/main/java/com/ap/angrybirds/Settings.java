@@ -3,6 +3,7 @@ package com.ap.angrybirds;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,6 +28,7 @@ public class Settings extends ScreenAdapter {
     private Texture info;
     private Texture infoText;
     private Texture blueBox;
+    private Music EnterSound;
 
 
     private OrthographicCamera camera;
@@ -52,13 +54,14 @@ public class Settings extends ScreenAdapter {
         settingsBackground = new Texture("settingBox.png");
         sound = new Texture("sound.png");
         music = new Texture("music.png");
-        info = new Texture("info.png");
+        info = new Texture("InfoButton.png");
         sound_word = new Texture("soundWord.png");
         music_word = new Texture("musicWord.png");
-        infoText = new Texture("infoText.png");
+//        infoText = new Texture("infoText.png");
         BackToHomePage = new Texture("BackToHomePage.png");
         BackToLevelMenu = new Texture("BackToLevelMenu.png");
         blueBox = new Texture("blueBox.png");
+        EnterSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         BackToHomepageButton = new Rectangle(740, 436, 500, 100);
         BackToLevelMenuButton = new Rectangle(740, 310, 500, 100);
     }
@@ -74,10 +77,10 @@ public class Settings extends ScreenAdapter {
         batch.draw(settingsBackground, 400, 80, 1200,1000);
         batch.draw(music, 710, 660, 125,125);
         batch.draw(sound, 920, 660, 125,125);
-        batch.draw(info, 1130, 660, 140,125);
+        batch.draw(info, 1130, 655, 130,125);
         batch.draw(music_word, 710, 620, 127,33);
         batch.draw(sound_word, 920, 620, 127,33);
-        batch.draw(infoText, 1130, 613, 127,40);
+//        batch.draw(infoText, 1130, 613, 127,40);
         batch.draw(blueBox, 740, 436, 500, 100);
         batch.draw(blueBox, 740, 310, 500, 100);
         batch.draw(BackToHomePage, 715, 450, 550,85);
@@ -88,8 +91,10 @@ public class Settings extends ScreenAdapter {
             Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
             if (BackToHomepageButton.contains(touchPos.x, touchPos.y)) {
+                EnterSound.play();
                 main.setScreen(new HomeScreen(main));
             }else if (BackToLevelMenuButton.contains(touchPos.x, touchPos.y)) {
+                EnterSound.play();
                 main.setScreen(new LevelPage(main));
             }
         }
@@ -104,6 +109,7 @@ public class Settings extends ScreenAdapter {
 
     public void dispose(){
         batch.dispose();
+        EnterSound.dispose();
         Background.dispose();
         settingsBackground.dispose();
     }
