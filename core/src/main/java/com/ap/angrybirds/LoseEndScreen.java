@@ -10,14 +10,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
-//
-
 public class LoseEndScreen extends ScreenAdapter {
-    Main main;
-    public LoseEndScreen(Main main) {
-        this.main = main;
-    }
+    Main main; // Important Attributes
     SpriteBatch batch;
     Texture background;
     Texture retry;
@@ -26,15 +20,15 @@ public class LoseEndScreen extends ScreenAdapter {
     Rectangle backButton;
     Music BackButtonSound;
     Music RetryButtonSound;
-
     OrthographicCamera camera;
     Viewport viewport;
-
     float worldWidth = 1920;
     float worldHeight = 1080;
-
+    public LoseEndScreen(Main main) {  // Constructor
+        this.main = main;
+    }
     @Override
-    public void show() {
+    public void show() { // Show method for creating the attributes
         batch = new SpriteBatch();
         background = new Texture("LosingPage.jpg");
         retry = new Texture("retry.png");
@@ -49,9 +43,8 @@ public class LoseEndScreen extends ScreenAdapter {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
     }
-
     @Override
-    public void render(float delta) {
+    public void render(float delta) { // Rendering
         // Clear the screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -62,28 +55,29 @@ public class LoseEndScreen extends ScreenAdapter {
         batch.draw(retry, retryButton.x, retryButton.y, retryButton.width, retryButton.height); // Retry button
         batch.draw(back, backButton.x, backButton.y, backButton.width, backButton.height);      // Back button
         batch.end();
+        // Checking User Input
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
             if(retryButton.contains(touchPos.x,touchPos.y)){
                 RetryButtonSound.play();
-                main.setScreen(new Level1Screen(main));
+                main.setScreen(new Level1Screen(main)); // switch to Level1Screen
             }
             else if(backButton.contains(touchPos.x,touchPos.y)){
                 BackButtonSound.play();
-                main.setScreen(new LevelPage(main));
+                main.setScreen(new LevelPage(main)); // Switch to LevelPage
 
             }
         }
 
     }
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height) { // Resizing
         // Update the viewport to maintain aspect ratio
         viewport.update(width, height);
     }
     @Override
-    public void dispose() {
+    public void dispose() { //Disposing
         batch.dispose();
         BackButtonSound.dispose();
         RetryButtonSound.dispose();
