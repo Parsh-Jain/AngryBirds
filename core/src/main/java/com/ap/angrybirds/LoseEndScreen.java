@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+//
+
 public class LoseEndScreen extends ScreenAdapter {
     Main main;
     public LoseEndScreen(Main main) {
