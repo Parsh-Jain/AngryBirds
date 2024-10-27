@@ -29,6 +29,9 @@ public class LevelPage extends ScreenAdapter {
     Rectangle Level2Button;
     Rectangle Level3Button;
     Rectangle SettingButton;
+    Music BackButtonSound;
+    Music Level1ButtonSound;
+    Music SettingButtonSound;
 
     // Declare Camera and Viewport
     OrthographicCamera camera;
@@ -61,6 +64,9 @@ public class LevelPage extends ScreenAdapter {
         Level2Button = new Rectangle(500, 525, 125, 125);
         Level3Button = new Rectangle(740, 770, 125, 125);
         SettingButton = new Rectangle(1650, 50, 150, 150);
+        BackButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
+        Level1ButtonSound=Gdx.audio.newMusic(Gdx.files.internal("EnterButtonSound.mp3"));
+        SettingButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
 
         // Create OrthographicCamera and FitViewport
         camera = new OrthographicCamera();
@@ -95,11 +101,14 @@ public class LevelPage extends ScreenAdapter {
             Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos); // Convert screen coordinates to world coordinates
             if (BackButton.contains(touchPos.x, touchPos.y)) {
+                BackButtonSound.play();
                 main.setScreen(new HomeScreen(main));
             }
             if(Level1Button.contains(touchPos.x, touchPos.y)) {
+                Level1ButtonSound.play();
                 main.setScreen(new Level1Screen(main));
             }else if(SettingButton.contains(touchPos.x,touchPos.y)){
+                SettingButtonSound.play();
                 main.setScreen(new Settings(main));
             }
         }
@@ -122,6 +131,9 @@ public class LevelPage extends ScreenAdapter {
     public void dispose() {
         batch.dispose();
         BackGroundMusic.dispose();
+        BackButtonSound.dispose();
+        SettingButtonSound.dispose();
+        Level1ButtonSound.dispose();
         background.dispose();
         level1.dispose();
         level2.dispose();

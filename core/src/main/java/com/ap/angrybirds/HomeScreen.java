@@ -35,6 +35,9 @@ public class HomeScreen extends ScreenAdapter {
     Texture LoadGame;
     Texture Exit;
     Rectangle Play_Button,SettingButton,BackButton,PlayerCoinButton,ViewButton1,ViewButton2,ExitButton;
+    Music ExitButtonSound;
+    Music PlayButtonSound;
+    Music SettingButtonSound;
 
     OrthographicCamera camera;
     Viewport viewport;
@@ -76,6 +79,10 @@ public class HomeScreen extends ScreenAdapter {
         ViewButton1 = new Rectangle(340,330,120,50);
         ViewButton2 = new Rectangle(worldWidth-360,330,120,50);
         ExitButton = new Rectangle(130,180,150,50);
+        ExitButtonSound=Gdx.audio.newMusic(Gdx.files.internal("ExitButtonSound.mp3"));
+        PlayButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
+        SettingButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
+
 
         // Create camera and viewport with fixed world dimensions
         camera = new OrthographicCamera();
@@ -126,11 +133,14 @@ public class HomeScreen extends ScreenAdapter {
            Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
           viewport.unproject(touchPos);
            if(Play_Button.contains(touchPos.x,touchPos.y)){
+               PlayButtonSound.play();
                 main.setScreen(new LevelPage(main));
             }
            else if(ExitButton.contains(touchPos.x,touchPos.y)){
+               ExitButtonSound.play();
                Gdx.app.exit(); // exiting the program
            }else if(SettingButton.contains(touchPos.x,touchPos.y)){
+               SettingButtonSound.play();
                main.setScreen(new Settings(main));
            }
        }
@@ -163,5 +173,8 @@ public class HomeScreen extends ScreenAdapter {
         View.dispose();
         AngryStory.dispose();
         LoadGame.dispose();
+        PlayButtonSound.dispose();
+        ExitButtonSound.dispose();
+        SettingButtonSound.dispose();
     }
 }
