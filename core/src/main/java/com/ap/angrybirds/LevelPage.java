@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LevelPage extends ScreenAdapter {
-    Main main;
+    Main main;  // Important Attributes
     Music BackGroundMusic;
     SpriteBatch batch;
     Texture background;
@@ -32,19 +32,16 @@ public class LevelPage extends ScreenAdapter {
     Music BackButtonSound;
     Music Level1ButtonSound;
     Music SettingButtonSound;
-
     // Declare Camera and Viewport
     OrthographicCamera camera;
     Viewport viewport;
-    int worldWidth = 1920; // Adjust world width and height according to your game's design
+    int worldWidth = 1920;
     int worldHeight = 1080;
-
     public LevelPage(Main main) {
         this.main = main;
     }
-
     @Override
-    public void show() {
+    public void show() { // Show method for creating all the attributes
         batch = new SpriteBatch();
         BackGroundMusic=Gdx.audio.newMusic(Gdx.files.internal("LevelMenuBackgroundMusic.mp3"));
         BackGroundMusic.setLooping(true);
@@ -67,27 +64,23 @@ public class LevelPage extends ScreenAdapter {
         BackButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         Level1ButtonSound=Gdx.audio.newMusic(Gdx.files.internal("ExitButtonSound.mp3"));
         SettingButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
-
         // Create OrthographicCamera and FitViewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(worldWidth, worldHeight, camera);
         viewport.apply();
-
         // Position the camera in the middle of the screen
         camera.position.set(worldWidth / 2, worldHeight / 2, 0);
         camera.update();
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta) { // Rendering
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         // Update camera and set projection matrix
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-
         batch.begin();
-        batch.draw(background, 0, 0, worldWidth, worldHeight); // Make sure to scale for world size
+        batch.draw(background, 0, 0, worldWidth, worldHeight);
         batch.draw(level1, 230, 525, 125, 125);
         batch.draw(level2, 500, 525, 125, 125);
         batch.draw(level3, 740, 770, 125, 125);
@@ -96,39 +89,39 @@ public class LevelPage extends ScreenAdapter {
         batch.draw(PlayerName, 1450, 900, 450, 150);
         batch.draw(PlayerCoin, 100, 900, 150, 150);
         batch.end();
-
+        // Checking User Input
         if (Gdx.input.isTouched()) {
             Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos); // Convert screen coordinates to world coordinates
+            viewport.unproject(touchPos);
             if (BackButton.contains(touchPos.x, touchPos.y)) {
                 BackButtonSound.play();
-                main.setScreen(new HomeScreen(main));
+                main.setScreen(new HomeScreen(main));  // switch to Homescreen
             }
             if(Level1Button.contains(touchPos.x, touchPos.y)) {
                 Level1ButtonSound.play();
-                main.setScreen(new Level1Screen(main));
+                main.setScreen(new Level1Screen(main)); // switch to Level1screen
             }else if(SettingButton.contains(touchPos.x,touchPos.y)){
                 SettingButtonSound.play();
-                main.setScreen(new Settings(main));
+                main.setScreen(new Settings(main)); // switch to setting screen
             }
         }
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height) { // Resizing
         // Update viewport on resize
         viewport.update(width, height);
         camera.position.set(worldWidth / 2, worldHeight / 2, 0); // Re-center the camera
     }
     @Override
-    public void hide(){
+    public void hide(){ // Stopping the music
         if(BackGroundMusic!=null){
             BackGroundMusic.stop();
         }
     }
 
     @Override
-    public void dispose() {
+    public void dispose() { // Disposing
         batch.dispose();
         BackGroundMusic.dispose();
         BackButtonSound.dispose();
