@@ -76,7 +76,6 @@ public class LoseEndScreen extends ScreenAdapter {
             }
         }
 
-        System.out.println("X: "+Gdx.input.getX() + " Y: "+Gdx.input.getY());
     }
     @Override
     public void resize(int width, int height) {
