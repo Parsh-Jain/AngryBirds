@@ -1,4 +1,5 @@
 package com.ap.angrybirds;
+import com.ap.angrybirds.learning.l;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
@@ -61,7 +62,7 @@ public class LoseEndScreen extends ScreenAdapter {
             viewport.unproject(touchPos);
             if(retryButton.contains(touchPos.x,touchPos.y)){
                 RetryButtonSound.play();
-                main.setScreen(new Level1Screen(main)); // switch to Level1Screen
+                main.setScreen(new l(main)); // switch to Level1Screen
             }
             else if(backButton.contains(touchPos.x,touchPos.y)){
                 BackButtonSound.play();

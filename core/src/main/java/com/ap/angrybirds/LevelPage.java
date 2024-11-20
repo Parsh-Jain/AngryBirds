@@ -1,5 +1,6 @@
 package com.ap.angrybirds;
 
+import com.ap.angrybirds.learning.l;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
@@ -99,7 +100,7 @@ public class LevelPage extends ScreenAdapter {
             }
             if(Level1Button.contains(touchPos.x, touchPos.y)) {
                 Level1ButtonSound.play();
-                main.setScreen(new Level1Screen(main)); // switch to Level1screen
+                main.setScreen(new l(main)); // switch to Level1screen
             }else if(SettingButton.contains(touchPos.x,touchPos.y)){
                 SettingButtonSound.play();
                 main.setScreen(new Settings(main)); // switch to setting screen

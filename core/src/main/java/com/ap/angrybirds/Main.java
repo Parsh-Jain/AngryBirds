@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
-    private SpriteBatch batch;
+    public SpriteBatch batch;
     BitmapFont font;
     ShapeRenderer shapeRenderer;
     @Override
@@ -20,5 +20,9 @@ public class Main extends Game {
         batch.dispose();
         shapeRenderer.dispose();
         font.dispose();
+    }
+    @Override
+    public void render() {
+        super.render();
     }
 }
