@@ -2,6 +2,7 @@ package com.ap.angrybirds.learning;
 
 
 import com.ap.angrybirds.*;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -24,6 +25,14 @@ public class l extends ScreenAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
+    private Vector2 dragStartPosition;
+    private Vector2 launchVelocity = new Vector2(); // Velocity from drag release
+    private boolean isBirdLaunched = false; // To check if bird is in flight
+    private boolean isSwitchingBird = false; // To track bird switching
+    private RedBird currentBird; // Track the current bird
+    private ShapeRenderer shapeRenderer; // To render the trajectory
+
+
     private Rectangle pauseButton;
     private Rectangle endbutton;
     private Rectangle resumeButton;
@@ -184,6 +193,9 @@ public class l extends ScreenAdapter {
         createBirds();
         createObstacles();
         createPigs();
+        shapeRenderer = new ShapeRenderer();
+        currentBird = redBird; // Start with the red bird
+
 
         Gdx.input.setInputProcessor(stage);
         isPaused = false;
@@ -389,8 +401,30 @@ public class l extends ScreenAdapter {
                 isPaused = false;
             }
         }
+        if (Gdx.input.isTouched() && !isBirdLaunched) {
+            isDragging = true;
+            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos);
+
+            // Constrain dragging to a max distance from the catapult
+            dragPosition.set(touchPos);
+            if (dragPosition.dst(initialPosition) > maxDragDistance) {
+                dragPosition.set(initialPosition).add(dragPosition.sub(initialPosition).nor().scl(maxDragDistance));
+            }
+        } else if (isDragging && !Gdx.input.isTouched()) {
+            // Release bird and apply velocity
+            isDragging = false;
+            isBirdLaunched = true;
+
+            // Calculate velocity from drag
+            launchVelocity.set(initialPosition.sub(dragPosition)).scl(10); // Adjust scaling as needed
+            currentBird.getBody().setLinearVelocity(launchVelocity);
+            currentBird.getBody().setAwake(true);
+        }
+
         stage.act(delta);
         stage.draw();
+
     }
     @Override
     public void resize(int width, int height) { // Rendering
