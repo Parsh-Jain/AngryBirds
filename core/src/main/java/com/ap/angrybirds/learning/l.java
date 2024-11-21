@@ -1,8 +1,5 @@
 package com.ap.angrybirds.learning;
-
-
 import com.ap.angrybirds.*;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -25,14 +22,6 @@ public class l extends ScreenAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
-    private Vector2 dragStartPosition;
-    private Vector2 launchVelocity = new Vector2(); // Velocity from drag release
-    private boolean isBirdLaunched = false; // To check if bird is in flight
-    private boolean isSwitchingBird = false; // To track bird switching
-    private RedBird currentBird; // Track the current bird
-    private ShapeRenderer shapeRenderer; // To render the trajectory
-
-
     private Rectangle pauseButton;
     private Rectangle endbutton;
     private Rectangle resumeButton;
@@ -86,7 +75,6 @@ public class l extends ScreenAdapter {
     public l(Main main) { // Constructor
         this.main = main;
     }
-
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
@@ -95,9 +83,6 @@ public class l extends ScreenAdapter {
         viewport = new FitViewport(1920, 1080, camera);
         stage = new Stage(viewport);
         batch = new SpriteBatch();
-
-
-
         PauseButtonSound=Gdx.audio.newMusic(Gdx.files.internal("PauseButtonSound.mp3"));
         ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         EndButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
@@ -186,19 +171,42 @@ public class l extends ScreenAdapter {
 //        woodObstacle14.setPosition(1368, 545);
 //        woodObstacle14.setSize(170,170);
 //        stage.addActor(woodObstacle14);
-        catapult = new Catapult(CatapultTexture);
-        catapult.setPosition(300, 183);
+
+
+        Body catapultBody = createCatapult(300, 183); // Position for the catapult
+        catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
+        //catapult.setPosition(300, 183);
         createGround();
         createBirds();
         createObstacles();
         createPigs();
-        shapeRenderer = new ShapeRenderer();
-        currentBird = redBird; // Start with the red bird
-
-
         Gdx.input.setInputProcessor(stage);
         isPaused = false;
+    }
+
+    private float centerX(Texture texture) {
+        return (viewport.getWorldWidth() - texture.getWidth()) / 2;
+    }
+
+    private float centerY(Texture texture) {
+        return (viewport.getWorldHeight() - texture.getHeight()) / 2;
+    }
+
+    private float alignLeft(float margin) {
+        return margin;
+    }
+
+    private float alignRight(Texture texture, float margin) {
+        return viewport.getWorldWidth() - texture.getWidth() - margin;
+    }
+
+    private float alignBottom(float margin) {
+        return margin;
+    }
+
+    private float alignTop(Texture texture, float margin) {
+        return viewport.getWorldHeight() - texture.getHeight() - margin;
     }
 
     private void createPigs() {
@@ -219,23 +227,41 @@ public class l extends ScreenAdapter {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
-
         Body body = world.createBody(bodyDef);
-
         CircleShape shape = new CircleShape();
         shape.setRadius(25 / PPM); // Bird radius
-
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.6f; // Bouncy effect
+        body.createFixture(fixtureDef);
+        shape.dispose();
+        return body;
+    }
+
+    private Body createCatapult(float x, float y) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody; // Catapult is static
+        bodyDef.position.set(x / PPM, y / PPM);
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(225 / PPM, 150 / PPM); // Half-width and half-height of the catapult
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0.1f;
 
         body.createFixture(fixtureDef);
         shape.dispose();
 
         return body;
     }
+
 
     private void createObstacles() {
         Body woodBody9a=createWood(1260,185);
@@ -270,49 +296,35 @@ public class l extends ScreenAdapter {
         woodObstacle14=new WoodObstacles(new Texture("Block.png"),woodBody14);
         woodObstacle14.setSize(170,170);
         stage.addActor(woodObstacle14);
-
-
-
     }
-
     private Body createWood(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
-
         Body body = world.createBody(bodyDef);
-
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(20/PPM,87.5f/PPM);
 //        shape.setRadius(25 / PPM); // Bird radius
-
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.6f; // Bouncy effect
-
         body.createFixture(fixtureDef);
         shape.dispose();
-
         return body;
     }
-
     private void createGround() {
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.position.set(0, 0); // Position in Box2D world
         groundBodyDef.type = BodyDef.BodyType.StaticBody;
-
         Body groundBody = world.createBody(groundBodyDef);
-
         PolygonShape groundBox = new PolygonShape();
         groundBox.setAsBox(1920 / 2f, 10); // Box dimensions
-
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = groundBox;
         fixtureDef.density = 0f;
         fixtureDef.friction = 0.5f;
-
         groundBody.createFixture(fixtureDef);
         groundBox.dispose();
     }
@@ -321,64 +333,60 @@ public class l extends ScreenAdapter {
         Body redBirdBody = createBird(480/ PPM, 181 / PPM); // Position
         redBird = new RedBird(new Texture("RedAngryBird.png"), redBirdBody);
         stage.addActor(redBird);
+        // Create Yellow Bird
+        Body yellowBirdBody = createBird(190 / PPM, 179 / PPM);
+        yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
+        stage.addActor(yellowBird);
 
-//        // Create Yellow Bird
-//        Body yellowBirdBody = createBird(190 / PPM, 179 / PPM);
-//        yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
-//        stage.addActor(yellowBird);
-//
-//        // Create Blue Bird
-//        Body blueBirdBody = createBird(330/ PPM, 181 / PPM);
-//        blueBird = new BlueBird(new Texture("BlueAngryBird.png"), blueBirdBody);
-//        stage.addActor(blueBird);
+        // Create Blue Bird
+        Body blueBirdBody = createBird(330/ PPM, 181 / PPM);
+        blueBird = new BlueBird(new Texture("BlueAngryBird.png"), blueBirdBody);
+        stage.addActor(blueBird);
 
-        // Create Black Bird
         Body blackBirdBody = createBird(260 / PPM, 181 / PPM);
         blackBird = new BlackBird(new Texture("BlackAngryBird.png"), blackBirdBody);
         stage.addActor(blackBird);
-    }
 
+        redBird.setPosition(alignLeft(400), alignBottom(190));
+        blackBird.setPosition(alignLeft(320), alignBottom(190));
+        blueBird.setPosition(alignLeft(240), alignBottom(190));
+        yellowBird.setPosition(alignLeft(160), alignBottom(180));
+    }
     private Body createBird(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
-
         Body body = world.createBody(bodyDef);
-
         CircleShape shape = new CircleShape();
         shape.setRadius(25 / PPM); // Bird radius
-
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.6f; // Bouncy effect
-
         body.createFixture(fixtureDef);
         shape.dispose();
-
         return body;
     }
-
     @Override
     public void render(float delta) { //Rendering
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
+        world.step(1 / 60f, 6, 2);
         if(!isPaused){ // Checking if Pause Button is clicked
             batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(pauseButtonTexture, 50, 900, 100, 100);
-
         }else{ // Drawing Pause Screen
             batch.draw(DulledBackground,0,0);
             batch.draw(resumeButtontexture, 800,480,250,250);
             batch.draw(restartLevelTexture,50, 690, 100, 100);
             batch.draw(musicButtonTexture, 50, 525,100,100);
             batch.draw(soundButtonTexture,50,360, 100, 100);
-
         }
         batch.draw(endbuttonTexture,1700,50,200,100);
         batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
+        catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
         // Checking User input
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
@@ -401,36 +409,13 @@ public class l extends ScreenAdapter {
                 isPaused = false;
             }
         }
-        if (Gdx.input.isTouched() && !isBirdLaunched) {
-            isDragging = true;
-            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
-
-            // Constrain dragging to a max distance from the catapult
-            dragPosition.set(touchPos);
-            if (dragPosition.dst(initialPosition) > maxDragDistance) {
-                dragPosition.set(initialPosition).add(dragPosition.sub(initialPosition).nor().scl(maxDragDistance));
-            }
-        } else if (isDragging && !Gdx.input.isTouched()) {
-            // Release bird and apply velocity
-            isDragging = false;
-            isBirdLaunched = true;
-
-            // Calculate velocity from drag
-            launchVelocity.set(initialPosition.sub(dragPosition)).scl(10); // Adjust scaling as needed
-            currentBird.getBody().setLinearVelocity(launchVelocity);
-            currentBird.getBody().setAwake(true);
-        }
-
         stage.act(delta);
         stage.draw();
-
     }
     @Override
     public void resize(int width, int height) { // Rendering
         viewport.update(width, height, true);
     }
-
     @Override
     public void dispose() {
         stage.dispose();
@@ -455,6 +440,4 @@ public class l extends ScreenAdapter {
         if (EndButtonSound != null) EndButtonSound.dispose();
         if (batch != null) batch.dispose();
     }
-
 }
-

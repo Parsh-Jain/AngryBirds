@@ -7,8 +7,6 @@ public class WoodObstacles extends Obstacles {
     public WoodObstacles(Texture obstacleTexture, Body body) {
         super(obstacleTexture, body);
     }
-
-//    public WoodObstacles(Texture obstacleTexture) { //  Constructor
-//        super(obstacleTexture); // Accessing Constructor of Obstacles
-//    }
 }
+
+
