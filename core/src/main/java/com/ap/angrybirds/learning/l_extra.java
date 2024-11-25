@@ -1,5 +1,6 @@
 package com.ap.angrybirds.learning;
 import com.ap.angrybirds.*;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -11,9 +12,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
+
+import static com.badlogic.gdx.graphics.Color.RED;
+
 public class l_extra extends ScreenAdapter {
     private static  final float PPM=100f;
     private World world;
@@ -38,15 +43,8 @@ public class l_extra extends ScreenAdapter {
     private MafiaPig mafiaPig2;
     private MafiaPig mafiaPig3;
     private MafiaPig mafiaPig4;
-    private WoodObstacles woodObstacle9a;
-    private WoodObstacles woodObstacle9b;
-    private WoodObstacles woodObstacle9c;
-    private WoodObstacles woodObstacle9d;
-    private WoodObstacles woodObstacle13a;
-    private WoodObstacles woodObstacle13b;
-    private WoodObstacles woodObstacle13c;
-    private WoodObstacles woodObstacle14;
-    private VerticalWood13 woodVertical1;
+    private VerticalWood13 woodVertical1, woodVertical2;
+
     private Catapult catapult;
     private Texture pauseButtonTexture;
     private Texture endbuttonTexture;
@@ -117,22 +115,24 @@ public class l_extra extends ScreenAdapter {
         WoodObstacleTexture14 = new Texture("Block.png");
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
         //createStructure();
+//
 
 
 
-
-        Body catapultBody = createCatapult(300, 183); // Position for the catapult
+        Body catapultBody = createCatapult(560, 280); // Adjusted position
         catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
-        //catapult.setPosition(300, 183);
+
+        //  catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
         createGround();
         createBirds();
         createWoodObstacles();
         //createObstacles();
-        createPigs();
+        setPigs();
         Gdx.input.setInputProcessor(stage);
         isPaused = false;
     }
+    //
 
     private float centerX(Texture texture) {
         return (viewport.getWorldWidth() - texture.getWidth()) / 2;
@@ -158,20 +158,18 @@ public class l_extra extends ScreenAdapter {
         return viewport.getWorldHeight() - texture.getHeight() - margin;
     }
 
-    private void createPigs() {
-        Body mafiapig1body=createPig(1335,220);
-        mafiaPig1=new MafiaPig(MafiaPig1Texture,mafiapig1body);
+    private void setPigs() {
+        Body mafiapig1body = createPig(1460 / PPM, 220 / PPM);
+        mafiaPig1 = new MafiaPig(MafiaPig1Texture, mafiapig1body);
         stage.addActor(mafiaPig1);
-        Body mafiapig2body=createPig(1415,360);
-        mafiaPig2=new MafiaPig(MafiaPig2Texture,mafiapig2body);
-        stage.addActor(mafiaPig2);
-        Body mafiapig3body=createPig(1415,580);
-        mafiaPig3=new MafiaPig(MafiaPig3Texture,mafiapig3body);
-        stage.addActor(mafiaPig3);
-        Body mafiapig4body=createPig(1415,220);
-        mafiaPig4=new MafiaPig(MafiaPig4Texture,mafiapig4body);
-        stage.addActor(mafiaPig4);
+        updatePigPosition(mafiaPig1, mafiapig1body);
     }
+
+    private void updatePigPosition(MafiaPig pig, Body body) {
+        Vector2 bodyPosition = body.getPosition();
+        pig.setPosition(bodyPosition.x * PPM - pig.getWidth() / 2, bodyPosition.y * PPM - pig.getHeight() / 2);
+    }
+
     private Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -189,81 +187,7 @@ public class l_extra extends ScreenAdapter {
         return body;
     }
 
-    private Body createCatapult(float x, float y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody; // Catapult is static
-        bodyDef.position.set(x / PPM, y / PPM);
 
-        Body body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(225 / PPM, 150 / PPM); // Half-width and half-height of the catapult
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.5f;
-        fixtureDef.restitution = 0.1f;
-
-        body.createFixture(fixtureDef);
-        shape.dispose();
-
-        return body;
-    }
-
-
-    private void createObstacles() {
-        Body woodBody9a=createWood(1260/100f,185/100f);
-        woodObstacle9a=new WoodObstacles(new Texture("9.png"),woodBody9a);
-        woodObstacle9a.setSize(40,175);
-        stage.addActor(woodObstacle9a);
-        Body woodBody9b=createWood(1600,185);
-        woodObstacle9b=new WoodObstacles(new Texture("9.png"),woodBody9b);
-        woodObstacle9b.setSize(40,175);
-        stage.addActor(woodObstacle9b);
-        Body woodBody9c=createWood(1310,350);
-        woodObstacle9c=new WoodObstacles(new Texture("9.png"),woodBody9c);
-        woodObstacle9c.setSize(40,175);
-        stage.addActor(woodObstacle9c);
-        Body woodBody9d=createWood(1550,350);
-        woodObstacle9d=new WoodObstacles(new Texture("9.png"),woodBody9d);
-        woodObstacle9d.setSize(40,175);
-        stage.addActor(woodObstacle9d);
-        Body woodBody13a=createWood(1258,320);
-        woodObstacle13a=new WoodObstacles(new Texture("13_H.png"),woodBody13a);
-        woodObstacle13a.setSize(350,40);
-        stage.addActor(woodObstacle13a);
-        Body woodBody13b=createWood(1258,185);
-        woodObstacle13b=new WoodObstacles(new Texture("13_H.png"),woodBody13b);
-        woodObstacle13b.setSize(350,40);
-        stage.addActor(woodObstacle13b);
-        Body woodBody13c=createWood(1278,510);
-        woodObstacle13c=new WoodObstacles(new Texture("13_H.png"),woodBody13c);
-        woodObstacle13c.setSize(350,40);
-        stage.addActor(woodObstacle13c);
-        Body woodBody14=createWood(1368,545);
-        woodObstacle14=new WoodObstacles(new Texture("Block.png"),woodBody14);
-        woodObstacle14.setSize(170,170);
-        stage.addActor(woodObstacle14);
-    }
-
-    private Body createWood(float x, float y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x, y);
-        Body body = world.createBody(bodyDef);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(20/PPM,87.5f/PPM);
-//        shape.setRadius(25 / PPM); // Bird radius
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.3f;
-        fixtureDef.restitution = 0.6f; // Bouncy effect
-        body.createFixture(fixtureDef);
-        shape.dispose();
-        return body;
-    }
     private void createGround() {
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.position.set(0, 0); // Position in Box2D world
@@ -278,6 +202,7 @@ public class l_extra extends ScreenAdapter {
         groundBody.createFixture(fixtureDef);
         groundBox.dispose();
     }
+    ////
     private void createBirds() {
         // Create Red Bird
         Body redBirdBody = createBird(480/ PPM, 181 / PPM); // Position
@@ -303,12 +228,46 @@ public class l_extra extends ScreenAdapter {
         yellowBird.setPosition(alignLeft(160), alignBottom(180));
     }
 
-    private void createWoodObstacles(){
-        Body verticalWood1Body = createObstacle(800/PPM, 180/PPM);
+    private void createWoodObstacles() {
+        Body verticalWood1Body = createObstacle(1354 / PPM, 310 / PPM);
+        Body verticalWood2Body = createObstacle(1554 / PPM, 310 / PPM);
+
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
+        woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
+
+        Vector2 bodyPosition = verticalWood1Body.getPosition();
+        woodVertical1.setPosition(bodyPosition.x * PPM - woodVertical1.getWidth() / 2, bodyPosition.y * PPM - woodVertical1.getHeight() / 2);
+        Vector2 bodyPosition2 = verticalWood2Body.getPosition();
+        woodVertical2.setPosition(bodyPosition2.x * PPM - woodVertical2.getWidth() / 2, bodyPosition2.y * PPM - woodVertical2.getHeight() / 2);
+
         stage.addActor(woodVertical1);
+        stage.addActor(woodVertical2);
     }
 
+
+    private Body createCatapult(float x, float y) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody; // Catapult is static
+        bodyDef.position.set(x, y); // Convert to world units
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(112.5f / PPM, 75f / PPM); // Half-width and half-height
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0.1f;
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
+
+        return body;
+    }
+
+//
 
     private Body createBird(float x, float y) {
         BodyDef bodyDef = new BodyDef();
@@ -322,6 +281,9 @@ public class l_extra extends ScreenAdapter {
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.6f; // Bouncy effect
+        fixtureDef.filter.categoryBits = 0x0001; // Bird category
+        fixtureDef.filter.maskBits = 0x0002;    // Collides with obstacles
+
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -339,6 +301,8 @@ public class l_extra extends ScreenAdapter {
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.7f;
         fixtureDef.restitution = 1f; // Bouncy effect
+        fixtureDef.filter.categoryBits = 0x0002; // Example category
+        fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -346,6 +310,7 @@ public class l_extra extends ScreenAdapter {
 
     @Override
     public void render(float delta) { //Rendering
+        super.render(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         world.step(1 / 60f, 6, 2);
@@ -363,6 +328,8 @@ public class l_extra extends ScreenAdapter {
         batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
         catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
+        // Handle input for dragging
+        //handleInput();
         // Checking User input
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
@@ -384,10 +351,12 @@ public class l_extra extends ScreenAdapter {
                 ResumeButtonSound.play();
                 isPaused = false;
             }
+            System.out.println("X:" + Gdx.input.getX() + " Y: " + Gdx.input.getY());
         }
         stage.act(delta);
         stage.draw();
     }
+
     @Override
     public void resize(int width, int height) { // Rendering
         viewport.update(width, height, true);
@@ -403,11 +372,7 @@ public class l_extra extends ScreenAdapter {
         if (mafiaPig2 != null) mafiaPig2.dispose();
         if (mafiaPig3 != null) mafiaPig3.dispose();
         if (mafiaPig4 != null) mafiaPig4.dispose();
-        if (woodObstacle9a != null) woodObstacle9a.dispose();
-        if (woodObstacle9b != null) woodObstacle9b.dispose();
-        if (woodObstacle13c != null) woodObstacle13c.dispose();
-        if (woodObstacle13a != null) woodObstacle13a.dispose();
-        if (woodObstacle14 != null) woodObstacle14.dispose();
+        if (woodVertical1 != null) woodVertical1.dispose();
         if (catapult != null) catapult.dispose();
         if (BackgroundTexture != null) BackgroundTexture.dispose();
         if (EndButton2Texture != null) EndButton2Texture.dispose();
