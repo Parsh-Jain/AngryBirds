@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
-public class l extends ScreenAdapter {
+public class l_extra extends ScreenAdapter {
     private static  final float PPM=100f;
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -38,6 +38,14 @@ public class l extends ScreenAdapter {
     private MafiaPig mafiaPig2;
     private MafiaPig mafiaPig3;
     private MafiaPig mafiaPig4;
+    private WoodObstacles woodObstacle9a;
+    private WoodObstacles woodObstacle9b;
+    private WoodObstacles woodObstacle9c;
+    private WoodObstacles woodObstacle9d;
+    private WoodObstacles woodObstacle13a;
+    private WoodObstacles woodObstacle13b;
+    private WoodObstacles woodObstacle13c;
+    private WoodObstacles woodObstacle14;
     private VerticalWood13 woodVertical1;
     private Catapult catapult;
     private Texture pauseButtonTexture;
@@ -65,7 +73,7 @@ public class l extends ScreenAdapter {
     private Texture soundButtonTexture;
     private Texture EndButton2Texture;
     private SpriteBatch batch;
-    public l(Main main) { // Constructor
+    public l_extra(Main main) { // Constructor
         this.main = main;
     }
     @Override
@@ -201,6 +209,42 @@ public class l extends ScreenAdapter {
         shape.dispose();
 
         return body;
+    }
+
+
+    private void createObstacles() {
+        Body woodBody9a=createWood(1260/100f,185/100f);
+        woodObstacle9a=new WoodObstacles(new Texture("9.png"),woodBody9a);
+        woodObstacle9a.setSize(40,175);
+        stage.addActor(woodObstacle9a);
+        Body woodBody9b=createWood(1600,185);
+        woodObstacle9b=new WoodObstacles(new Texture("9.png"),woodBody9b);
+        woodObstacle9b.setSize(40,175);
+        stage.addActor(woodObstacle9b);
+        Body woodBody9c=createWood(1310,350);
+        woodObstacle9c=new WoodObstacles(new Texture("9.png"),woodBody9c);
+        woodObstacle9c.setSize(40,175);
+        stage.addActor(woodObstacle9c);
+        Body woodBody9d=createWood(1550,350);
+        woodObstacle9d=new WoodObstacles(new Texture("9.png"),woodBody9d);
+        woodObstacle9d.setSize(40,175);
+        stage.addActor(woodObstacle9d);
+        Body woodBody13a=createWood(1258,320);
+        woodObstacle13a=new WoodObstacles(new Texture("13_H.png"),woodBody13a);
+        woodObstacle13a.setSize(350,40);
+        stage.addActor(woodObstacle13a);
+        Body woodBody13b=createWood(1258,185);
+        woodObstacle13b=new WoodObstacles(new Texture("13_H.png"),woodBody13b);
+        woodObstacle13b.setSize(350,40);
+        stage.addActor(woodObstacle13b);
+        Body woodBody13c=createWood(1278,510);
+        woodObstacle13c=new WoodObstacles(new Texture("13_H.png"),woodBody13c);
+        woodObstacle13c.setSize(350,40);
+        stage.addActor(woodObstacle13c);
+        Body woodBody14=createWood(1368,545);
+        woodObstacle14=new WoodObstacles(new Texture("Block.png"),woodBody14);
+        woodObstacle14.setSize(170,170);
+        stage.addActor(woodObstacle14);
     }
 
     private Body createWood(float x, float y) {
@@ -359,7 +403,11 @@ public class l extends ScreenAdapter {
         if (mafiaPig2 != null) mafiaPig2.dispose();
         if (mafiaPig3 != null) mafiaPig3.dispose();
         if (mafiaPig4 != null) mafiaPig4.dispose();
-        if (woodVertical1 != null) woodVertical1.dispose();
+        if (woodObstacle9a != null) woodObstacle9a.dispose();
+        if (woodObstacle9b != null) woodObstacle9b.dispose();
+        if (woodObstacle13c != null) woodObstacle13c.dispose();
+        if (woodObstacle13a != null) woodObstacle13a.dispose();
+        if (woodObstacle14 != null) woodObstacle14.dispose();
         if (catapult != null) catapult.dispose();
         if (BackgroundTexture != null) BackgroundTexture.dispose();
         if (EndButton2Texture != null) EndButton2Texture.dispose();
