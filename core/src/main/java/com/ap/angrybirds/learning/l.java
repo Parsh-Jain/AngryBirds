@@ -313,7 +313,7 @@ public class l extends ScreenAdapter {
     }
 
 //
-
+//
     private Body createBird(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
