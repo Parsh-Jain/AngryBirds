@@ -264,7 +264,7 @@ public class l extends ScreenAdapter {
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         stage.addActor(woodVertical1);
     }
-
+//
 
     private Body createBird(float x, float y) {
         BodyDef bodyDef = new BodyDef();
