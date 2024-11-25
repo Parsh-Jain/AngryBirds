@@ -21,9 +21,6 @@ import static com.badlogic.gdx.graphics.Color.RED;
 
 public class l extends ScreenAdapter {
     private static  final float PPM=100f;
-    private boolean isDragging = false;
-    private Body currentBirdBody;
-    private float dragStartX, dragStartY;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Stage stage;  // Important Attributes
@@ -47,11 +44,7 @@ public class l extends ScreenAdapter {
     private MafiaPig mafiaPig3;
     private MafiaPig mafiaPig4;
     private VerticalWood13 woodVertical1, woodVertical2;
-    private Array<Bird>birds=new Array<>();
-    private int currentBirdIndex; // Track the current bird being launched
-    private Bird currentBird; // Store the current bird
-    private boolean isDragging = false;
-    private Vector2 dragStart = new Vector2();
+
     private Catapult catapult;
     private Texture pauseButtonTexture;
     private Texture endbuttonTexture;
@@ -222,27 +215,16 @@ public class l extends ScreenAdapter {
         // Create Blue Bird
         Body blueBirdBody = createBird(330/ PPM, 181 / PPM);
         blueBird = new BlueBird(new Texture("BlueAngryBird.png"), blueBirdBody);
-        birds.insert(2, blueBird);
         stage.addActor(blueBird);
 
         Body blackBirdBody = createBird(260 / PPM, 181 / PPM);
         blackBird = new BlackBird(new Texture("BlackAngryBird.png"), blackBirdBody);
-        birds.insert(3, blackBird);
         stage.addActor(blackBird);
 
         redBird.setPosition(alignLeft(400), alignBottom(190));
         blackBird.setPosition(alignLeft(320), alignBottom(190));
         blueBird.setPosition(alignLeft(240), alignBottom(190));
         yellowBird.setPosition(alignLeft(160), alignBottom(180));
-        loadNextBird();
-    }
-    private void loadNextBird() {
-        if (currentBirdIndex < birds.size) {
-            Bird currentBird = birds.get(currentBirdIndex);
-            currentBird.getBody().setTransform(560 / PPM, 280 / PPM, 0); // Set bird on the catapult
-            stage.addActor(currentBird);
-            currentBirdIndex++; // Move to the next bird
-        }
     }
 
     private void createWoodObstacles() {
@@ -372,24 +354,6 @@ public class l extends ScreenAdapter {
         }
         stage.act(delta);
         stage.draw();
-    }
-    private void drawTrajectory(Vector2 start, Vector2 end,float delta) {
-        // Example of using ShapeRenderer to draw trajectory
-        ShapeRenderer shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(RED);
-
-        Vector2 velocity = start.sub(end).scl(5); // Adjust force
-        Vector2 position = new Vector2(560 / PPM, 280 / PPM); // Starting point of the bird
-
-        for (int i = 0; i < 30; i++) {
-            velocity.add(0, -9.8f * delta); // Simulate gravity
-            position.add(velocity.cpy().scl(delta));
-            shapeRenderer.circle(position.x, position.y, 0.1f); // Small circles for trajectory
-        }
-
-        shapeRenderer.end();
     }
 
     @Override
