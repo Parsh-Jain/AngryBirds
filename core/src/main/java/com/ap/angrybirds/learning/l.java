@@ -125,6 +125,7 @@ public class l extends ScreenAdapter {
         Gdx.input.setInputProcessor(stage);
         isPaused = false;
     }
+    //
 
     private float centerX(Texture texture) {
         return (viewport.getWorldWidth() - texture.getWidth()) / 2;
