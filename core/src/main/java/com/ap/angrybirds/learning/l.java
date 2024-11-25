@@ -24,7 +24,7 @@ import static com.badlogic.gdx.graphics.Color.RED;
 import static com.badlogic.gdx.graphics.Color.WHITE;
 
 public class l extends ScreenAdapter {
-    private static  final float PPM=100f;
+    private static final float PPM=100f;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Stage stage;  // Important Attributes
@@ -44,9 +44,6 @@ public class l extends ScreenAdapter {
     private BlueBird blueBird;
     private BlackBird blackBird;
     private MafiaPig mafiaPig1;
-    private MafiaPig mafiaPig2;
-    private MafiaPig mafiaPig3;
-    private MafiaPig mafiaPig4;
     private VerticalWood13 woodVertical1, woodVertical2;
     private Vector2 dragVector = new Vector2();
     private Vector2 slingPosition = new Vector2(480, 181);
@@ -67,14 +64,6 @@ public class l extends ScreenAdapter {
     private Texture BlueBirdTexture;
     private Texture BlackBirdTexture;
     private Texture MafiaPig1Texture;
-    private Texture MafiaPig2Texture;
-    private Texture MafiaPig3Texture;
-    private Texture MafiaPig4Texture;
-    private Texture WoodObstacleTexture9a;
-    private Texture WoodObstacleTexture9b;
-    private Texture WoodObstacleTexture13_Ha;
-    private Texture WoodObstacleTexture13_Hb;
-    private Texture WoodObstacleTexture14;
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
     private Texture DulledBackground;
@@ -128,9 +117,9 @@ public class l extends ScreenAdapter {
         catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
 
-        //  catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
         createGround();
         createBirds();
+        createBoundaries();
         currentBirdBody = redBird.getBody();
         createWoodObstacles();
         //createObstacles();
@@ -139,19 +128,19 @@ public class l extends ScreenAdapter {
             Gdx.input.setInputProcessor(new InputAdapter() {
                 @Override
                 public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                    System.out.println("Touch down detected.");
                     Vector2 touchPos = new Vector2(screenX, screenY);
                     viewport.unproject(touchPos);
-
-                    // Assign the bird being dragged
                     if (redBird.getBounds().contains(touchPos)) {
                         currentBirdBody = redBird.getBody();
+                        System.out.println("Red bird selected for dragging.");
                     }
-
                     isDragging = true;
                     dragStartX = touchPos.x;
                     dragStartY = touchPos.y;
                     return true;
                 }
+
 
                 @Override
                 public boolean touchDragged(int screenX, int screenY, int pointer) {
@@ -197,14 +186,6 @@ public class l extends ScreenAdapter {
 
 
     //
-
-    private float centerX(Texture texture) {
-        return (viewport.getWorldWidth() - texture.getWidth()) / 2;
-    }
-
-    private float centerY(Texture texture) {
-        return (viewport.getWorldHeight() - texture.getHeight()) / 2;
-    }
 
     private float alignLeft(float margin) {
         return margin;
@@ -254,7 +235,7 @@ public class l extends ScreenAdapter {
 
     private void createGround() {
         BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.position.set(0, 0); // Position in Box2D world
+        groundBodyDef.position.set(0, 150/PPM); // Position in Box2D world
         groundBodyDef.type = BodyDef.BodyType.StaticBody;
         Body groundBody = world.createBody(groundBodyDef);
         PolygonShape groundBox = new PolygonShape();
@@ -372,15 +353,52 @@ public class l extends ScreenAdapter {
         return body;
     }
 
+    private void createBoundaries() {
+        // Bottom boundary at y = 150
+        createBoundary(viewport.getWorldWidth() / 2f, 150, viewport.getWorldWidth(), 10);
+
+        // Left boundary
+        createBoundary(5, viewport.getWorldHeight() / 2f, 10, viewport.getWorldHeight());
+
+        // Right boundary
+        createBoundary(viewport.getWorldWidth() - 5, viewport.getWorldHeight() / 2f, 10, viewport.getWorldHeight());
+
+        // Top boundary
+        createBoundary(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() - 5, viewport.getWorldWidth(), 10);
+    }
+
+
+    private void createBoundary(float x, float y, float halfWidth, float halfHeight) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(x, y);
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(halfWidth, halfHeight);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0f;
+        fixtureDef.friction = 0.5f;
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
+    }
+
+
     private void launchBird(Vector2 dragVector) {
         if (currentBirdBody != null) {
-            Vector2 launchVector = dragVector.cpy().scl(-10f); // Adjust multiplier
+            Vector2 launchVector = dragVector.scl(-3f); // Adjust multiplier
             currentBirdBody.applyLinearImpulse(launchVector, currentBirdBody.getWorldCenter(), true);
-
-            currentBirdBody = null; // Clear the bird reference after launch
-            dragVector.setZero();
+            System.out.println("Launch vector applied: " + launchVector);
+            currentBirdBody = null; // Prevent multiple launches
+        } else {
+            System.out.println("No bird body to launch!");
         }
     }
+
 
 
     private void calculateTrajectory(Vector2 dragVector) {
@@ -423,28 +441,12 @@ public class l extends ScreenAdapter {
                 // Calculate trajectory
                 calculateTrajectory(dragVector);
             }
-        } else if (isDragging && Gdx.input.isTouched()) {
+        } else if (isDragging && !Gdx.input.isTouched()) {
             // Launch the bird when the user releases the touch
             launchBird(dragVector);
             isDragging = false;
         }
     }
-
-//    private void launchBird() {
-////        Vector2 impulse = dragVector.cpy().scl(3); // Adjust multiplier for desired launch speed
-////        currentBirdBody.setLinearDamping(0.5f);
-////        currentBirdBody.applyLinearImpulse(impulse, currentBirdBody.getWorldCenter(), true);
-//        float launchX = dragVector.x * 3; // Adjust multiplier for desired launch speed
-//        float launchY = dragVector.y * 3; // Adjust multiplier for desired launch speed
-//
-//        // Apply launch impulse to the bird's body
-//        Vector2 impulse = new Vector2(launchX, launchY);
-//        currentBirdBody.applyLinearImpulse(impulse, currentBirdBody.getWorldCenter(), true);
-//        currentBirdBody = null;
-//        dragVector.setZero();
-//        dragStartX = 0;
-//        dragStartY = 0;
-//    }
 
     @Override
     public void render(float delta) { //Rendering
@@ -453,7 +455,7 @@ public class l extends ScreenAdapter {
         batch.begin();
         world.step(1 / 60f, 6, 2);
         if(!isPaused){ // Checking if Pause Button is clicked
-            //batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(pauseButtonTexture, 50, 900, 100, 100);
             handleInput(); // Add this line to call handleInput() when the game is not paused
             world.step(1 / 60f, 6, 2);
@@ -468,9 +470,7 @@ public class l extends ScreenAdapter {
         batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
         catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
-        // Handle input for dragging
-        //handleInput();
-        // Checking User input
+
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
