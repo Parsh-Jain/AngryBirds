@@ -114,10 +114,11 @@ public class l extends ScreenAdapter {
 
 
 
-        Body catapultBody = createCatapult(300, 183); // Position for the catapult
+        Body catapultBody = createCatapult(560, 270); // Adjusted position
         catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
-        //catapult.setPosition(300, 183);
+
+        //  catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
         createGround();
         createBirds();
         createWoodObstacles();
@@ -183,28 +184,6 @@ public class l extends ScreenAdapter {
         return body;
     }
 
-    private Body createCatapult(float x, float y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody; // Catapult is static
-        bodyDef.position.set(x / PPM, y / PPM);
-
-        Body body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(225 / PPM, 150 / PPM); // Half-width and half-height of the catapult
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.5f;
-        fixtureDef.restitution = 0.1f;
-
-        body.createFixture(fixtureDef);
-        shape.dispose();
-
-        return body;
-    }
-
     private Body createWood(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -262,7 +241,6 @@ public class l extends ScreenAdapter {
     }
 
     private void createWoodObstacles() {
-
         Body verticalWood1Body = createObstacle(1354 / PPM, 310 / PPM);
         Body verticalWood2Body = createObstacle(1554 / PPM, 310 / PPM);
 
@@ -276,6 +254,32 @@ public class l extends ScreenAdapter {
 
         stage.addActor(woodVertical1);
         stage.addActor(woodVertical2);
+    }
+
+    public void createCatapult(){
+
+    }
+
+    private Body createCatapult(float x, float y) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody; // Catapult is static
+        bodyDef.position.set(x, y); // Convert to world units
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(112.5f / PPM, 75f / PPM); // Half-width and half-height
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0.1f;
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
+
+        return body;
     }
 
 //
