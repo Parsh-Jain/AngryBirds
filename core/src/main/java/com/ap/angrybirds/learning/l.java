@@ -202,7 +202,7 @@ public class l extends ScreenAdapter {
         groundBody.createFixture(fixtureDef);
         groundBox.dispose();
     }
-    ///
+    ////
     private void createBirds() {
         // Create Red Bird
         Body redBirdBody = createBird(480/ PPM, 181 / PPM); // Position
