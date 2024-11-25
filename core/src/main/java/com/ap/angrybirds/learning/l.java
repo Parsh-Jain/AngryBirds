@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
 public class l extends ScreenAdapter {
     private static  final float PPM=100f;
+    private boolean isDragging = false;
+    private Body currentBirdBody;
+    private float dragStartX, dragStartY;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Stage stage;  // Important Attributes
@@ -292,6 +295,9 @@ public class l extends ScreenAdapter {
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.6f; // Bouncy effect
+        fixtureDef.filter.categoryBits = 0x0001; // Bird category
+        fixtureDef.filter.maskBits = 0x0002;    // Collides with obstacles
+
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -309,6 +315,8 @@ public class l extends ScreenAdapter {
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.7f;
         fixtureDef.restitution = 1f; // Bouncy effect
+        fixtureDef.filter.categoryBits = 0x0002; // Example category
+        fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -333,6 +341,8 @@ public class l extends ScreenAdapter {
         batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
         catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
+        // Handle input for dragging
+        handleInput();
         // Checking User input
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
@@ -354,11 +364,44 @@ public class l extends ScreenAdapter {
                 ResumeButtonSound.play();
                 isPaused = false;
             }
-            System.out.println("X: " + Gdx.input.getX() + " Y: " + Gdx.input.getY());
+        }
+        // Update physics and stage
+        if (!isPaused) {
+            world.step(1 / 60f, 6, 2);
         }
         stage.act(delta);
         stage.draw();
     }
+    private void handleInput() {
+        if (Gdx.input.isTouched()) {
+            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos);
+
+            if (!isDragging) {
+                // Check if touch is near the bird to start dragging
+                if (redBird.getBounds().contains(touchPos.x, touchPos.y)) {
+                    isDragging = true;
+                    currentBirdBody = redBird.getBody();
+                    dragStartX = currentBirdBody.getPosition().x;
+                    dragStartY = currentBirdBody.getPosition().y;
+                }
+            } else {
+                // Update bird's position while dragging
+                currentBirdBody.setTransform(touchPos.x / PPM, touchPos.y / PPM, 0);
+            }
+        } else if (isDragging) {
+            // On release, calculate launch force
+            isDragging = false;
+
+            Vector2 releasePosition = currentBirdBody.getPosition();
+            float forceX = (dragStartX - releasePosition.x) * 10; // Adjust multiplier as needed
+            float forceY = (dragStartY - releasePosition.y) * 10;
+
+            currentBirdBody.setLinearDamping(0.5f); // Prevent infinite sliding
+            currentBirdBody.applyLinearImpulse(new Vector2(forceX, forceY), currentBirdBody.getWorldCenter(), true);
+        }
+    }
+
     @Override
     public void resize(int width, int height) { // Rendering
         viewport.update(width, height, true);
@@ -383,5 +426,4 @@ public class l extends ScreenAdapter {
         if (EndButtonSound != null) EndButtonSound.dispose();
         if (batch != null) batch.dispose();
     }
-    //
 }
