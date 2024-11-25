@@ -117,7 +117,7 @@ public class l extends ScreenAdapter {
 
 
 
-        Body catapultBody = createCatapult(560, 270); // Adjusted position
+        Body catapultBody = createCatapult(560, 280); // Adjusted position
         catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
 
@@ -126,7 +126,7 @@ public class l extends ScreenAdapter {
         createBirds();
         createWoodObstacles();
         //createObstacles();
-        createPigs();
+        setPigs();
         Gdx.input.setInputProcessor(stage);
         isPaused = false;
     }
@@ -156,20 +156,18 @@ public class l extends ScreenAdapter {
         return viewport.getWorldHeight() - texture.getHeight() - margin;
     }
 
-    private void createPigs() {
-        Body mafiapig1body=createPig(1335,220);
-        mafiaPig1=new MafiaPig(MafiaPig1Texture,mafiapig1body);
+    private void setPigs() {
+        Body mafiapig1body = createPig(1460 / PPM, 220 / PPM);
+        mafiaPig1 = new MafiaPig(MafiaPig1Texture, mafiapig1body);
         stage.addActor(mafiaPig1);
-        Body mafiapig2body=createPig(1415,360);
-        mafiaPig2=new MafiaPig(MafiaPig2Texture,mafiapig2body);
-        stage.addActor(mafiaPig2);
-        Body mafiapig3body=createPig(1415,580);
-        mafiaPig3=new MafiaPig(MafiaPig3Texture,mafiapig3body);
-        stage.addActor(mafiaPig3);
-        Body mafiapig4body=createPig(1415,220);
-        mafiaPig4=new MafiaPig(MafiaPig4Texture,mafiapig4body);
-        stage.addActor(mafiaPig4);
+        updatePigPosition(mafiaPig1, mafiapig1body);
     }
+
+    private void updatePigPosition(MafiaPig pig, Body body) {
+        Vector2 bodyPosition = body.getPosition();
+        pig.setPosition(bodyPosition.x * PPM - pig.getWidth() / 2, bodyPosition.y * PPM - pig.getHeight() / 2);
+    }
+
     private Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -187,23 +185,7 @@ public class l extends ScreenAdapter {
         return body;
     }
 
-    private Body createWood(float x, float y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x, y);
-        Body body = world.createBody(bodyDef);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(20/PPM,87.5f/PPM);
-//        shape.setRadius(25 / PPM); // Bird radius
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.3f;
-        fixtureDef.restitution = 0.6f; // Bouncy effect
-        body.createFixture(fixtureDef);
-        shape.dispose();
-        return body;
-    }
+
     private void createGround() {
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.position.set(0, 0); // Position in Box2D world
@@ -259,9 +241,6 @@ public class l extends ScreenAdapter {
         stage.addActor(woodVertical2);
     }
 
-    public void createCatapult(){
-
-    }
 
     private Body createCatapult(float x, float y) {
         BodyDef bodyDef = new BodyDef();
@@ -368,7 +347,9 @@ public class l extends ScreenAdapter {
                 ResumeButtonSound.play();
                 isPaused = false;
             }
+            System.out.println("X:" + Gdx.input.getX() + " Y: " + Gdx.input.getY());
         }
+
         // Update physics and stage
         if (!isPaused) {
             world.step(1 / 60f, 6, 2);

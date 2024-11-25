@@ -12,4 +12,9 @@ public class MafiaPig extends Pigs{
 //        super(new Texture("MafiaPig.png"));  // Accessing Constructor of Pigs`
 //        setSize(75,75);
 //    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+    }
 }
