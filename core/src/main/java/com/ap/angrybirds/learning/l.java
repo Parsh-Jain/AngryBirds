@@ -113,7 +113,7 @@ public class l extends ScreenAdapter {
         WoodObstacleTexture14 = new Texture("Block.png");
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
         //createStructure();
-
+//
 
 
 
