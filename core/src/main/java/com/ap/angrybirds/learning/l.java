@@ -21,6 +21,9 @@ import static com.badlogic.gdx.graphics.Color.RED;
 
 public class l extends ScreenAdapter {
     private static  final float PPM=100f;
+    private boolean isDragging = false;
+    private Body currentBirdBody;
+    private float dragStartX, dragStartY;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Stage stage;  // Important Attributes
@@ -132,7 +135,7 @@ public class l extends ScreenAdapter {
         createBirds();
         createWoodObstacles();
         //createObstacles();
-        createPigs();
+        setPigs();
         Gdx.input.setInputProcessor(stage);
         isPaused = false;
     }
@@ -162,20 +165,18 @@ public class l extends ScreenAdapter {
         return viewport.getWorldHeight() - texture.getHeight() - margin;
     }
 
-    private void createPigs() {
-        Body mafiapig1body=createPig(1335,220);
-        mafiaPig1=new MafiaPig(MafiaPig1Texture,mafiapig1body);
+    private void setPigs() {
+        Body mafiapig1body = createPig(1460 / PPM, 220 / PPM);
+        mafiaPig1 = new MafiaPig(MafiaPig1Texture, mafiapig1body);
         stage.addActor(mafiaPig1);
-        Body mafiapig2body=createPig(1415,360);
-        mafiaPig2=new MafiaPig(MafiaPig2Texture,mafiapig2body);
-        stage.addActor(mafiaPig2);
-        Body mafiapig3body=createPig(1415,580);
-        mafiaPig3=new MafiaPig(MafiaPig3Texture,mafiapig3body);
-        stage.addActor(mafiaPig3);
-        Body mafiapig4body=createPig(1415,220);
-        mafiaPig4=new MafiaPig(MafiaPig4Texture,mafiapig4body);
-        stage.addActor(mafiaPig4);
+        updatePigPosition(mafiaPig1, mafiapig1body);
     }
+
+    private void updatePigPosition(MafiaPig pig, Body body) {
+        Vector2 bodyPosition = body.getPosition();
+        pig.setPosition(bodyPosition.x * PPM - pig.getWidth() / 2, bodyPosition.y * PPM - pig.getHeight() / 2);
+    }
+
     private Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -193,23 +194,7 @@ public class l extends ScreenAdapter {
         return body;
     }
 
-    private Body createWood(float x, float y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x, y);
-        Body body = world.createBody(bodyDef);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(20/PPM,87.5f/PPM);
-//        shape.setRadius(25 / PPM); // Bird radius
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.3f;
-        fixtureDef.restitution = 0.6f; // Bouncy effect
-        body.createFixture(fixtureDef);
-        shape.dispose();
-        return body;
-    }
+
     private void createGround() {
         BodyDef groundBodyDef = new BodyDef();
         groundBodyDef.position.set(0, 0); // Position in Box2D world
@@ -228,12 +213,10 @@ public class l extends ScreenAdapter {
         // Create Red Bird
         Body redBirdBody = createBird(480/ PPM, 181 / PPM); // Position
         redBird = new RedBird(new Texture("RedAngryBird.png"), redBirdBody);
-        birds.insert(0, redBird);
         stage.addActor(redBird);
         // Create Yellow Bird
         Body yellowBirdBody = createBird(190 / PPM, 179 / PPM);
         yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
-        birds.insert(1, yellowBird);
         stage.addActor(yellowBird);
 
         // Create Blue Bird
@@ -278,9 +261,6 @@ public class l extends ScreenAdapter {
         stage.addActor(woodVertical2);
     }
 
-    public void createCatapult(){
-
-    }
 
     private Body createCatapult(float x, float y) {
         BodyDef bodyDef = new BodyDef();
@@ -318,6 +298,9 @@ public class l extends ScreenAdapter {
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.6f; // Bouncy effect
+        fixtureDef.filter.categoryBits = 0x0001; // Bird category
+        fixtureDef.filter.maskBits = 0x0002;    // Collides with obstacles
+
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -335,6 +318,8 @@ public class l extends ScreenAdapter {
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.7f;
         fixtureDef.restitution = 1f; // Bouncy effect
+        fixtureDef.filter.categoryBits = 0x0002; // Example category
+        fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -360,32 +345,8 @@ public class l extends ScreenAdapter {
         batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
         catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
-        if (Gdx.input.isTouched() && currentBird != null && !isDragging) {
-            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
-
-            // Check if touching the bird
-            if (currentBird.getBounds().contains(touchPos.x, touchPos.y)) {
-                isDragging = true;
-                dragStart.set(touchPos);
-            }
-        } else if (isDragging) {
-            // While dragging
-            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
-
-            // Calculate trajectory and show it
-            drawTrajectory(dragStart, touchPos,delta);
-
-            if (!Gdx.input.isTouched()) {
-                // On release, launch the bird
-                Vector2 launchVector = dragStart.sub(touchPos).scl(5); // Adjust force multiplier
-                currentBird.getBody().applyLinearImpulse(launchVector, currentBird.getBody().getWorldCenter(), true);
-
-                isDragging = false;
-                currentBird = null; // Reset current bird
-            }
-        }
+        // Handle input for dragging
+        //handleInput();
         // Checking User input
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());
@@ -407,6 +368,7 @@ public class l extends ScreenAdapter {
                 ResumeButtonSound.play();
                 isPaused = false;
             }
+            System.out.println("X:" + Gdx.input.getX() + " Y: " + Gdx.input.getY());
         }
         stage.act(delta);
         stage.draw();
@@ -429,6 +391,7 @@ public class l extends ScreenAdapter {
 
         shapeRenderer.end();
     }
+
     @Override
     public void resize(int width, int height) { // Rendering
         viewport.update(width, height, true);
