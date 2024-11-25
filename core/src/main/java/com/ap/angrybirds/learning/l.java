@@ -38,7 +38,8 @@ public class l extends ScreenAdapter {
     private MafiaPig mafiaPig2;
     private MafiaPig mafiaPig3;
     private MafiaPig mafiaPig4;
-    private VerticalWood13 woodVertical1;
+    private VerticalWood13 woodVertical1, woodVertical2;
+
     private Catapult catapult;
     private Texture pauseButtonTexture;
     private Texture endbuttonTexture;
@@ -260,11 +261,23 @@ public class l extends ScreenAdapter {
         yellowBird.setPosition(alignLeft(160), alignBottom(180));
     }
 
-    private void createWoodObstacles(){
-        Body verticalWood1Body = createObstacle(800/PPM, 180/PPM);
+    private void createWoodObstacles() {
+
+        Body verticalWood1Body = createObstacle(1354 / PPM, 310 / PPM);
+        Body verticalWood2Body = createObstacle(1554 / PPM, 310 / PPM);
+
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
+        woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
+
+        Vector2 bodyPosition = verticalWood1Body.getPosition();
+        woodVertical1.setPosition(bodyPosition.x * PPM - woodVertical1.getWidth() / 2, bodyPosition.y * PPM - woodVertical1.getHeight() / 2);
+        Vector2 bodyPosition2 = verticalWood2Body.getPosition();
+        woodVertical2.setPosition(bodyPosition2.x * PPM - woodVertical2.getWidth() / 2, bodyPosition2.y * PPM - woodVertical2.getHeight() / 2);
+
         stage.addActor(woodVertical1);
+        stage.addActor(woodVertical2);
     }
+
 //
 
     private Body createBird(float x, float y) {
@@ -341,6 +354,7 @@ public class l extends ScreenAdapter {
                 ResumeButtonSound.play();
                 isPaused = false;
             }
+            System.out.println("X: " + Gdx.input.getX() + " Y: " + Gdx.input.getY());
         }
         stage.act(delta);
         stage.draw();
