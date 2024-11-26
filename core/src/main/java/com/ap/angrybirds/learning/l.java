@@ -581,7 +581,7 @@ private Body createBird(float x, float y, String birdType) {
         stage.act(delta);
         stage.draw();
     }
-
+//
     @Override
     public void resize(int width, int height) { // Rendering
         viewport.update(width, height, true);
