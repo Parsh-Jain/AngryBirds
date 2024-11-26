@@ -25,15 +25,13 @@ public class WoodObstacles extends Actor{
         super.act(delta);
     }
 
+    public Body getBody() {
+        return body;
+    }
+
     public void dispose() { // Disposing Bird Texture
         woodTexture.dispose();
     }
 }
-
-//public class WoodObstacles extends Obstacles {
-//    public WoodObstacles(Texture obstacleTexture, Body body) {
-//        super(obstacleTexture, body);
-//    }
-//}
 
 

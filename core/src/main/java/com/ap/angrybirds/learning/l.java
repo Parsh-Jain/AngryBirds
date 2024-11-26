@@ -212,8 +212,31 @@ public class l extends ScreenAdapter {
 
     private void updatePigPosition(MafiaPig pig, Body body) {
         Vector2 bodyPosition = body.getPosition();
+        float groundY = 150 / PPM; // Ground level in world units
+
+        // Prevent pig from falling below the ground
+        if (bodyPosition.y < groundY) {
+            body.setLinearVelocity(0, 0); // Stop vertical movement
+            body.setTransform(bodyPosition.x, groundY, 0); // Reset to ground level
+        }
+
         pig.setPosition(bodyPosition.x * PPM - pig.getWidth() / 2, bodyPosition.y * PPM - pig.getHeight() / 2);
     }
+
+    private void updateWoodObstaclePosition(VerticalWood13 wood, Body body) {
+        Vector2 bodyPosition = body.getPosition();
+        float groundY = 150 / PPM; // Ground level in world units
+
+        // Prevent wood obstacle from falling below the ground
+        if (bodyPosition.y < groundY) {
+            body.setLinearVelocity(0, 0); // Stop vertical movement
+            body.setTransform(bodyPosition.x, groundY, 0); // Reset to ground level
+        }
+
+        wood.setPosition(bodyPosition.x * PPM - wood.getWidth() / 2, bodyPosition.y * PPM - wood.getHeight() / 2);
+    }
+
+
 
     private Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
@@ -504,6 +527,9 @@ public class l extends ScreenAdapter {
             }
             //System.out.println("X:" + Gdx.input.getX() + " Y: " + Gdx.input.getY());
         }
+        updatePigPosition(mafiaPig1, mafiaPig1.getBody());
+        updateWoodObstaclePosition(woodVertical1, woodVertical1.getBody());
+        updateWoodObstaclePosition(woodVertical2, woodVertical2.getBody());
 
         if (isDragging) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
