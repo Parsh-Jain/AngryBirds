@@ -32,14 +32,8 @@ public class l extends ScreenAdapter {
     private Viewport viewport;
     private Main main;
     private Array<Body> bodiesToDestroy = new Array<>();
-    private Rectangle pauseButton;
-    private Rectangle endbutton;
-    private Rectangle resumeButton;
-    private Rectangle restartLevelButton;
-    private Rectangle EndButton2;
-    Music PauseButtonSound;
-    Music ResumeButtonSound;
-    Music EndButtonSound;
+    private Rectangle pauseButton,endbutton, resumeButton, EndButton2, restartLevelButton;
+    Music PauseButtonSound, ResumeButtonSound, EndButtonSound;
     private RedBird redBird;
     private YellowBird yellowBird;
     private BlueBird blueBird;
@@ -56,14 +50,12 @@ public class l extends ScreenAdapter {
     private float dragStartX, dragStartY;
     private float maxDragDistance = 100f;
 
+    private CollisionListener collisionListener;
+
 
     private Catapult catapult;
     private Texture pauseButtonTexture;
     private Texture endbuttonTexture;
-    private Texture RedBirdTexture;
-    private Texture YellowBirdTexture;
-    private Texture BlueBirdTexture;
-    private Texture BlackBirdTexture;
     private Texture MafiaPig1Texture;
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
@@ -81,7 +73,8 @@ public class l extends ScreenAdapter {
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
-        world.setContactListener(new CollisionListener());
+        collisionListener = new CollisionListener();
+        world.setContactListener(collisionListener);
         debugRenderer = new Box2DDebugRenderer();
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
@@ -111,9 +104,6 @@ public class l extends ScreenAdapter {
         dragVector = new Vector2();
         trajectoryPoints = new Array<>();
         shapeRenderer = new ShapeRenderer();
-//
-
-
 
         Body catapultBody = createCatapult(560, 280); // Adjusted position
         catapult = new Catapult(CatapultTexture, catapultBody);
@@ -124,7 +114,6 @@ public class l extends ScreenAdapter {
         createBoundaries();
         currentBirdBody = null;
         createWoodObstacles();
-        //createObstacles();
         setPigs();
         Gdx.input.setInputProcessor(stage);
             Gdx.input.setInputProcessor(new InputAdapter() {
@@ -155,7 +144,6 @@ public class l extends ScreenAdapter {
                     return true;
                 }
 
-
                 @Override
                 public boolean touchDragged(int screenX, int screenY, int pointer) {
                     if (isDragging) {
@@ -172,13 +160,12 @@ public class l extends ScreenAdapter {
 
                         // Update bird's position while dragging
                         if (currentBirdBody != null) {
-                            currentBirdBody.setTransform(
-                                slingPosition.x / PPM - dragVector.x,
-                                slingPosition.y / PPM - dragVector.y,
-                                0
-                            );
+                            currentBirdBody.setTransform(slingPosition.x / PPM - dragVector.x, slingPosition.y / PPM - dragVector.y, 0);
+                            shapeRenderer.setProjectionMatrix(camera.combined);
+                            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                            shapeRenderer.line(slingPosition.x / PPM, slingPosition.y / PPM, touchPos.x, touchPos.y);
+                            shapeRenderer.end();
                         }
-
                         // Calculate trajectory
                         calculateTrajectory(dragVector);
                         return true;
@@ -198,23 +185,12 @@ public class l extends ScreenAdapter {
             });
         }
 
-
-    //
-
     private float alignLeft(float margin) {
         return margin;
     }
 
-    private float alignRight(Texture texture, float margin) {
-        return viewport.getWorldWidth() - texture.getWidth() - margin;
-    }
-
     private float alignBottom(float margin) {
         return margin;
-    }
-
-    private float alignTop(Texture texture, float margin) {
-        return viewport.getWorldHeight() - texture.getHeight() - margin;
     }
 
     private void setPigs() {
@@ -251,8 +227,6 @@ public class l extends ScreenAdapter {
         wood.setPosition(bodyPosition.x * PPM - wood.getWidth() / 2, bodyPosition.y * PPM - wood.getHeight() / 2);
     }
 
-
-
     private Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -263,8 +237,8 @@ public class l extends ScreenAdapter {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.3f;
-        fixtureDef.restitution = 0.6f; // Bouncy effect
+        fixtureDef.friction = 1f;
+        fixtureDef.restitution = 0.1f; // Bouncy effect
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -281,7 +255,7 @@ public class l extends ScreenAdapter {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = groundBox;
         fixtureDef.density = 0f;
-        fixtureDef.friction = 0.5f;
+        fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = 0x0004; // Ground category
         fixtureDef.filter.maskBits = 0x0001;    // Collides with birds
 
@@ -289,19 +263,16 @@ public class l extends ScreenAdapter {
         groundBox.dispose();
 
     }
-    ////
     private void createBirds() {
         // Create Red Bird
         Body redBirdBody = createBird(480 / PPM, 181 / PPM, "RedBird");
         redBird = new RedBird(new Texture("RedAngryBird.png"), redBirdBody);
         stage.addActor(redBird);
 
-        // Create Yellow Bird
         Body yellowBirdBody = createBird(190 / PPM, 179 / PPM, "YellowBird");
         yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
         stage.addActor(yellowBird);
 
-        // Create Blue Bird
         Body blueBirdBody = createBird(330 / PPM, 181 / PPM, "BlueBird");
         blueBird = new BlueBird(new Texture("BlueAngryBird.png"), blueBirdBody);
         stage.addActor(blueBird);
@@ -310,7 +281,6 @@ public class l extends ScreenAdapter {
         blackBird = new BlackBird(new Texture("BlackAngryBird.png"), blackBirdBody);
         stage.addActor(blackBird);
 
-        // Set positions
         redBird.setPosition(alignLeft(400), alignBottom(190));
         blackBird.setPosition(alignLeft(320), alignBottom(190));
         blueBird.setPosition(alignLeft(240), alignBottom(190));
@@ -318,8 +288,8 @@ public class l extends ScreenAdapter {
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1354 / PPM, 310 / PPM, "VerticalWood1");
-        Body verticalWood2Body = createObstacle(1554 / PPM, 310 / PPM, "VerticalWood2");
+        Body verticalWood1Body = createObstacle(1354 / PPM, 410 / PPM, "VerticalWood1");
+        Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2");
 
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
@@ -347,7 +317,7 @@ public class l extends ScreenAdapter {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.5f;
+        fixtureDef.friction = 1f;
         fixtureDef.restitution = 0.1f;
 
         body.createFixture(fixtureDef);
@@ -368,8 +338,8 @@ private Body createBird(float x, float y, String birdType) {
     FixtureDef fixtureDef = new FixtureDef();
     fixtureDef.shape = shape;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
-    fixtureDef.restitution = 0.6f; // Bouncy effect
+    fixtureDef.friction = 1f;
+    fixtureDef.restitution = 0.1f; // Bouncy effect
     fixtureDef.filter.categoryBits = 0x0001; // Bird category
     fixtureDef.filter.maskBits = 0x0002 | 0x0004; // Birds collide with obstacles and ground
 
@@ -389,8 +359,8 @@ private Body createBird(float x, float y, String birdType) {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.2f;
-        fixtureDef.restitution = 1f; // Bouncy effect
+        fixtureDef.friction = 0.1f;
+        fixtureDef.restitution = 0.1f; // Bouncy effect
         fixtureDef.filter.categoryBits = 0x0002; // Example category
         fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
 
@@ -402,16 +372,16 @@ private Body createBird(float x, float y, String birdType) {
 
     private void createBoundaries() {
         // Bottom boundary at y = 150
-        createBoundary(viewport.getWorldWidth() / 2f, 150, viewport.getWorldWidth(), 10);
+        createBoundary(viewport.getWorldWidth() / 2f, 150 / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
 
         // Left boundary
-        createBoundary(5, viewport.getWorldHeight() / 2f, 10, viewport.getWorldHeight());
+        createBoundary(5 / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Right boundary
-        createBoundary(viewport.getWorldWidth() - 5, viewport.getWorldHeight() / 2f, 10, viewport.getWorldHeight());
+        createBoundary((viewport.getWorldWidth() - 5) / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Top boundary
-        createBoundary(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() - 5, viewport.getWorldWidth(), 10);
+        createBoundary(viewport.getWorldWidth() / 2f, (viewport.getWorldHeight() - 5) / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
     }
 
 
@@ -419,17 +389,16 @@ private Body createBird(float x, float y, String birdType) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.StaticBody;
-
         Body body = world.createBody(bodyDef);
-
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(halfWidth, halfHeight);
-
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0f;
-        fixtureDef.friction = 0.5f;
-
+        fixtureDef.friction = 1f;
+        fixtureDef.restitution = 0.1f;
+        fixtureDef.filter.categoryBits = 0x0004; // Boundary category
+        fixtureDef.filter.maskBits = 0x0001;
         body.createFixture(fixtureDef);
         shape.dispose();
     }
@@ -448,7 +417,6 @@ private Body createBird(float x, float y, String birdType) {
 //            currentBirdBody.setLinearVelocity(0, 0);
 //            currentBirdBody.setTransform(currentBirdBody.getPosition().x, 150 / PPM, 0);
 //        }
-
     }
 
 
@@ -587,6 +555,7 @@ private Body createBird(float x, float y, String birdType) {
         updatePigPosition(mafiaPig1, mafiaPig1.getBody());
         updateWoodObstaclePosition(woodVertical1, woodVertical1.getBody());
         updateWoodObstaclePosition(woodVertical2, woodVertical2.getBody());
+        collisionListener.processRemovals();
 
         if (isDragging) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -599,68 +568,18 @@ private Body createBird(float x, float y, String birdType) {
             shapeRenderer.end();
         }
 
+        if (trajectoryPoints.size > 0) {
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            for (Vector2 point : trajectoryPoints) {
+                shapeRenderer.circle(point.x, point.y, 5 / PPM); // Adjust radius for visibility
+            }
+            shapeRenderer.end();
+        }
+
 
         stage.act(delta);
         stage.draw();
-    }
-    private class CollisionListener implements ContactListener {
-        @Override
-        public void beginContact(Contact contact) {
-            Fixture fixtureA = contact.getFixtureA();
-            Fixture fixtureB = contact.getFixtureB();
-
-            if (isBirdCollision(fixtureA, fixtureB)) {
-                handleBirdCollision(fixtureA, fixtureB);
-            }
-        }
-
-        @Override
-        public void endContact(Contact contact) {}
-
-        @Override
-        public void preSolve(Contact contact, Manifold oldManifold) {}
-
-        @Override
-        public void postSolve(Contact contact, ContactImpulse impulse) {}
-
-        private boolean isBirdCollision(Fixture fixtureA, Fixture fixtureB) {
-            return (fixtureA.getBody().getUserData() instanceof Bird &&
-                (fixtureB.getBody().getUserData() instanceof WoodObstacles ||
-                    fixtureB.getBody().getUserData() instanceof Pigs)) ||
-                ((fixtureA.getBody().getUserData() instanceof WoodObstacles ||
-                    fixtureA.getBody().getUserData() instanceof Pigs) &&
-                    fixtureB.getBody().getUserData() instanceof Bird);
-        }
-
-        private void handleBirdCollision(Fixture fixtureA, Fixture fixtureB) {
-            Body birdBody, targetBody;
-            if (fixtureA.getBody().getUserData() instanceof Bird) {
-                birdBody = fixtureA.getBody();
-                targetBody = fixtureB.getBody();
-            } else {
-                birdBody = fixtureB.getBody();
-                targetBody = fixtureA.getBody();
-            }
-
-            if (targetBody.getUserData() instanceof WoodObstacles) {
-                destroyWoodObstacle(targetBody);
-            } else if (targetBody.getUserData() instanceof Pigs) {
-                destroyPig(targetBody);
-            }
-        }
-    }
-    private void destroyWoodObstacle(Body obstacleBody) {
-        WoodObstacles obstacle = (WoodObstacles) obstacleBody.getUserData();
-        bodiesToDestroy.add(obstacleBody);
-        stage.getActors().removeValue(obstacle, true);
-        System.out.println("Wood obstacle destroyed!");
-    }
-
-    private void destroyPig(Body pigBody) {
-        Pigs pig = (Pigs) pigBody.getUserData();
-        bodiesToDestroy.add(pigBody);
-        stage.getActors().removeValue(pig, true);
-        System.out.println("Pig destroyed!");
     }
 
     @Override

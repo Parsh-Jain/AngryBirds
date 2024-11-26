@@ -1,6 +1,8 @@
 package com.ap.angrybirds;
 
+import com.ap.angrybirds.learning.l;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -64,6 +66,8 @@ public class LoadingPage extends ScreenAdapter {
         batch.end();
         if (loadingPercentage >= 100) {
             main.setScreen(new HomeScreen(main)); // switch to HomeScreen
+        }if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            main.setScreen(new l(main));
         }
     }
     @Override
