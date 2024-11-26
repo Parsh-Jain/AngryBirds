@@ -32,6 +32,12 @@ public class WoodObstacles extends Actor{
     public void dispose() { // Disposing Bird Texture
         woodTexture.dispose();
     }
+    public void setUserData(Object userData) {
+        body.setUserData(userData);
+    }
+    public Object getUserData() {
+        return body.getUserData();
+    }
 }
 
 
