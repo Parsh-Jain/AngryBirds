@@ -239,13 +239,17 @@ public class l extends ScreenAdapter {
         groundBodyDef.type = BodyDef.BodyType.StaticBody;
         Body groundBody = world.createBody(groundBodyDef);
         PolygonShape groundBox = new PolygonShape();
-        groundBox.setAsBox(1920 / 2f, 10); // Box dimensions
+        groundBox.setAsBox(1920 / (2f * PPM), 10 / PPM);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = groundBox;
         fixtureDef.density = 0f;
         fixtureDef.friction = 0.5f;
+        fixtureDef.filter.categoryBits = 0x0004; // Ground category
+        fixtureDef.filter.maskBits = 0x0001;    // Collides with birds
+
         groundBody.createFixture(fixtureDef);
         groundBox.dispose();
+
     }
     ////
     private void createBirds() {
@@ -327,7 +331,8 @@ public class l extends ScreenAdapter {
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.6f; // Bouncy effect
         fixtureDef.filter.categoryBits = 0x0001; // Bird category
-        fixtureDef.filter.maskBits = 0x0002;    // Collides with obstacles
+        fixtureDef.filter.maskBits = 0x0002 | 0x0004; // Birds collide with obstacles and ground
+
 
         body.createFixture(fixtureDef);
         shape.dispose();
@@ -397,6 +402,11 @@ public class l extends ScreenAdapter {
         } else {
             System.out.println("No bird body to launch!");
         }
+//        if (currentBirdBody.getPosition().y < 150 / PPM) { // Ensure bird doesn't go below ground
+//            currentBirdBody.setLinearVelocity(0, 0);
+//            currentBirdBody.setTransform(currentBirdBody.getPosition().x, 150 / PPM, 0);
+//        }
+
     }
 
 
@@ -455,7 +465,7 @@ public class l extends ScreenAdapter {
         batch.begin();
         world.step(1 / 60f, 6, 2);
         if(!isPaused){ // Checking if Pause Button is clicked
-            batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            //batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(pauseButtonTexture, 50, 900, 100, 100);
             handleInput(); // Add this line to call handleInput() when the game is not paused
             world.step(1 / 60f, 6, 2);
@@ -470,6 +480,7 @@ public class l extends ScreenAdapter {
         batch.draw(EndButton2Texture,20,50,200,100);
         batch.end();
         catapult.setPosition(alignLeft(500)/PPM, alignBottom(190)/PPM);
+        debugRenderer.render(world, camera.combined);
 
         if(Gdx.input.isTouched()){
             Vector2 touchPos=new Vector2(Gdx.input.getX(),Gdx.input.getY());

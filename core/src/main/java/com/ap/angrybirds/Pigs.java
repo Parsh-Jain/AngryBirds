@@ -26,6 +26,10 @@ public class Pigs extends Actor {
         // Pig-specific actions here
     }
 
+    public Body getBody() {
+        return body;
+    }
+
     public void dispose() { // Disposing
         pigTexture.dispose();
     }
