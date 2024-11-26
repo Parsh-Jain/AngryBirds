@@ -75,7 +75,6 @@ public class l extends ScreenAdapter {
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
-        //collisionListener = new CollisionListener(world);
         collisionListener = new CollisionListener(bodiesToDestroy);
         world.setContactListener(collisionListener);
         debugRenderer = new Box2DDebugRenderer();
@@ -280,7 +279,7 @@ public class l extends ScreenAdapter {
         System.out.println("Bird userData: " + redBirdBody.getUserData());
         stage.addActor(redBird);
 
-        Body yellowBirdBody = createBird(190 / PPM, 179 / PPM, "YellowBird");
+        Body yellowBirdBody = createBird(190 / PPM, 181 / PPM, "YellowBird");
         yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
         yellowBirdBody.setUserData(yellowBird);
         stage.addActor(yellowBird);
@@ -705,7 +704,7 @@ private Body createBird(float x, float y, String birdType) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(WHITE);
             for (Vector2 point : trajectoryPoints) {
-                shapeRenderer.circle(point.x, point.y, 3); // Adjust the radius as needed
+                shapeRenderer.circle(point.x, point.y, 5); // Adjust the radius as needed
             }
             shapeRenderer.end();
         }
