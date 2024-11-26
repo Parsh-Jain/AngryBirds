@@ -1,10 +1,7 @@
-package com.ap.angrybirds.learning;
-import com.ap.angrybirds.*;
+package com.ap.angrybirds;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
