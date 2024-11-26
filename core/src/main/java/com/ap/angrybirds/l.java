@@ -111,7 +111,7 @@ public class l extends ScreenAdapter {
         trajectoryPoints = new Array<>();
         shapeRenderer = new ShapeRenderer();
 
-        Body catapultBody = createCatapult(560, 280); // Adjusted position
+        Body catapultBody = createCatapult(505, 280); // Adjusted position
         catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
         currentBirdBody = null;
@@ -210,7 +210,7 @@ public class l extends ScreenAdapter {
 
     private void updatePigPosition(MafiaPig pig, Body body) {
         Vector2 bodyPosition = body.getPosition();
-        float groundY = 150 / PPM; // Ground level in world units
+        float groundY = 220 / PPM; // Ground level in world units
 
         // Prevent pig from falling below the ground
         if (bodyPosition.y < groundY) {
@@ -223,7 +223,7 @@ public class l extends ScreenAdapter {
 
     private void updateWoodObstaclePosition(VerticalWood13 wood, Body body) {
         Vector2 bodyPosition = body.getPosition();
-        float groundY = 150 / PPM; // Ground level in world units
+        float groundY = 300 / PPM; // Ground level in world units
 
         // Prevent wood obstacle from falling below the ground
         if (bodyPosition.y < groundY) {
@@ -256,7 +256,7 @@ public class l extends ScreenAdapter {
 
     private void createGround() {
         BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.position.set(0, 150/PPM); // Position in Box2D world
+        groundBodyDef.position.set(0, 180/PPM); // Position in Box2D world
         groundBodyDef.type = BodyDef.BodyType.StaticBody;
         Body groundBody = world.createBody(groundBodyDef);
         PolygonShape groundBox = new PolygonShape();
@@ -388,7 +388,7 @@ private Body createBird(float x, float y, String birdType) {
 
     private void createBoundaries() {
         // Bottom boundary at y = 150
-        createBoundary(viewport.getWorldWidth() / 2f, 150 / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
+        createBoundary(viewport.getWorldWidth() / 2f, 180 / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
 
         // Left boundary
         createBoundary(5 / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
@@ -419,7 +419,7 @@ private Body createBird(float x, float y, String birdType) {
         shape.dispose();
     }
 
-    private Vector2 catapultPosition = new Vector2(500, 190); // Adjust these values as needed
+    private Vector2 catapultPosition = new Vector2(490, 190); // Adjust these values as needed
     private static final int TRAJECTORY_POINTS = 30;
     private static final float MAX_PULL_DISTANCE = 100f;
     private static final float LAUNCH_SPEED_MULTIPLIER = 15f;
@@ -657,9 +657,8 @@ private Body createBird(float x, float y, String birdType) {
         handleInput();
         bodiesToDestroy.clear();
         if(!isPaused){ // Checking if Pause Button is clicked
-            //batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(pauseButtonTexture, 50, 900, 100, 100);
-           // handleInput(); // Add this line to call handleInput() when the game is not paused
             world.step(1 / 60f, 6, 2);
         }else{ // Drawing Pause Screen
             batch.draw(DulledBackground,0,0);
