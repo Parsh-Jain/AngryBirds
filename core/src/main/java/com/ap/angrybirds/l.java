@@ -111,7 +111,7 @@ public class l extends ScreenAdapter {
         trajectoryPoints = new Array<>();
         shapeRenderer = new ShapeRenderer();
 
-        Body catapultBody = createCatapult(505, 280); // Adjusted position
+        Body catapultBody = createCatapult(498, 280); // Adjusted position
         catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
         currentBirdBody = null;
@@ -419,7 +419,7 @@ private Body createBird(float x, float y, String birdType) {
         shape.dispose();
     }
 
-    private Vector2 catapultPosition = new Vector2(490, 190); // Adjust these values as needed
+    private Vector2 catapultPosition = new Vector2(500, 190); // Adjust these values as needed
     private static final int TRAJECTORY_POINTS = 30;
     private static final float MAX_PULL_DISTANCE = 100f;
     private static final float LAUNCH_SPEED_MULTIPLIER = 15f;
