@@ -3,7 +3,6 @@ import com.ap.angrybirds.*;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -44,14 +43,13 @@ public class l extends ScreenAdapter {
     private Vector2 slingPosition = new Vector2(480, 181);
     private Array<Vector2> trajectoryPoints = new Array<>();
     private ShapeRenderer shapeRenderer;
-    private static final float TRAJECTORY_POINTS = 30;
+   // private static final float TRAJECTORY_POINTS = 10;
     private boolean isDragging = false;
     private Body currentBirdBody;
     private float dragStartX, dragStartY;
     private float maxDragDistance = 100f;
 
     private CollisionListener collisionListener;
-
 
     private Catapult catapult;
     private Texture pauseButtonTexture;
@@ -73,7 +71,7 @@ public class l extends ScreenAdapter {
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
-        collisionListener = new CollisionListener();
+        collisionListener = new CollisionListener(world);
         world.setContactListener(collisionListener);
         debugRenderer = new Box2DDebugRenderer();
         camera = new OrthographicCamera();
@@ -288,16 +286,20 @@ public class l extends ScreenAdapter {
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1354 / PPM, 410 / PPM, "VerticalWood1");
-        Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2");
+        float woodWidth = 25f;
+        float woodHeight = 250f;
+
+        Body verticalWood1Body = createObstacle(1354 / PPM, (410 + woodHeight) / PPM, woodWidth / PPM, woodHeight / PPM, "VerticalWood1");
+        Body verticalWood2Body = createObstacle(1554 / PPM, (410 + woodHeight) / PPM, woodWidth / PPM, woodHeight / PPM, "VerticalWood2");
 
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
 
-        Vector2 bodyPosition = verticalWood1Body.getPosition();
-        woodVertical1.setPosition(bodyPosition.x * PPM - woodVertical1.getWidth() / 2, bodyPosition.y * PPM - woodVertical1.getHeight() / 2);
-        Vector2 bodyPosition2 = verticalWood2Body.getPosition();
-        woodVertical2.setPosition(bodyPosition2.x * PPM - woodVertical2.getWidth() / 2, bodyPosition2.y * PPM - woodVertical2.getHeight() / 2);
+        woodVertical1.setSize(woodWidth, woodHeight);
+        woodVertical2.setSize(woodWidth, woodHeight);
+
+        updateWoodObstaclePosition(woodVertical1, verticalWood1Body);
+        updateWoodObstaclePosition(woodVertical2, verticalWood2Body);
 
         stage.addActor(woodVertical1);
         stage.addActor(woodVertical2);
@@ -349,23 +351,23 @@ private Body createBird(float x, float y, String birdType) {
     return body;
 }
 
-    private Body createObstacle(float x, float y, String obstacleType) {
+    private Body createObstacle(float x, float y, float halfWidth, float halfHeight, String obstacleType) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
         Body body = world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(25 / PPM, 250 / PPM);
+        shape.setAsBox(halfWidth, halfHeight);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 0.1f;
-        fixtureDef.restitution = 0.1f; // Bouncy effect
-        fixtureDef.filter.categoryBits = 0x0002; // Example category
-        fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
+        fixtureDef.restitution = 0.1f;
+        fixtureDef.filter.categoryBits = 0x0002;
+        fixtureDef.filter.maskBits = 0x0001;
 
         body.createFixture(fixtureDef);
-        body.setUserData(obstacleType); // Set the obstacle type as user data
+        body.setUserData(obstacleType);
         shape.dispose();
         return body;
     }
@@ -403,95 +405,117 @@ private Body createBird(float x, float y, String birdType) {
         shape.dispose();
     }
 
+    private Vector2 catapultPosition = new Vector2(500, 190); // Adjust these values as needed
+    private static final int TRAJECTORY_POINTS = 30;
+    private static final float MAX_PULL_DISTANCE = 100f;
+    private static final float LAUNCH_SPEED_MULTIPLIER = 15f;
+    private static final float GRAVITY = -9.8f; // Gravity constant
 
-    private void launchBird(Vector2 dragVector) {
-        if (currentBirdBody != null) {
-            Vector2 launchVector = dragVector.scl(-3f); // Adjust multiplier
-            currentBirdBody.applyLinearImpulse(launchVector, currentBirdBody.getWorldCenter(), true);
-            System.out.println("Launch vector applied: " + launchVector);
-            currentBirdBody = null; // Prevent multiple launches
-        } else {
-            System.out.println("No bird body to launch!");
-        }
-//        if (currentBirdBody.getPosition().y < 150 / PPM) { // Ensure bird doesn't go below ground
-//            currentBirdBody.setLinearVelocity(0, 0);
-//            currentBirdBody.setTransform(currentBirdBody.getPosition().x, 150 / PPM, 0);
-//        }
+    private void setCurrentBird(Bird bird) {
+        currentBirdBody = bird.getBody();
+        isDragging = true;
+        // Set the bird's position to the center of the catapult
+        currentBirdBody.setTransform(catapultPosition.x / PPM, catapultPosition.y / PPM, 0);
+        dragVector.setZero();
     }
-
-
 
     private void calculateTrajectory(Vector2 dragVector) {
         trajectoryPoints.clear();
-        Vector2 launchVector = dragVector.cpy().scl(-1);
-        float velocity = launchVector.len() * 10; // Use the same multiplier as in launchBird()
-        float angle = launchVector.angleDeg(); // Use angleDeg() for degrees
+        // Invert the drag vector to get the launch direction
+        Vector2 launchVector = dragVector.cpy().scl(-1); // Invert the direction
+
+        // Calculate launch velocity based on drag vector length
+        float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * LAUNCH_SPEED_MULTIPLIER;
+
+        // Normalize the launch vector and scale by launch speed
+        launchVector.nor().scl(launchSpeed / PPM);
+
+        float velocityX = launchVector.x;
+        float velocityY = launchVector.y;
+
+        float startX = catapultPosition.x / PPM;
+        float startY = catapultPosition.y / PPM;
 
         for (int i = 0; i < TRAJECTORY_POINTS; i++) {
-            float t = i / 60f; // Time step
-            float x = slingPosition.x / PPM + velocity * MathUtils.cosDeg(angle) * t;
-            float y = slingPosition.y / PPM + velocity * MathUtils.sinDeg(angle) * t - 0.5f * 9.8f * t * t;
+            float t = i * 0.1f; // Time step
+
+            // Calculate x and y positions using projectile motion equations
+            float x = startX + velocityX * t;
+            float y = startY + velocityY * t + 0.5f * GRAVITY * t * t;
+
+            // Stop adding points if the trajectory goes below ground level
+            if (y < 0) break;
+
+            // Scale the trajectory points back to pixels for rendering
             trajectoryPoints.add(new Vector2(x * PPM, y * PPM));
         }
     }
 
+    private void launchBird(Vector2 dragVector) {
+        if (currentBirdBody != null) {
+            // Invert the drag vector to get the launch direction
+            Vector2 launchVector = dragVector.cpy().scl(-1);
+
+            // Calculate launch velocity based on drag vector length
+            float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * LAUNCH_SPEED_MULTIPLIER;
+
+            // Normalize the launch vector and scale by launch speed
+            launchVector.nor().scl(launchSpeed / PPM);
+
+            // Set the bird's initial velocity
+            currentBirdBody.setLinearVelocity(launchVector);
+
+            // Reset the current bird to prevent multiple launches
+            currentBirdBody = null;
+            isDragging = false;
+        }
+    }
+
     private void handleInput() {
-        if (Gdx.input.isTouched()) {
-            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
+        Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+        viewport.unproject(touchPos);
+
+        if (Gdx.input.justTouched()) {
             if (!isDragging) {
                 // Check if a bird is touched and set it as the current bird
                 if (isBirdTouched(redBird, touchPos)) {
-                    currentBirdBody = redBird.getBody();
-                    isDragging = true;
-                    dragStartX = touchPos.x;
-                    dragStartY = touchPos.y;
+                    setCurrentBird(redBird);
                 } else if (isBirdTouched(yellowBird, touchPos)) {
-                    currentBirdBody = yellowBird.getBody();
-                    isDragging = true;
-                    dragStartX = touchPos.x;
-                    dragStartY = touchPos.y;
+                    setCurrentBird(yellowBird);
                 } else if (isBirdTouched(blueBird, touchPos)) {
-                    currentBirdBody = blueBird.getBody();
-                    isDragging = true;
-                    dragStartX = touchPos.x;
-                    dragStartY = touchPos.y;
+                    setCurrentBird(blueBird);
                 } else if (isBirdTouched(blackBird, touchPos)) {
-                    currentBirdBody = blackBird.getBody();
-                    isDragging = true;
-                    dragStartX = touchPos.x;
-                    dragStartY = touchPos.y;
+                    setCurrentBird(blackBird);
                 }
             }
+        } else if (Gdx.input.isTouched() && isDragging) {
+            // Calculate drag vector from catapult to touch position
+            dragVector.set(catapultPosition.x - touchPos.x, catapultPosition.y - touchPos.y);
 
-            if (isDragging) {
-                dragVector.set(touchPos.x - dragStartX, touchPos.y - dragStartY);
-
-                // Limit the bird's movement within the slingshot range
-                float maxDragDistance = 100f / PPM; // Adjust this value as needed
-                if (dragVector.len() > maxDragDistance) {
-                    dragVector.nor().scl(maxDragDistance);
-                }
-
-                // Update bird's position while dragging
-                if (currentBirdBody != null) {
-                    currentBirdBody.setTransform(
-                        slingPosition.x / PPM - dragVector.x,
-                        slingPosition.y / PPM - dragVector.y,
-                        0
-                    );
-                    Gdx.app.log("CurrentBody", "x: " + currentBirdBody.getPosition().x + ", y: " + currentBirdBody.getPosition().y);
-                }
-
-                // Calculate trajectory
-                calculateTrajectory(dragVector);
+            // Limit the pull distance
+            if (dragVector.len() > MAX_PULL_DISTANCE) {
+                dragVector.setLength(MAX_PULL_DISTANCE);
             }
+
+            // Update bird's position while dragging
+            if (currentBirdBody != null) {
+                currentBirdBody.setTransform(
+                    (catapultPosition.x - dragVector.x) / PPM,
+                    (catapultPosition.y - dragVector.y) / PPM,
+                    0
+                );
+            }
+
+            // Calculate trajectory
+            calculateTrajectory(dragVector);
         } else if (isDragging && !Gdx.input.isTouched()) {
             // Launch the bird when the user releases the touch
             launchBird(dragVector);
             isDragging = false;
         }
     }
+
+
     private boolean isBirdTouched(Bird bird, Vector2 touchPos) {
         float birdX = bird.getX() / PPM; // Adjust for Box2D scale
         float birdY = bird.getY() / PPM; // Adjust for Box2D scale
@@ -511,11 +535,11 @@ private Body createBird(float x, float y, String birdType) {
         for (Body body : bodiesToDestroy) {
             world.destroyBody(body);
         }
+        handleInput();
         bodiesToDestroy.clear();
         if(!isPaused){ // Checking if Pause Button is clicked
             //batch.draw(BackgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(pauseButtonTexture, 50, 900, 100, 100);
-            handleInput(); // Add this line to call handleInput() when the game is not paused
             world.step(1 / 60f, 6, 2);
         }else{ // Drawing Pause Screen
             batch.draw(DulledBackground,0,0);
@@ -550,32 +574,31 @@ private Body createBird(float x, float y, String birdType) {
                 ResumeButtonSound.play();
                 isPaused = false;
             }
-            //System.out.println("X:" + Gdx.input.getX() + " Y: " + Gdx.input.getY());
+            System.out.println("X:" + Gdx.input.getX() + " Y: " + Gdx.input.getY());
         }
         updatePigPosition(mafiaPig1, mafiaPig1.getBody());
         updateWoodObstaclePosition(woodVertical1, woodVertical1.getBody());
         updateWoodObstaclePosition(woodVertical2, woodVertical2.getBody());
+        collisionListener.update(delta);
         collisionListener.processRemovals();
 
         if (isDragging) {
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(WHITE);
-            for (int i = 1; i < trajectoryPoints.size; i++) {
-                Vector2 point1 = trajectoryPoints.get(i - 1);
-                Vector2 point2 = trajectoryPoints.get(i);
-                shapeRenderer.line(point1, point2);
+            for (Vector2 point : trajectoryPoints) {
+                shapeRenderer.circle(point.x, point.y, 3); // Adjust the radius as needed
             }
             shapeRenderer.end();
         }
 
-        if (trajectoryPoints.size > 0) {
-            shapeRenderer.setProjectionMatrix(camera.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            for (Vector2 point : trajectoryPoints) {
-                shapeRenderer.circle(point.x, point.y, 5 / PPM); // Adjust radius for visibility
-            }
-            shapeRenderer.end();
-        }
+//        if (trajectoryPoints.size > 0) {
+//            shapeRenderer.setProjectionMatrix(camera.combined);
+//            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//            for (Vector2 point : trajectoryPoints) {
+//                shapeRenderer.circle(point.x, point.y, 5 / PPM); // Adjust radius for visibility
+//            }
+//            shapeRenderer.end();
+//        }
 
 
         stage.act(delta);

@@ -1,16 +1,25 @@
 package com.ap.angrybirds;
 
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class CollisionListener implements ContactListener {
+    private World world;
+    private Array<Body> bodiesToRemove;
+    private Array<Texture> texturesToRemove;
+    private float birdRemovalTimer;
+    private Body birdToRemove;
 
-    private final List<Body> bodiesToRemove = new ArrayList<>();
+    public CollisionListener(World world) {
+        this.world = world;
+        this.bodiesToRemove = new Array<>();
+        this.texturesToRemove = new Array<>();
+        this.birdRemovalTimer = 0f;
+    }
 
     @Override
     public void beginContact(Contact contact) {
@@ -31,17 +40,28 @@ public class CollisionListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        // Handle end of contact if needed
+
     }
 
     @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-        // Handle pre-solve if needed
+    public void preSolve(Contact contact, Manifold manifold) {
+
     }
 
     @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-        // Handle post-solve if needed
+    public void postSolve(Contact contact, ContactImpulse contactImpulse) {
+
+    }
+
+    private void handleCollision(Body bird, Body target) {
+        bodiesToRemove.add(target);
+        // Assuming the texture is stored as user data in the body
+        Texture texture = (Texture) target.getUserData();
+        if (texture != null) {
+            texturesToRemove.add(texture);
+        }
+        birdToRemove = bird;
+        birdRemovalTimer = 2; // Set timer to 2 seconds
     }
 
     private boolean isBird(Body body) {
@@ -57,13 +77,30 @@ public class CollisionListener implements ContactListener {
         return "VerticalWood1".equals(body.getUserData()) || "VerticalWood2".equals(body.getUserData());
     }
 
-    public void processRemovals() {
-        for (Body body : bodiesToRemove) {
-            if (body != null) {
-                body.setUserData(null);
-                body.getWorld().destroyBody(body);
+    public void update(float delta) {
+        if (birdRemovalTimer > 0) {
+            birdRemovalTimer -= delta;
+            if (birdRemovalTimer <= 0) {
+                bodiesToRemove.add(birdToRemove);
+                Texture birdTexture = (Texture) birdToRemove.getUserData();
+                if (birdTexture != null) {
+                    texturesToRemove.add(birdTexture);
+                }
+                birdToRemove = null;
             }
         }
+
+    }
+
+    public void processRemovals() {
+        for (Body body : bodiesToRemove) {
+            world.destroyBody(body);
+        }
         bodiesToRemove.clear();
+
+        for (Texture texture : texturesToRemove) {
+            texture.dispose();
+        }
+        texturesToRemove.clear();
     }
 }

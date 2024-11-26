@@ -5,11 +5,12 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.graphics.Texture;
 
 
-public class VerticalWood13 extends WoodObstacles{
+public class VerticalWood13 extends WoodObstacles {
     static float PPM = 100f;
-    public VerticalWood13(Texture woodTexture, Body body){
+
+    public VerticalWood13(Texture woodTexture, Body body) {
         super(woodTexture, body);
-        setSize(25,250);
+        setSize(25, 250);
     }
 
     @Override
@@ -19,4 +20,3 @@ public class VerticalWood13 extends WoodObstacles{
         setPosition(position.x * PPM - getWidth() / 2, position.y * PPM - getHeight() / 2);
     }
 }
-
