@@ -19,4 +19,5 @@ public class VerticalWood13 extends WoodObstacles {
         Vector2 position = getBody().getPosition();
         setPosition(position.x * PPM - getWidth() / 2, position.y * PPM - getHeight() / 2);
     }
+
 }

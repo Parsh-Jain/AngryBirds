@@ -33,6 +33,13 @@ public class Bird extends Actor {
     public Body getBody() {
         return body;
     }
+    public void setUserData(Object userData) {
+        body.setUserData(userData);
+    }
+    public Object getUserData() {
+        return body.getUserData();
+    }
+
 
     public void dispose() { // Disposing Bird Texture
         birdTexture.dispose();

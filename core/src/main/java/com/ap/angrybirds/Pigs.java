@@ -33,5 +33,11 @@ public class Pigs extends Actor {
     public void dispose() { // Disposing
         pigTexture.dispose();
     }
+    public void setUserData(Object userData) {
+        body.setUserData(userData);
+    }
+    public Object getUserData() {
+        return body.getUserData();
+    }
 }
 
