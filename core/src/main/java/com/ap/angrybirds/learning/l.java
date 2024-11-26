@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
@@ -207,6 +208,7 @@ public class l extends ScreenAdapter {
         mafiapig1body.setUserData(mafiaPig1);
         stage.addActor(mafiaPig1);
         updatePigPosition(mafiaPig1, mafiapig1body);
+        mafiapig1body.setUserData(mafiaPig1);
     }
 
     private void updatePigPosition(MafiaPig pig, Body body) {
@@ -247,6 +249,8 @@ public class l extends ScreenAdapter {
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
         fixtureDef.restitution = 0.1f; // Bouncy effect
+        fixtureDef.filter.categoryBits = PIG_CATEGORY;
+        fixtureDef.filter.maskBits = BIRD_CATEGORY | WOOD_CATEGORY;
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -435,9 +439,11 @@ private Body createBird(float x, float y, String birdType) {
 
     private class CollisionListener implements ContactListener {
         private Array<Body> bodiesToDestroy;
+
         public CollisionListener(Array<Body> bodiesToDestroy) {
             this.bodiesToDestroy = bodiesToDestroy;
         }
+
         @Override
         public void beginContact(Contact contact) {
             Fixture fixtureA = contact.getFixtureA();
@@ -448,34 +454,45 @@ private Body createBird(float x, float y, String birdType) {
             } else if (isBirdContactingPig(fixtureA, fixtureB)) {
                 score += 200; // 200 points for hitting pig
             }
+
             if (isBirdAndWoodCollision(fixtureA, fixtureB) || isBirdAndPigCollision(fixtureA, fixtureB)) {
                 Body bird = fixtureA.getBody().getUserData() instanceof Bird ? fixtureA.getBody() : fixtureB.getBody();
                 Body other = fixtureA.getBody().getUserData() instanceof Bird ? fixtureB.getBody() : fixtureA.getBody();
-                System.out.println("Added to ARRAY");
-                // Get the actors
-                Bird birdActor = (Bird) bird.getUserData();
-                WoodObstacles woodActor = (WoodObstacles) other.getUserData();
 
-                // Remove actors from stage
-                stage.getActors().removeValue(birdActor, true);
-                stage.getActors().removeValue(woodActor, true);
+                // Delay destruction using Timer
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        // Get the actors
+                        Bird birdActor = (Bird) bird.getUserData();
 
-                // Dispose of textures (if necessary)
-//                birdActor.getTexture().dispose();
-//                woodActor.getTexture().dispose();
-                bodiesToDestroy.add(bird);
-                bodiesToDestroy.add(other);
+                        // Remove the bird from the stage
+                        stage.getActors().removeValue(birdActor, true);
 
-//                // Remove the actors
-//                stage.getActors().removeValue(Bird(bird), true);
-//                stage.getActors().removeValue(other, true);
+                        // Check and remove the other object (Wood or Pig)
+                        if (other.getUserData() instanceof WoodObstacles) {
+                            WoodObstacles woodActor = (WoodObstacles) other.getUserData();
+                            stage.getActors().removeValue(woodActor, true);
+                        } else if (other.getUserData() instanceof MafiaPig) {
+                            MafiaPig pigActor = (MafiaPig) other.getUserData();
+                            stage.getActors().removeValue(pigActor, true);
+                        }
+
+                        // Add bodies to destroy
+                        bodiesToDestroy.add(bird);
+                        bodiesToDestroy.add(other);
+                    }
+                }, 0.5f); // Delay of 2 seconds
+
+                System.out.println("Collision detected. Destruction scheduled in 2 seconds.");
             }
+
+            // Log collisions
             Gdx.app.log("Collision", "FixtureA: " + fixtureA.getBody().getUserData() +
                 ", FixtureB: " + fixtureB.getBody().getUserData());
-            for(Body b : bodiesToDestroy) {
+            for (Body b : bodiesToDestroy) {
                 System.out.println(b);
             }
-
         }
         private boolean isBirdAndWoodCollision(Fixture fixtureA, Fixture fixtureB) {
             return (fixtureA.getBody().getUserData() instanceof Bird && fixtureB.getBody().getUserData() instanceof WoodObstacles) ||
