@@ -137,6 +137,18 @@ public class l extends ScreenAdapter {
                         currentBirdBody = redBird.getBody();
                         System.out.println("Red bird selected for dragging.");
                     }
+                    if (yellowBird.getBounds().contains(touchPos)) {
+                        currentBirdBody = yellowBird.getBody();
+                        System.out.println("Yellow bird selected for dragging.");
+                    }
+                    if (blueBird.getBounds().contains(touchPos)) {
+                        currentBirdBody = blueBird.getBody();
+                        System.out.println("Blue bird selected for dragging.");
+                    }
+                    if (blackBird.getBounds().contains(touchPos)) {
+                        currentBirdBody = blackBird.getBody();
+                        System.out.println("Black bird selected for dragging.");
+                    }
                     isDragging = true;
                     dragStartX = touchPos.x;
                     dragStartY = touchPos.y;
