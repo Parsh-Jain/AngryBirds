@@ -112,7 +112,7 @@ public class level2 extends ScreenAdapter{
         trajectoryPoints = new Array<>();
         shapeRenderer = new ShapeRenderer();
 
-        Body catapultBody = createCatapult(498, 280); // Adjusted position
+        Body catapultBody = createCatapult(498, 310); // Adjusted position
         catapult = new Catapult(CatapultTexture, catapultBody);
         stage.addActor(catapult);
         currentBirdBody = null;
@@ -275,32 +275,32 @@ public class level2 extends ScreenAdapter{
     }
     private void createBirds() {
         // Create Red Bird
-        Body redBirdBody = createBird(480 / PPM, 181 / PPM, "RedBird");
+        Body redBirdBody = createBird(480 / PPM, 201 / PPM, "RedBird");
         redBird = new RedBird(new Texture("RedAngryBird.png"), redBirdBody);
         redBirdBody.setUserData(redBird);
         System.out.println("Bird userData: " + redBirdBody.getUserData());
         stage.addActor(redBird);
 
-        Body yellowBirdBody = createBird(190 / PPM, 179 / PPM, "YellowBird");
+        Body yellowBirdBody = createBird(190 / PPM, 199 / PPM, "YellowBird");
         yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
         yellowBirdBody.setUserData(yellowBird);
         stage.addActor(yellowBird);
 
-        Body blueBirdBody = createBird(330 / PPM, 181 / PPM, "BlueBird");
+        Body blueBirdBody = createBird(330 / PPM, 201 / PPM, "BlueBird");
         blueBird = new BlueBird(new Texture("BlueAngryBird.png"), blueBirdBody);
         blueBirdBody.setUserData(blueBird);
         System.out.println("Bird userData: " + blueBirdBody.getUserData());
         stage.addActor(blueBird);
 
-        Body blackBirdBody = createBird(260 / PPM, 181 / PPM, "BlackBird");
+        Body blackBirdBody = createBird(260 / PPM, 201 / PPM, "BlackBird");
         blackBird = new BlackBird(new Texture("BlackAngryBird.png"), blackBirdBody);
         blackBirdBody.setUserData(blackBird);
         stage.addActor(blackBird);
 
-        redBird.setPosition(alignLeft(400), alignBottom(190));
-        blackBird.setPosition(alignLeft(320), alignBottom(190));
-        blueBird.setPosition(alignLeft(240), alignBottom(190));
-        yellowBird.setPosition(alignLeft(160), alignBottom(180));
+        redBird.setPosition(alignLeft(400), alignBottom(217));
+        blackBird.setPosition(alignLeft(320), alignBottom(217));
+        blueBird.setPosition(alignLeft(240), alignBottom(217));
+        yellowBird.setPosition(alignLeft(160), alignBottom(210));
     }
 
     private void createWoodObstacles() {
