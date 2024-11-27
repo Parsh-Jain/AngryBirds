@@ -586,6 +586,13 @@ public class level2 extends ScreenAdapter{
             // Reset the current bird to prevent multiple launches
             currentBirdBody = null;
             isDragging = false;
+
+            Timer timer = new Timer();
+            timer.schedule(new Timer.Task() {
+                public void run(){
+                    birdcount--;
+                }
+            },4);
         }
     }
 
