@@ -706,7 +706,7 @@ public class level2 extends ScreenAdapter{
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(WHITE);
             for (Vector2 point : trajectoryPoints) {
-                shapeRenderer.circle(point.x, point.y, 3); // Adjust the radius as needed
+                shapeRenderer.circle(point.x, point.y, 6); // Adjust the radius as needed
             }
             shapeRenderer.end();
         }
