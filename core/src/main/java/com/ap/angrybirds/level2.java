@@ -257,7 +257,7 @@ public class level2 extends ScreenAdapter{
 
     private void createGround() {
         BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.position.set(0, 180/PPM); // Position in Box2D world
+        groundBodyDef.position.set(0, 200/PPM); // Position in Box2D world
         groundBodyDef.type = BodyDef.BodyType.StaticBody;
         Body groundBody = world.createBody(groundBodyDef);
         PolygonShape groundBox = new PolygonShape();
@@ -281,7 +281,7 @@ public class level2 extends ScreenAdapter{
         System.out.println("Bird userData: " + redBirdBody.getUserData());
         stage.addActor(redBird);
 
-        Body yellowBirdBody = createBird(190 / PPM, 199 / PPM, "YellowBird");
+        Body yellowBirdBody = createBird(190 / PPM, 201 / PPM, "YellowBird");
         yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
         yellowBirdBody.setUserData(yellowBird);
         stage.addActor(yellowBird);
