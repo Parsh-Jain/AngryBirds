@@ -30,6 +30,12 @@ public class l extends ScreenAdapter {
     private Viewport viewport;
     private Main main;
     private Array<Body> bodiesToDestroy = new Array<>();
+    private Array<VerticalWood13> woodObstacles; // Store all the wood obstacles
+    private Array<MafiaPig> pigs; // Store all the pigs
+    private Array<Bird> birds;
+    private boolean allWoodDestroyed = false;
+    private boolean allPigsDestroyed = false;
+    private boolean anyBirdsLeft = true;
     private int score = 0;
     private Rectangle pauseButton,endbutton, resumeButton, EndButton2, restartLevelButton;
     Music PauseButtonSound, ResumeButtonSound, EndButtonSound;
@@ -69,8 +75,12 @@ public class l extends ScreenAdapter {
     private Texture soundButtonTexture;
     private Texture EndButton2Texture;
     private SpriteBatch batch;
+    private int birdcount;
     public l(Main main) { // Constructor
         this.main = main;
+        woodObstacles = new Array<>();
+        pigs = new Array<>();
+        birds = new Array<>();
     }
     @Override
     public void show() { // Show method to creating all the attributes
@@ -78,6 +88,7 @@ public class l extends ScreenAdapter {
         collisionListener = new CollisionListener(bodiesToDestroy);
         world.setContactListener(collisionListener);
         debugRenderer = new Box2DDebugRenderer();
+        birdcount=4;
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
         stage = new Stage(viewport);
@@ -120,6 +131,18 @@ public class l extends ScreenAdapter {
         currentBirdBody = null;
         createWoodObstacles();
         setPigs();
+        // Track wood and pigs
+        woodObstacles.add(woodVertical1);
+        woodObstacles.add(woodVertical2);
+
+        pigs.add(mafiaPig1);
+
+        // Add all birds
+        birds.add(redBird);
+        birds.add(yellowBird);
+        birds.add(blueBird);
+        birds.add(blackBird);
+
         Gdx.input.setInputProcessor(stage);
             Gdx.input.setInputProcessor(new InputAdapter() {
                 @Override
@@ -390,13 +413,13 @@ private Body createBird(float x, float y, String birdType) {
         createBoundary(viewport.getWorldWidth() / 2f, 180 / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
 
         // Left boundary
-        createBoundary(5 / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
+        //createBoundary(5 / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Right boundary
-        createBoundary((viewport.getWorldWidth() - 5) / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
+       // createBoundary((viewport.getWorldWidth() - 5) / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Top boundary
-        createBoundary(viewport.getWorldWidth() / 2f, (viewport.getWorldHeight() - 5) / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
+        //createBoundary(viewport.getWorldWidth() / 2f, (viewport.getWorldHeight() - 5) / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
     }
 
 
@@ -433,7 +456,25 @@ private Body createBird(float x, float y, String birdType) {
         currentBirdBody.setTransform(catapultPosition.x / PPM, catapultPosition.y/ PPM, 0);
         dragVector.setZero();
     }
+    private void checkGameState() {
+        // Check if all birds are destroyed
+        boolean allBirdsDestroyed = birds.isEmpty();
 
+        // Check if all obstacles are remaining
+        boolean obstaclesRemaining = !pigs.isEmpty() || !woodObstacles.isEmpty();
+
+        // Check if all obstacles are destroyed
+        boolean allObstaclesDestroyed = pigs.isEmpty() && woodObstacles.isEmpty();
+
+        // If all birds are destroyed and obstacles remain, go to lose screen
+        if ((allBirdsDestroyed && obstaclesRemaining)||birdcount==0) {
+            main.setScreen(new LoseEndScreen(main));
+        }
+        // If all obstacles are destroyed, go to successful end screen
+        else if (allObstaclesDestroyed) {
+            main.setScreen(new SuccessfulEndScreen(main));
+        }
+    }
 
     private class CollisionListener implements ContactListener {
         private Array<Body> bodiesToDestroy;
@@ -466,14 +507,17 @@ private Body createBird(float x, float y, String birdType) {
 
                         // Remove the bird from the stage
                         stage.getActors().removeValue(birdActor, true);
+                        birds.removeValue((Bird)birdActor, true);
 
                         // Check and remove the other object (Wood or Pig)
                         if (other.getUserData() instanceof WoodObstacles) {
                             WoodObstacles woodActor = (WoodObstacles) other.getUserData();
                             stage.getActors().removeValue(woodActor, true);
+                            woodObstacles.removeValue((VerticalWood13) woodActor, true);
                         } else if (other.getUserData() instanceof MafiaPig) {
                             MafiaPig pigActor = (MafiaPig) other.getUserData();
                             stage.getActors().removeValue(pigActor, true);
+                            pigs.removeValue(pigActor, true);
                         }
 
                         // Add bodies to destroy
@@ -586,6 +630,8 @@ private Body createBird(float x, float y, String birdType) {
             // Reset the current bird to prevent multiple launches
             currentBirdBody = null;
             isDragging = false;
+            birdcount--;
+
         }
     }
 
@@ -714,6 +760,14 @@ private Body createBird(float x, float y, String birdType) {
 
         stage.act(delta);
         stage.draw();
+        checkGameState();
+        System.out.println("Bird Counter: " + birdcount);
+//
+//        if(allWoodDestroyed && allPigsDestroyed) {
+//            main.setScreen(new SuccessfulEndScreen(main));
+//        } else if(!allWoodDestroyed || !allPigsDestroyed && !anyBirdsLeft) {
+//            main.setScreen(new LoseEndScreen(main));
+//        }
     }
 //
     @Override
