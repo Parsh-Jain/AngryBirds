@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
@@ -630,7 +631,14 @@ private Body createBird(float x, float y, String birdType) {
             // Reset the current bird to prevent multiple launches
             currentBirdBody = null;
             isDragging = false;
-            birdcount--;
+
+            Timer timer = new Timer();
+            timer.schedule(new Timer.Task() {
+                public void run(){
+                    birdcount--;
+                }
+            },4);
+
 
         }
     }
@@ -697,11 +705,20 @@ private Body createBird(float x, float y, String birdType) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         world.step(1 / 60f, 6, 2);
-        for (Body body : collisionListener.bodiesToDestroy) {
+        Array<Body> bodiesMarkedForRemoval = new Array<>(collisionListener.bodiesToDestroy);
+        for (Body body : bodiesMarkedForRemoval) {
             if (body != null && world != null) {
+                // Remove associated actor from stage
+                Object userData = body.getUserData();
+                if (userData instanceof Actor) {
+                    stage.getActors().removeValue((Actor) userData, true);
+                }
+
+                // Destroy the body
                 world.destroyBody(body);
             }
         }
+        collisionListener.bodiesToDestroy.clear();
         handleInput();
         bodiesToDestroy.clear();
         if(!isPaused){ // Checking if Pause Button is clicked
