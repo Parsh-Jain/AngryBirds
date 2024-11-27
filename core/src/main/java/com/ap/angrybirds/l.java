@@ -418,17 +418,19 @@ private Body createBird(float x, float y, String birdType) {
         shape.dispose();
     }
 
-    private Vector2 catapultPosition = new Vector2(500, 190); // Adjust these values as needed
+    private Vector2 catapultPosition = new Vector2(500, 345); // Adjust these values as needed
     private static final int TRAJECTORY_POINTS = 30;
     private static final float MAX_PULL_DISTANCE = 100f;
     private static final float LAUNCH_SPEED_MULTIPLIER = 15f;
     private static final float GRAVITY = -9.8f; // Gravity constant
 
+     //catapultPosition.y = 600;
+
     private void setCurrentBird(Bird bird) {
         currentBirdBody = bird.getBody();
         isDragging = true;
         // Set the bird's position to the center of the catapult
-        currentBirdBody.setTransform(catapultPosition.x / PPM, catapultPosition.y / PPM, 0);
+        currentBirdBody.setTransform(catapultPosition.x / PPM, catapultPosition.y/ PPM, 0);
         dragVector.setZero();
     }
 
@@ -592,7 +594,8 @@ private Body createBird(float x, float y, String birdType) {
         viewport.unproject(touchPos);
 
         if (Gdx.input.justTouched()) {
-            if (!isDragging) {
+            if (isDragging) {
+                System.out.println("Dragging");
                 // Check if a bird is touched and set it as the current bird
                 if (isBirdTouched(redBird, touchPos)) {
                     setCurrentBird(redBird);
