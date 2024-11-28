@@ -81,20 +81,82 @@ public class l extends ScreenAdapter implements Serializable {
     private Texture EndButton2Texture;
     private SpriteBatch batch;
     private int birdcount;
-    public l(Main main,GameState1 gameState) { // Constructor
+    public l(Main main, GameState1 gameState) {
         this.main = main;
         this.gameState = gameState;
         this.world = new World(new Vector2(0, -9.81f), true);
+
+        // Initialize arrays
         woodObstacles = new Array<>();
         pigs = new Array<>();
         birds = new Array<>();
-        stage2 = new Stage(new ScreenViewport(), main.batch);
-        initializeFromSavedState();
 
+        // Load saved game state directly in constructor
+        if (gameState != null) {
+            System.out.println("Loading saved game state...");
 
+            // Load birds
+            for (GameState1.SerializableVector2 pos : gameState.birdPositions) {
+                String birdKey = "Bird-" + pos.x + "-" + pos.y;
+                if (!gameState.destroyedEntities.contains(birdKey)) {
+                    Texture birdTexture = getBirdTexture(pos.birdType);
+                    Body birdBody = createBird(pos.x, pos.y, pos.birdType);
+                    Bird bird;
 
+                    switch (pos.birdType) {
+                        case "RedBird":
+                            bird = new RedBird(birdTexture, birdBody);
+                            break;
+                        case "YellowBird":
+                            bird = new YellowBird(birdTexture, birdBody);
+                            break;
+                        case "BlueBird":
+                            bird = new BlueBird(birdTexture, birdBody);
+                            break;
+                        case "BlackBird":
+                            bird = new BlackBird(birdTexture, birdBody);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Unknown bird type: " + pos.birdType);
+                    }
 
+                    birds.add(bird);
+                    System.out.println("Loaded bird: " + pos.birdType + " at (" + pos.x + ", " + pos.y + ")");
+                }
+            }
+
+            // Load pigs
+            for (GameState1.SerializableVector2 pos : gameState.pigPositions) {
+                String pigKey = "Pig-" + pos.x + "-" + pos.y;
+                if (!gameState.destroyedEntities.contains(pigKey)) {
+                    Body pigBody = createPig(pos.x, pos.y);
+                    MafiaPig pig = new MafiaPig(new Texture("MafiaPig.png"), pigBody);
+                    pigs.add(pig);
+                    System.out.println("Loaded pig at (" + pos.x + ", " + pos.y + ")");
+                }
+            }
+
+            // Load wood obstacles
+            for (GameState1.SerializableVector2 pos : gameState.woodPositions) {
+                String woodKey = "Wood-" + pos.x + "-" + pos.y;
+                if (!gameState.destroyedEntities.contains(woodKey)) {
+                    Body woodBody = createObstacle(pos.x, pos.y, "Wood");
+                    VerticalWood13 wood = new VerticalWood13(new Texture("13.png"), woodBody);
+                    woodObstacles.add(wood);
+                    System.out.println("Loaded wood obstacle at (" + pos.x + ", " + pos.y + ")");
+                }
+            }
+
+            // Restore game variables
+            this.score = gameState.score;
+            this.birdcount = gameState.birdCount;
+
+            System.out.println("Score: " + score + ", Bird Count: " + birdcount);
+        } else {
+            System.out.println("No saved game state found. Starting fresh.");
+        }
     }
+
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
@@ -155,6 +217,7 @@ public class l extends ScreenAdapter implements Serializable {
         birds.add(yellowBird);
         birds.add(blueBird);
         birds.add(blackBird);
+
 
         Gdx.input.setInputProcessor(stage);
             Gdx.input.setInputProcessor(new InputAdapter() {
@@ -763,6 +826,7 @@ private Body createBird(float x, float y, String birdType) {
             if (!gameState.destroyedEntities.contains(pigKey)) { // Skip destroyed pigs
                 Body pigBody = createPig(pos.x, pos.y);
                 MafiaPig pig = new MafiaPig(new Texture("MafiaPig.png"), pigBody);
+                System.out.println("Loading pig with type: " + pos.birdType);
                 pigs.add(pig);
                 stage2.addActor(pig);
             }
@@ -774,6 +838,7 @@ private Body createBird(float x, float y, String birdType) {
             if (!gameState.destroyedEntities.contains(woodKey)) { // Skip destroyed wood
                 Body woodBody = createObstacle(pos.x, pos.y, "Wood");
                 VerticalWood13 wood = new VerticalWood13(new Texture("13.png"), woodBody);
+                System.out.println("Loading wood with type: " + pos.birdType);
                 woodObstacles.add(wood);
                 stage2.addActor(wood);
             }
