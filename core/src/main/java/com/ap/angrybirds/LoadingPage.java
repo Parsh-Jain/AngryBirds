@@ -65,7 +65,7 @@ public class LoadingPage extends ScreenAdapter {
         if (loadingPercentage >= 100) {
             main.setScreen(new HomeScreen(main)); // switch to HomeScreen
         }if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            main.setScreen(new l(main));
+            main.setScreen(new l(main,new GameState1()));
         }
     }
     @Override

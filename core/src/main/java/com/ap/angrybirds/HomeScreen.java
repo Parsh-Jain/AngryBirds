@@ -131,8 +131,13 @@ public class HomeScreen extends ScreenAdapter {
            }else if(SettingButton.contains(touchPos.x,touchPos.y)){
                SettingButtonSound.play();
                main.setScreen(new Settings(main));
+           } else if (ViewButton2.contains(touchPos.x,touchPos.y)){
+               SettingButtonSound.play();
+               main.setScreen(new SaveGameScreen(main));
+           } {
+
            }
-       }
+        }
     }
 
     @Override

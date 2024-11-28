@@ -17,16 +17,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
+import java.io.*;
 
 import static com.badlogic.gdx.graphics.Color.*;
 
-public class l extends ScreenAdapter {
+public class l extends ScreenAdapter implements Serializable {
     private static final float PPM=100f;
+    private final GameState1 gameState;
     private World world;
     private Box2DDebugRenderer debugRenderer;
-    private Stage stage;  // Important Attributes
+    private Stage stage;// Important Attributes
+    private  Stage stage2;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
@@ -77,11 +81,19 @@ public class l extends ScreenAdapter {
     private Texture EndButton2Texture;
     private SpriteBatch batch;
     private int birdcount;
-    public l(Main main) { // Constructor
+    public l(Main main,GameState1 gameState) { // Constructor
         this.main = main;
+        this.gameState = gameState;
+        this.world = new World(new Vector2(0, -9.81f), true);
         woodObstacles = new Array<>();
         pigs = new Array<>();
         birds = new Array<>();
+        stage2 = new Stage(new ScreenViewport(), main.batch);
+        initializeFromSavedState();
+
+
+
+
     }
     @Override
     public void show() { // Show method to creating all the attributes
@@ -508,15 +520,21 @@ private Body createBird(float x, float y, String birdType) {
 
                         // Remove the bird from the stage
                         stage.getActors().removeValue(birdActor, true);
+                        String birdKey = "Bird-" + birdActor.getPosition().x + "-" + birdActor.getPosition().y;
+                        gameState.recordDestroyed(birdKey);
                         birds.removeValue((Bird)birdActor, true);
 
                         // Check and remove the other object (Wood or Pig)
                         if (other.getUserData() instanceof WoodObstacles) {
                             WoodObstacles woodActor = (WoodObstacles) other.getUserData();
                             stage.getActors().removeValue(woodActor, true);
+                            String woodKey = "Wood-" + woodActor.getPosition().x + "-" + woodActor.getPosition().y;
+                            gameState.recordDestroyed(woodKey);
                             woodObstacles.removeValue((VerticalWood13) woodActor, true);
                         } else if (other.getUserData() instanceof MafiaPig) {
                             MafiaPig pigActor = (MafiaPig) other.getUserData();
+                            String pigKey = "Pig-" + pigActor.getPosition().x + "-" + pigActor.getPosition().y;
+                            gameState.recordDestroyed(pigKey);
                             stage.getActors().removeValue(pigActor, true);
                             pigs.removeValue(pigActor, true);
                         }
@@ -698,6 +716,278 @@ private Body createBird(float x, float y, String birdType) {
         return touchPos.x >= birdX && touchPos.x <= birdX + birdWidth &&
             touchPos.y >= birdY && touchPos.y <= birdY + birdHeight;
     }
+    private void initializeFromSavedState() {
+        // Recreate birds
+        for (GameState1.SerializableVector2 pos : gameState.birdPositions) {
+            // Construct a unique key for the bird to check if it was destroyed
+            String birdKey = "Bird-" + pos.x + "-" + pos.y;
+
+            // Skip destroyed birds
+            if (!gameState.destroyedEntities.contains(birdKey)) {
+                // Get the correct texture based on the bird type
+                Texture birdTexture = getBirdTexture(pos.birdType);
+
+                // Create the bird's physics body
+                Body birdBody = createBird(pos.x, pos.y, pos.birdType);
+                System.out.println("Loading bird with type: " + pos.birdType);
+
+                // Initialize the bird object dynamically based on its type
+                Bird bird;
+                switch (pos.birdType) {
+                    case "RedBird":
+                        bird = new RedBird(birdTexture, birdBody);
+                        break;
+                    case "YellowBird":
+                        bird = new YellowBird(birdTexture, birdBody);
+                        break;
+                    case "BlueBird":
+                        bird = new BlueBird(birdTexture, birdBody);
+                        break;
+                    case "BlackBird":
+                        bird = new BlackBird(birdTexture, birdBody);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown bird type: " + pos.birdType);
+                }
+
+                // Add the bird to the birds list and stage
+                birds.add(bird);
+                stage2.addActor(bird);
+            }
+        }
+
+
+        // Recreate pigs
+        for (GameState1.SerializableVector2 pos : gameState.pigPositions) {
+            String pigKey = "Pig-" + pos.x + "-" + pos.y;
+            if (!gameState.destroyedEntities.contains(pigKey)) { // Skip destroyed pigs
+                Body pigBody = createPig(pos.x, pos.y);
+                MafiaPig pig = new MafiaPig(new Texture("MafiaPig.png"), pigBody);
+                pigs.add(pig);
+                stage2.addActor(pig);
+            }
+        }
+
+        // Recreate wood obstacles
+        for (GameState1.SerializableVector2 pos : gameState.woodPositions) {
+            String woodKey = "Wood-" + pos.x + "-" + pos.y;
+            if (!gameState.destroyedEntities.contains(woodKey)) { // Skip destroyed wood
+                Body woodBody = createObstacle(pos.x, pos.y, "Wood");
+                VerticalWood13 wood = new VerticalWood13(new Texture("13.png"), woodBody);
+                woodObstacles.add(wood);
+                stage2.addActor(wood);
+            }
+        }
+
+        // Restore score and bird count
+        this.score = gameState.score;
+        this.birdcount = gameState.birdCount;
+
+        System.out.println("Game initialized from saved state.");
+    }
+    private void initializeBirds() {
+        // Create Red Bird
+        Body redBirdBody = createBird(GameState1.RED_BIRD_POSITION.x, GameState1.RED_BIRD_POSITION.y, "RedBird");
+        redBird = new RedBird(new Texture("RedAngryBird.png"), redBirdBody);
+        redBirdBody.setUserData(redBird);
+        birds.add(redBird);
+
+        // Create Yellow Bird
+        Body yellowBirdBody = createBird(GameState1.YELLOW_BIRD_POSITION.x, GameState1.YELLOW_BIRD_POSITION.y, "YellowBird");
+        yellowBird = new YellowBird(new Texture("YellowAngryBird.png"), yellowBirdBody);
+        yellowBirdBody.setUserData(yellowBird);
+        birds.add(yellowBird);
+
+        // Create Blue Bird
+        Body blueBirdBody = createBird(GameState1.BLUE_BIRD_POSITION.x, GameState1.BLUE_BIRD_POSITION.y, "BlueBird");
+        blueBird = new BlueBird(new Texture("BlueAngryBird.png"), blueBirdBody);
+        blueBirdBody.setUserData(blueBird);
+        birds.add(blueBird);
+
+        // Create Black Bird
+        Body blackBirdBody = createBird(GameState1.BLACK_BIRD_POSITION.x, GameState1.BLACK_BIRD_POSITION.y, "BlackBird");
+        blackBird = new BlackBird(new Texture("BlackAngryBird.png"), blackBirdBody);
+        blackBirdBody.setUserData(blackBird);
+        birds.add(blackBird);
+    }
+    private void initializePigs() {
+        // Create Mafia Pig
+        Body mafiaPigBody = createPig(GameState1.PIG_POSITION.x, GameState1.PIG_POSITION.y);
+        mafiaPig1 = new MafiaPig(new Texture("MafiaPig.png"), mafiaPigBody);
+        mafiaPigBody.setUserData(mafiaPig1);
+        pigs.add(mafiaPig1);
+    }
+    private void initializeWoodObstacles() {
+        // Create Wood 1
+        Body wood1Body = createObstacle(GameState1.WOOD1_POSITION.x, GameState1.WOOD1_POSITION.y, "Wood1");
+        woodVertical1 = new VerticalWood13(new Texture("13.png"), wood1Body);
+        wood1Body.setUserData(woodVertical1);
+        woodObstacles.add(woodVertical1);
+
+        // Create Wood 2
+        Body wood2Body = createObstacle(GameState1.WOOD2_POSITION.x, GameState1.WOOD2_POSITION.y, "Wood2");
+        woodVertical2 = new VerticalWood13(new Texture("13.png"), wood2Body);
+        wood2Body.setUserData(woodVertical2);
+        woodObstacles.add(woodVertical2);
+    }
+
+
+
+    private void saveGameState() {
+        gameState.score = this.score; // Save the score
+        gameState.birdCount = this.birdcount; // Save the bird count
+
+        // Clear existing positions before saving
+        gameState.birdPositions.clear();
+        gameState.pigPositions.clear();
+        gameState.woodPositions.clear();
+
+        // Save current bird positions
+        for (Bird bird : birds) {
+            Vector2 position = bird.getPosition();
+            String birdType = bird.getClass().getSimpleName();
+            gameState.birdPositions.add(new GameState1.SerializableVector2(position.x, position.y,birdType));
+
+        }
+
+        // Save current pig positions
+        for (MafiaPig pig : pigs) {
+            Vector2 position = pig.getBody().getPosition();
+            gameState.pigPositions.add(new GameState1.SerializableVector2( position.x, position.y,null));
+        }
+
+        // Save current wood positions
+        for (VerticalWood13 wood : woodObstacles) {
+            Vector2 position = wood.getBody().getPosition();
+            gameState.woodPositions.add(new GameState1.SerializableVector2( position.x, position.y,null));
+        }
+
+        // Ensure destroyed entities are included
+        // gameState.destroyedEntities is already updated dynamically in CollisionListener
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("gamestate.ser"))) {
+            oos.writeObject(gameState);
+            System.out.println("Game state saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private Texture getBirdTexture(String birdType) {
+        if (birdType == null || birdType.isEmpty()) {
+            throw new IllegalArgumentException("Invalid bird type: " + birdType);
+        }
+        switch (birdType) {
+            case "RedBird":
+                return new Texture("RedAngryBird.png");
+            case "YellowBird":
+                return new Texture("YellowAngryBird.png");
+            case "BlueBird":
+                return new Texture("BlueAngryBird.png");
+            case "BlackBird":
+                return new Texture("BlackAngryBird.png");
+            default:
+                throw new IllegalArgumentException("Unknown bird type: " + birdType);
+        }
+    }
+
+
+
+
+//    private void loadGameState() {
+//        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("gamestate.ser"))) {
+//            GameState gameState = (GameState) ois.readObject();
+//
+//            this.score = gameState.score;
+//            this.birdcount = gameState.birdCount;
+//
+//            // Clear existing objects
+//            birds.clear();
+//            pigs.clear();
+//            woodObstacles.clear();
+//
+//            // Recreate birds
+//            // Recreate birds
+//            for (GameState.SerializableVector2 pos : gameState.birdPositions) {
+//                // Create a body for the bird
+//                BodyDef bodyDef = new BodyDef();
+//                bodyDef.type = BodyDef.BodyType.DynamicBody;
+//                bodyDef.position.set(pos.x, pos.y);
+//                Body birdBody = world.createBody(bodyDef);
+//
+//                // Create a shape for the bird
+//                CircleShape shape = new CircleShape();
+//                shape.setRadius(50f / PPM); // Adjust this value as needed
+//
+//                // Create a fixture for the bird
+//                FixtureDef fixtureDef = new FixtureDef();
+//                fixtureDef.shape = shape;
+//                fixtureDef.density = 1f;
+//                birdBody.createFixture(fixtureDef);
+//
+//                // Dispose of the shape
+//                shape.dispose();
+//
+//                // Create the bird texture
+//                Texture birdTexture = new Texture("RedBird.png"); // Replace with actual path
+//
+//                // Create the bird
+//                Bird bird = new Bird(birdTexture, birdBody);
+//                birds.add(bird);
+//                stage.addActor(bird);
+//            }
+//
+//            // Recreate pigs
+//            // Recreate pigs
+//            for (GameState.SerializableVector2 pos : gameState.pigPositions) {
+//                BodyDef bodyDef = new BodyDef();
+//                bodyDef.type = BodyDef.BodyType.DynamicBody;
+//                bodyDef.position.set(pos.x, pos.y);
+//                Body pigBody = world.createBody(bodyDef);
+//
+//                CircleShape shape = new CircleShape();
+//                shape.setRadius(25f / PPM); // Adjust radius as needed
+//
+//                FixtureDef fixtureDef = new FixtureDef();
+//                fixtureDef.shape = shape;
+//                fixtureDef.density = 1f;
+//                pigBody.createFixture(fixtureDef);
+//
+//                shape.dispose();
+//                Texture pigTexture = new Texture("MafiaPig.png"); // Adjust path as needed
+//                MafiaPig pig = new MafiaPig(pigTexture, pigBody);
+//                pigs.add(pig);
+//                stage.addActor(pig);
+//            }
+//
+//            // Recreate wood obstacles
+//            for (GameState.SerializableVector2 pos : gameState.woodPositions) {
+//                BodyDef bodyDef = new BodyDef();
+//                bodyDef.type = BodyDef.BodyType.DynamicBody;
+//                bodyDef.position.set(pos.x, pos.y);
+//                Body woodBody = world.createBody(bodyDef);
+//
+//                PolygonShape shape = new PolygonShape();
+//                shape.setAsBox(25f / PPM, 250f / PPM); // Adjust dimensions as needed
+//
+//                FixtureDef fixtureDef = new FixtureDef();
+//                fixtureDef.shape = shape;
+//                fixtureDef.density = 1f;
+//                woodBody.createFixture(fixtureDef);
+//
+//                shape.dispose();
+//
+//                Texture woodTexture = new Texture("VerticalWood13.png"); // Adjust path as needed
+//                VerticalWood13 wood = new VerticalWood13(woodTexture, woodBody);
+//                woodObstacles.add(wood);
+//                stage.addActor(wood);
+//            }
+//
+//
+//            System.out.println("Game state loaded successfully.");
+//        } catch (IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void render(float delta) { //Rendering
@@ -745,6 +1035,7 @@ private Body createBird(float x, float y, String birdType) {
             if(pauseButton.contains(touchPos.x,touchPos.y)){
                 PauseButtonSound.play();
                 isPaused = true;
+                saveGameState();
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 EndButtonSound.play();
                 main.setScreen(new SuccessfulEndScreen(main));

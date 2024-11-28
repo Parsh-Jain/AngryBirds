@@ -62,7 +62,7 @@ public class LoseEndScreen extends ScreenAdapter {
             viewport.unproject(touchPos);
             if(retryButton.contains(touchPos.x,touchPos.y)){
                 RetryButtonSound.play();
-                main.setScreen(new l(main)); // switch to Level1Screen
+                main.setScreen(new l(main,new GameState1())); // switch to Level1Screen
             }
             else if(backButton.contains(touchPos.x,touchPos.y)){
                 BackButtonSound.play();

@@ -11,7 +11,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class LevelPage extends ScreenAdapter {
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+public class SaveGameScreen extends ScreenAdapter {
     Main main;  // Important Attributes
     Music BackGroundMusic;
     SpriteBatch batch;
@@ -36,7 +40,7 @@ public class LevelPage extends ScreenAdapter {
     Viewport viewport;
     int worldWidth = 1920;
     int worldHeight = 1080;
-    public LevelPage(Main main) {
+    public SaveGameScreen(Main main) {
         this.main = main;
     }
     @Override
@@ -97,8 +101,8 @@ public class LevelPage extends ScreenAdapter {
                 main.setScreen(new HomeScreen(main));  // switch to Homescreen
             }
             if(Level1Button.contains(touchPos.x, touchPos.y)) {
-                Level1ButtonSound.play();
-                main.setScreen(new l(main,new GameState1())); // switch to Level1screen
+//                loadGameState();
+                main.setScreen(new l(main,loadGameState())); // switch to Level1screen
             }else if(SettingButton.contains(touchPos.x,touchPos.y)){
                 SettingButtonSound.play();
                 main.setScreen(new Settings(main)); // switch to setting screen
@@ -108,6 +112,19 @@ public class LevelPage extends ScreenAdapter {
             }
         }
     }
+    private GameState1 loadGameState() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("gamestate.ser"))) {
+            GameState1 gameState = (GameState1) ois.readObject();
+            System.out.println("Game state loaded successfully.");
+            return gameState;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Failed to load game state.");
+        }
+        return null;
+    }
+
+
 
     @Override
     public void resize(int width, int height) { // Resizing

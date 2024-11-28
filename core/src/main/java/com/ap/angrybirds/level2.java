@@ -2,6 +2,7 @@ package com.ap.angrybirds;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -18,6 +19,10 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import static com.badlogic.gdx.graphics.Color.WHITE;
 
@@ -31,6 +36,13 @@ public class level2 extends ScreenAdapter{
     private Viewport viewport;
     private Main main;
     private Array<Body> bodiesToDestroy = new Array<>();
+    private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
+    private Map<Body, Boolean> groundedMap = new HashMap<>();
+    private Array<MafiaPig> pigs; // Store all the pigs
+    private Array<Bird> birds;
+    private boolean allWoodDestroyed = false;
+    private boolean allPigsDestroyed = false;
+    private boolean anyBirdsLeft = true;
     private int score = 0;
     private Rectangle pauseButton,endbutton, resumeButton, EndButton2, restartLevelButton;
     Music PauseButtonSound, ResumeButtonSound, EndButtonSound;
@@ -40,6 +52,7 @@ public class level2 extends ScreenAdapter{
     private BlackBird blackBird;
     private MafiaPig mafiaPig1;
     private VerticalWood13 woodVertical1, woodVertical2;
+    private HorizontalWood13 woodHorizontal1;
     private Vector2 dragVector = new Vector2();
     private Vector2 slingPosition = new Vector2(480, 181);
     private Array<Vector2> trajectoryPoints = new Array<>();
@@ -70,8 +83,12 @@ public class level2 extends ScreenAdapter{
     private Texture soundButtonTexture;
     private Texture EndButton2Texture;
     private SpriteBatch batch;
+    private int birdcount;
     public level2(Main main) { // Constructor
         this.main = main;
+        woodObstacles = new Array<>();
+        pigs = new Array<>();
+        birds = new Array<>();
     }
     @Override
     public void show() { // Show method to creating all the attributes
@@ -80,6 +97,7 @@ public class level2 extends ScreenAdapter{
         collisionListener = new CollisionListener(bodiesToDestroy);
         world.setContactListener(collisionListener);
         debugRenderer = new Box2DDebugRenderer();
+        birdcount=4;
         camera = new OrthographicCamera();
         viewport = new FitViewport(1920, 1080, camera);
         stage = new Stage(viewport);
@@ -91,7 +109,7 @@ public class level2 extends ScreenAdapter{
         ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         EndButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         BackgroundTexture = new Texture("level2Background.jpg");
-        DulledBackground = new Texture("DulledBackground.png");
+        DulledBackground = new Texture("level2Background_dulled.jpg");
         pauseButtonTexture=new Texture("PauseButton.png");
         pauseButton=new Rectangle(50,900,100,100);
         endbuttonTexture=new Texture("EndLevelButton.png");
@@ -122,6 +140,17 @@ public class level2 extends ScreenAdapter{
         currentBirdBody = null;
         createWoodObstacles();
         setPigs();
+        // Track wood and pigs
+        woodObstacles.add(woodVertical1);
+        woodObstacles.add(woodVertical2);
+        woodObstacles.add(woodHorizontal1);
+        pigs.add(mafiaPig1);
+        // Add all birds
+        birds.add(redBird);
+        birds.add(yellowBird);
+        birds.add(blueBird);
+        birds.add(blackBird);
+
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
@@ -222,17 +251,26 @@ public class level2 extends ScreenAdapter{
         pig.setPosition(bodyPosition.x * PPM - pig.getWidth() / 2, bodyPosition.y * PPM - pig.getHeight() / 2);
     }
 
-    private void updateWoodObstaclePosition(VerticalWood13 wood, Body body) {
+    private void updateWoodObstaclePosition(WoodObstacles wood, Body body) {
         Vector2 bodyPosition = body.getPosition();
-        float groundY = 325 / PPM; // Ground level in world units
+        float angle = body.getAngle(); // Get the rotation angle
 
-        // Prevent wood obstacle from falling below the ground
-        if (bodyPosition.y < groundY) {
-            body.setLinearVelocity(0, 0); // Stop vertical movement
-            body.setTransform(bodyPosition.x, groundY, 0); // Reset to ground level
-        }
+        boolean isGrounded = groundedMap.getOrDefault(body, false);
 
+        // Update the visual position and rotation of the wood obstacle
         wood.setPosition(bodyPosition.x * PPM - wood.getWidth() / 2, bodyPosition.y * PPM - wood.getHeight() / 2);
+        wood.setRotation(angle * MathUtils.radiansToDegrees);
+
+        // Prevent movement below if grounded
+        if (isGrounded) {
+            body.setLinearVelocity(body.getLinearVelocity().x, 0);
+        } else {
+            float floorY = 300 / PPM; // Adjust to your ground level
+            if (bodyPosition.y < floorY) {
+                body.setTransform(bodyPosition.x, floorY, angle);
+                body.setLinearVelocity(body.getLinearVelocity().x, 0);
+            }
+        }
     }
 
     private Body createPig(float x, float y) {
@@ -304,20 +342,36 @@ public class level2 extends ScreenAdapter{
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1354 / PPM, 410 / PPM, "VerticalWood1");
-        Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2");
+        Body verticalWood1Body = createObstacle(1354 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
+        Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2",25, 250);
+        Body horizontalWood1Body = createObstacle(1480/PPM, 600/PPM, "HorizontalWood1",250,25);
 
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
+        woodHorizontal1 = new HorizontalWood13(new Texture("13_H.png"), horizontalWood1Body);
+
 
         Vector2 bodyPosition = verticalWood1Body.getPosition();
         woodVertical1.setPosition(bodyPosition.x * PPM - woodVertical1.getWidth() / 2, bodyPosition.y * PPM - woodVertical1.getHeight() / 2);
         Vector2 bodyPosition2 = verticalWood2Body.getPosition();
         woodVertical2.setPosition(bodyPosition2.x * PPM - woodVertical2.getWidth() / 2, bodyPosition2.y * PPM - woodVertical2.getHeight() / 2);
+
+        Vector2 bodyPosition3 = horizontalWood1Body.getPosition();
+        woodHorizontal1.setPosition(bodyPosition3.x * PPM - woodHorizontal1.getWidth() / 2, bodyPosition3.y * PPM - woodHorizontal1.getHeight() / 2);
+
+
+
         verticalWood1Body.setUserData(woodVertical1);
         verticalWood2Body.setUserData(woodVertical2);
+        horizontalWood1Body.setUserData(woodHorizontal1);
+
         stage.addActor(woodVertical1);
         stage.addActor(woodVertical2);
+        stage.addActor(woodHorizontal1);
+
+        woodObstacles.add(woodVertical1);
+        woodObstacles.add(woodVertical2);
+        woodObstacles.add(woodHorizontal1);
     }
 
 
@@ -366,13 +420,13 @@ public class level2 extends ScreenAdapter{
         return body;
     }
 
-    private Body createObstacle(float x, float y, String obstacleType) {
+    private Body createObstacle(float x, float y, String obstacleType, int sizeX, int sizeY) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
         Body body = world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(25 / PPM, 250 / PPM);
+        shape.setAsBox(sizeX / (2f * PPM), sizeY / (2f * PPM));
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
@@ -392,13 +446,13 @@ public class level2 extends ScreenAdapter{
         createBoundary(viewport.getWorldWidth() / 2f, 180 / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
 
         // Left boundary
-        createBoundary(5 / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
+        // createBoundary(5 / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Right boundary
-        createBoundary((viewport.getWorldWidth() - 5) / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
+        //createBoundary((viewport.getWorldWidth() - 5) / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Top boundary
-        createBoundary(viewport.getWorldWidth() / 2f, (viewport.getWorldHeight() - 5) / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
+        //createBoundary(viewport.getWorldWidth() / 2f, (viewport.getWorldHeight() - 5) / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
     }
 
 
@@ -434,6 +488,26 @@ public class level2 extends ScreenAdapter{
         dragVector.setZero();
     }
 
+    private void checkGameState() {
+        // Check if all birds are destroyed
+        boolean allBirdsDestroyed = birds.isEmpty();
+
+        // Check if all obstacles are remaining
+        boolean pigsRemaining = !pigs.isEmpty();
+
+        // Check if all obstacles are destroyed
+        boolean allObstaclesDestroyed = pigs.isEmpty() && woodObstacles.isEmpty();
+
+        // If all birds are destroyed and obstacles remain, go to lose screen
+        if ((allBirdsDestroyed && pigsRemaining)||birdcount==0) {
+            main.setScreen(new LoseEndScreen(main));
+        }
+        // If all obstacles are destroyed, go to successful end screen
+        else if (!pigsRemaining) {
+            main.setScreen(new SuccessfulEndScreen(main));
+        }
+    }
+
 
     private class CollisionListener implements ContactListener {
         private Array<Body> bodiesToDestroy;
@@ -453,6 +527,15 @@ public class level2 extends ScreenAdapter{
                 score += 200; // 200 points for hitting pig
             }
 
+            Body bodyA = fixtureA.getBody();
+            Body bodyB = fixtureB.getBody();
+
+            if (isWoodFixture(fixtureA) && isGroundBelow(bodyA, bodyB)) {
+                groundedMap.put(bodyA, true);
+            } else if (isWoodFixture(fixtureB) && isGroundBelow(bodyB, bodyA)) {
+                groundedMap.put(bodyB, true);
+            }
+
             if (isBirdAndWoodCollision(fixtureA, fixtureB) || isBirdAndPigCollision(fixtureA, fixtureB)) {
                 Body bird = fixtureA.getBody().getUserData() instanceof Bird ? fixtureA.getBody() : fixtureB.getBody();
                 Body other = fixtureA.getBody().getUserData() instanceof Bird ? fixtureB.getBody() : fixtureA.getBody();
@@ -466,21 +549,24 @@ public class level2 extends ScreenAdapter{
 
                         // Remove the bird from the stage
                         stage.getActors().removeValue(birdActor, true);
+                        birds.removeValue((Bird)birdActor, true);
 
                         // Check and remove the other object (Wood or Pig)
                         if (other.getUserData() instanceof WoodObstacles) {
                             WoodObstacles woodActor = (WoodObstacles) other.getUserData();
                             stage.getActors().removeValue(woodActor, true);
+                            woodObstacles.removeValue(woodActor, true);
                         } else if (other.getUserData() instanceof MafiaPig) {
                             MafiaPig pigActor = (MafiaPig) other.getUserData();
                             stage.getActors().removeValue(pigActor, true);
+                            pigs.removeValue(pigActor, true);
                         }
 
                         // Add bodies to destroy
                         bodiesToDestroy.add(bird);
                         bodiesToDestroy.add(other);
                     }
-                }, 0.5f); // Delay of 2 seconds
+                }, 0.5f); // Delay of 0.5 seconds
 
                 System.out.println("Collision detected. Destruction scheduled in 2 seconds.");
             }
@@ -503,7 +589,32 @@ public class level2 extends ScreenAdapter{
 
 
         @Override
-        public void endContact(Contact contact) {}
+        public void endContact(Contact contact) {
+            Fixture fixtureA = contact.getFixtureA();
+            Fixture fixtureB = contact.getFixtureB();
+
+            Body bodyA = fixtureA.getBody();
+            Body bodyB = fixtureB.getBody();
+
+            // If the contact ends, update the grounded state
+            if (isWoodFixture(fixtureA)) {
+                groundedMap.put(bodyA, false);
+            }
+            if (isWoodFixture(fixtureB)) {
+                groundedMap.put(bodyB, false);
+            }
+        }
+
+        private boolean isGroundBelow(Body woodBody, Body otherBody) {
+            Vector2 woodPos = woodBody.getPosition();
+            Vector2 otherPos = otherBody.getPosition();
+
+            float otherHeight = otherBody.getFixtureList().first().getShape().getRadius() * 2;
+
+            // Check if other body is directly below the wood body
+            return (woodPos.y - (25 / PPM)) <= (otherPos.y + (otherHeight / 2)) // Adjust with size
+                && Math.abs(woodPos.x - otherPos.x) < (woodBody.getFixtureList().first().getShape().getRadius() * 2);
+        }
 
         @Override
         public void preSolve(Contact contact, Manifold oldManifold) {}
@@ -657,11 +768,19 @@ public class level2 extends ScreenAdapter{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         world.step(1 / 60f, 6, 2);
-        for (Body body : collisionListener.bodiesToDestroy) {
+        Array<Body> bodiesMarkedForRemoval = new Array<>(collisionListener.bodiesToDestroy);
+        for (Body body : bodiesMarkedForRemoval) {
             if (body != null && world != null) {
+                // Remove associated actor from stage
+                Object userData = body.getUserData();
+                if (userData instanceof Actor) {
+                    stage.getActors().removeValue((Actor) userData, true);
+                }
+                // Destroy the body
                 world.destroyBody(body);
             }
         }
+        collisionListener.bodiesToDestroy.clear();
         handleInput();
         bodiesToDestroy.clear();
         if(!isPaused){ // Checking if Pause Button is clicked
@@ -707,6 +826,7 @@ public class level2 extends ScreenAdapter{
         updatePigPosition(mafiaPig1, mafiaPig1.getBody());
         updateWoodObstaclePosition(woodVertical1, woodVertical1.getBody());
         updateWoodObstaclePosition(woodVertical2, woodVertical2.getBody());
+        updateWoodObstaclePosition(woodHorizontal1, woodHorizontal1.getBody());
 //        collisionListener.processRemovals();
 
         if (isDragging) {
@@ -728,9 +848,13 @@ public class level2 extends ScreenAdapter{
 //        }
 
 
+        checkGameState();
+        //System.out.println("Bird Counter: " + birdcount);
         stage.act(delta);
         stage.draw();
     }
+    //
+    //
     //
     @Override
     public void resize(int width, int height) { // Rendering
