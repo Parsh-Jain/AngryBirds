@@ -66,6 +66,7 @@ public class level2 extends ScreenAdapter{
     private static final short BIRD_CATEGORY = 0x0001;
     private static final short WOOD_CATEGORY = 0x0002;
     private static final short PIG_CATEGORY = 0x0004;
+    private static final short GROUND_CATEGORY = 0x0005;
     private CollisionListener collisionListener;
     private ShapeRenderer trajectoryRenderer = new ShapeRenderer();
 
@@ -270,6 +271,7 @@ public class level2 extends ScreenAdapter{
         boolean isGrounded = groundedMap.getOrDefault(body, false);
 
         if (isGrounded) {
+            System.out.println("is grounded");
             // Stop vertical movement if the body is grounded
             body.setLinearVelocity(body.getLinearVelocity().x, 0);
         } else if (woodBottom <= floorY) {
@@ -350,7 +352,7 @@ public class level2 extends ScreenAdapter{
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1354 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
+        Body verticalWood1Body = createObstacle(1480 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
         Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2",25, 250);
         Body horizontalWood1Body = createObstacle(1480/PPM, 600/PPM, "HorizontalWood1",250,25);
 
@@ -438,10 +440,10 @@ public class level2 extends ScreenAdapter{
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.1f;
+        fixtureDef.friction = 1f;
         fixtureDef.restitution = 0.1f; // Bouncy effect
-        fixtureDef.filter.categoryBits = 0x0002; // Example category
-        fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
+        fixtureDef.filter.categoryBits = WOOD_CATEGORY;
+        fixtureDef.filter.maskBits = WOOD_CATEGORY | BIRD_CATEGORY;
 
         body.createFixture(fixtureDef);
 //        body.setUserData(obstacleType); // Set the obstacle type as user data
@@ -535,13 +537,20 @@ public class level2 extends ScreenAdapter{
                 score += 200; // 200 points for hitting pig
             }
 
+            System.out.println("contact1");
+
             Body bodyA = fixtureA.getBody();
             Body bodyB = fixtureB.getBody();
 
-            if (isWoodFixture(fixtureA) && isGroundBelow(bodyA, bodyB)) {
-                groundedMap.put(bodyA, true);
-            } else if (isWoodFixture(fixtureB) && isGroundBelow(bodyB, bodyA)) {
-                groundedMap.put(bodyB, true);
+            if (isWoodFixture(fixtureA) && isWoodFixture(fixtureB)) {
+                System.out.println("contact2");
+                if (isGroundBelow(bodyA, bodyB)) {
+                    groundedMap.put(bodyA, true);
+                    System.out.println("Put A in B");
+                } else if (isGroundBelow(bodyB, bodyA)) {
+                    groundedMap.put(bodyB, true);
+                    System.out.println("Put B in A");
+                }
             }
 
             if (isBirdAndWoodCollision(fixtureA, fixtureB) || isBirdAndPigCollision(fixtureA, fixtureB)) {
@@ -623,14 +632,17 @@ public class level2 extends ScreenAdapter{
             float otherHalfHeight = otherBody.getFixtureList().first().getShape().getRadius();
             float otherHalfWidth = otherBody.getFixtureList().first().getShape().getRadius();
 
-            // Check if the bottom of the woodBody touches the top of the otherBody
-            boolean verticalOverlap = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight) &&
-                (woodPos.y - woodHalfHeight) > (otherPos.y - otherHalfHeight);
+//            // Check if the bottom of the woodBody touches the top of the otherBody
+//            boolean verticalOverlap = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight) &&
+//                (woodPos.y - woodHalfHeight) > (otherPos.y - otherHalfHeight);
+//
+//            // Check if the woodBody and otherBody overlap horizontally
+//            boolean horizontalOverlap = Math.abs(woodPos.x - otherPos.x) <= (woodHalfWidth + otherHalfWidth);
+//
+//            return verticalOverlap && horizontalOverlap;
 
-            // Check if the woodBody and otherBody overlap horizontally
-            boolean horizontalOverlap = Math.abs(woodPos.x - otherPos.x) <= (woodHalfWidth + otherHalfWidth);
-
-            return verticalOverlap && horizontalOverlap;
+            boolean collision = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight);
+            return collision;
         }
 
 

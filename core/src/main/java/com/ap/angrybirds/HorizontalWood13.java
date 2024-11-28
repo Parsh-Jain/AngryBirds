@@ -14,10 +14,6 @@ public class HorizontalWood13 extends WoodObstacles {
         setSize(250, 25);
     }
 
-//    public float getHeight() {
-//        return
-//    }
-
     @Override
     public void act(float delta) {
         super.act(delta);
