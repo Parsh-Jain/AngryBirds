@@ -35,7 +35,6 @@ public class level2 extends ScreenAdapter{
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
-    //
     private Array<Body> bodiesToDestroy = new Array<>();
     private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
     private Map<Body, Boolean> groundedMap = new HashMap<>();
@@ -253,26 +252,34 @@ public class level2 extends ScreenAdapter{
     }
 
     private void updateWoodObstaclePosition(WoodObstacles wood, Body body) {
-        Vector2 bodyPosition = body.getPosition();
-        float angle = body.getAngle(); // Get the rotation angle
+        Vector2 bodyPosition = body.getPosition(); // Center position of the body in world coordinates
+        float angle = body.getAngle(); // Rotation angle of the body
 
-        boolean isGrounded = groundedMap.getOrDefault(body, false);
+        // Calculate the actual bottom of the body (considering its height)
+        float woodHalfHeight = (wood.getHeight() / 2) / PPM; // Half-height in meters
+        float woodBottom = bodyPosition.y - woodHalfHeight;  // Bottom-most point in meters
 
         // Update the visual position and rotation of the wood obstacle
         wood.setPosition(bodyPosition.x * PPM - wood.getWidth() / 2, bodyPosition.y * PPM - wood.getHeight() / 2);
         wood.setRotation(angle * MathUtils.radiansToDegrees);
 
-        // Prevent movement below if grounded
+        // Ground level
+        float floorY = 200 / PPM; // Adjust to your ground level in world coordinates
+
+        // Check if the wood is grounded or needs to stop at the floor
+        boolean isGrounded = groundedMap.getOrDefault(body, false);
+
         if (isGrounded) {
+            // Stop vertical movement if the body is grounded
             body.setLinearVelocity(body.getLinearVelocity().x, 0);
-        } else {
-            float floorY = 300 / PPM; // Adjust to your ground level
-            if (bodyPosition.y < floorY) {
-                body.setTransform(bodyPosition.x, floorY, angle);
-                body.setLinearVelocity(body.getLinearVelocity().x, 0);
-            }
+        } else if (woodBottom <= floorY) {
+            // Stop the body when its bottom-most point touches the floor
+            body.setTransform(bodyPosition.x, floorY + woodHalfHeight, angle); // Adjust position to sit on the floor
+            body.setLinearVelocity(body.getLinearVelocity().x, 0); // Stop vertical movement
         }
     }
+
+
 
     private Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
@@ -610,12 +617,22 @@ public class level2 extends ScreenAdapter{
             Vector2 woodPos = woodBody.getPosition();
             Vector2 otherPos = otherBody.getPosition();
 
-            float otherHeight = otherBody.getFixtureList().first().getShape().getRadius() * 2;
+            // Get the height and width of both bodies
+            float woodHalfHeight = woodBody.getFixtureList().first().getShape().getRadius();
+            float woodHalfWidth = woodBody.getFixtureList().first().getShape().getRadius();
+            float otherHalfHeight = otherBody.getFixtureList().first().getShape().getRadius();
+            float otherHalfWidth = otherBody.getFixtureList().first().getShape().getRadius();
 
-            // Check if other body is directly below the wood body
-            return (woodPos.y - (25 / PPM)) <= (otherPos.y + (otherHeight / 2)) // Adjust with size
-                && Math.abs(woodPos.x - otherPos.x) < (woodBody.getFixtureList().first().getShape().getRadius() * 2);
+            // Check if the bottom of the woodBody touches the top of the otherBody
+            boolean verticalOverlap = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight) &&
+                (woodPos.y - woodHalfHeight) > (otherPos.y - otherHalfHeight);
+
+            // Check if the woodBody and otherBody overlap horizontally
+            boolean horizontalOverlap = Math.abs(woodPos.x - otherPos.x) <= (woodHalfWidth + otherHalfWidth);
+
+            return verticalOverlap && horizontalOverlap;
         }
+
 
         @Override
         public void preSolve(Contact contact, Manifold oldManifold) {}
