@@ -65,8 +65,8 @@ public class level2 extends ScreenAdapter{
     private BitmapFont font;
     private static final short BIRD_CATEGORY = 0x0001;
     private static final short WOOD_CATEGORY = 0x0002;
-    private static final short PIG_CATEGORY = 0x0004;
-    private static final short GROUND_CATEGORY = 0x0005;
+    private static final short PIG_CATEGORY = 0x0003;
+    private static final short GROUND_CATEGORY = 0x0004;
     private CollisionListener collisionListener;
     private ShapeRenderer trajectoryRenderer = new ShapeRenderer();
 
@@ -231,7 +231,7 @@ public class level2 extends ScreenAdapter{
     }
 
     private void setPigs() {
-        Body mafiapig1body = createPig(1460 / PPM, 220 / PPM);
+        Body mafiapig1body = createPig(1480 / PPM, 220 / PPM);
         mafiaPig1 = new MafiaPig(MafiaPig1Texture, mafiapig1body);
         mafiapig1body.setUserData(mafiaPig1);
         stage.addActor(mafiaPig1);
@@ -271,9 +271,10 @@ public class level2 extends ScreenAdapter{
         boolean isGrounded = groundedMap.getOrDefault(body, false);
 
         if (isGrounded) {
-            System.out.println("is grounded");
-            // Stop vertical movement if the body is grounded
-            body.setLinearVelocity(body.getLinearVelocity().x, 0);
+            // Stop movement and stabilize position if grounded
+            body.setLinearVelocity(0, 0); // Stop all motion
+            body.setAngularVelocity(0); // Prevent rotation
+            body.setTransform(bodyPosition.x, Math.max(bodyPosition.y, floorY + woodHalfHeight), 0);
         } else if (woodBottom <= floorY) {
             // Stop the body when its bottom-most point touches the floor
             body.setTransform(bodyPosition.x, floorY + woodHalfHeight, angle); // Adjust position to sit on the floor
@@ -294,7 +295,7 @@ public class level2 extends ScreenAdapter{
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.1f; // Bouncy effect
+        fixtureDef.restitution = 0.3f; // Bouncy effect
         fixtureDef.filter.categoryBits = PIG_CATEGORY;
         fixtureDef.filter.maskBits = BIRD_CATEGORY | WOOD_CATEGORY;
         body.createFixture(fixtureDef);
@@ -352,9 +353,9 @@ public class level2 extends ScreenAdapter{
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1480 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
-        Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2",25, 250);
-        Body horizontalWood1Body = createObstacle(1480/PPM, 600/PPM, "HorizontalWood1",250,25);
+        Body verticalWood1Body = createObstacle(1419 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
+        Body verticalWood2Body = createObstacle(1539 / PPM, 410 / PPM, "VerticalWood2",25, 250);
+        Body horizontalWood1Body = createObstacle(1480/PPM, 500/PPM, "HorizontalWood1",250,25);
 
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
@@ -399,7 +400,7 @@ public class level2 extends ScreenAdapter{
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.1f;
+        fixtureDef.restitution = 0.3f;
 
         body.createFixture(fixtureDef);
         shape.dispose();
@@ -420,7 +421,7 @@ public class level2 extends ScreenAdapter{
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.1f; // Bouncy effect
+        fixtureDef.restitution = 0.4f; // Bouncy effect
         fixtureDef.filter.categoryBits = 0x0001; // Bird category
         fixtureDef.filter.maskBits = 0x0002 | 0x0004; // Birds collide with obstacles and ground
 
@@ -441,9 +442,9 @@ public class level2 extends ScreenAdapter{
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.1f; // Bouncy effect
+        fixtureDef.restitution = 0.2f; // Bouncy effect
         fixtureDef.filter.categoryBits = WOOD_CATEGORY;
-        fixtureDef.filter.maskBits = WOOD_CATEGORY | BIRD_CATEGORY;
+        fixtureDef.filter.maskBits = WOOD_CATEGORY | BIRD_CATEGORY | GROUND_CATEGORY;
 
         body.createFixture(fixtureDef);
 //        body.setUserData(obstacleType); // Set the obstacle type as user data
