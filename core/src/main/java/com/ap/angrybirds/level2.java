@@ -35,6 +35,7 @@ public class level2 extends ScreenAdapter{
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
+    //
     private Array<Body> bodiesToDestroy = new Array<>();
     private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
     private Map<Body, Boolean> groundedMap = new HashMap<>();
