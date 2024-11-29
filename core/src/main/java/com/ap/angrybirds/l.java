@@ -44,8 +44,12 @@ public class l extends ScreenAdapter implements Serializable {
     private Array<Body> bodiesToDestroy = new Array<>();
     private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
     private Map<Body, Boolean> groundedMap = new HashMap<>();
+
     private Array<MafiaPig> pigs; // Store all the pigs
     private Array<Bird> birds;
+    private boolean allWoodDestroyed = false;
+    private boolean allPigsDestroyed = false;
+    private boolean anyBirdsLeft = true;
     private int score = 0;
     private Rectangle pauseButton,endbutton, resumeButton, EndButton2, restartLevelButton;
     Music PauseButtonSound, ResumeButtonSound, EndButtonSound;
@@ -63,12 +67,15 @@ public class l extends ScreenAdapter implements Serializable {
     private boolean isDragging = false;
     private Body currentBirdBody;
     private float dragStartX, dragStartY;
+    private float maxDragDistance = 100f;
     private BitmapFont font;
     private static final short BIRD_CATEGORY = 0x0001;
     private static final short WOOD_CATEGORY = 0x0002;
     private static final short PIG_CATEGORY = 0x0003;
     private static final short GROUND_CATEGORY = 0x0004;
     private CollisionListener collisionListener;
+    private ShapeRenderer trajectoryRenderer = new ShapeRenderer();
+
     private Catapult catapult;
     private Texture pauseButtonTexture;
     private Texture endbuttonTexture;
@@ -88,7 +95,6 @@ public class l extends ScreenAdapter implements Serializable {
 
     public l(Main main,GameState1 gameState) { // Constructor
         this.main = main;
-
         this.gameState = gameState;
         this.world = new World(new Vector2(0, -9.81f), true);
         woodObstacles = new Array<>();
@@ -99,36 +105,11 @@ public class l extends ScreenAdapter implements Serializable {
         initializePigs();
         initializeWoodObstacles();
         initializeFromSavedState();
-        printDestroyedEntities();
 
 
 
 
     }
-    /**
-     * Prints all destroyed entities from the game state, categorized by type.
-     */
-    private void printDestroyedEntities() {
-        System.out.println("Destroyed Entities:");
-
-        if (gameState.destroyedEntities.isEmpty()) {
-            System.out.println("No destroyed entities recorded.");
-            return;
-        }
-
-        for (String entity : gameState.destroyedEntities) {
-            if (entity.startsWith("Bird-")) {
-                System.out.println("Bird Destroyed: " + entity);
-            } else if (entity.startsWith("Pig-")) {
-                System.out.println("Pig Destroyed: " + entity);
-            } else if (entity.startsWith("Wood-")) {
-                System.out.println("Wood Destroyed: " + entity);
-            } else {
-                System.out.println("Unknown Entity: " + entity);
-            }
-        }
-    }
-
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
