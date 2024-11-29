@@ -81,82 +81,22 @@ public class l extends ScreenAdapter implements Serializable {
     private Texture EndButton2Texture;
     private SpriteBatch batch;
     private int birdcount;
-    public l(Main main, GameState1 gameState) {
+    int specialBird;
+
+    public l(Main main,GameState1 gameState) { // Constructor
         this.main = main;
         this.gameState = gameState;
         this.world = new World(new Vector2(0, -9.81f), true);
-
-        // Initialize arrays
         woodObstacles = new Array<>();
         pigs = new Array<>();
         birds = new Array<>();
+        stage2 = new Stage(new ScreenViewport(), main.batch);
+        initializeFromSavedState();
 
-        // Load saved game state directly in constructor
-        if (gameState != null) {
-            System.out.println("Loading saved game state...");
 
-            // Load birds
-            for (GameState1.SerializableVector2 pos : gameState.birdPositions) {
-                String birdKey = "Bird-" + pos.x + "-" + pos.y;
-                if (!gameState.destroyedEntities.contains(birdKey)) {
-                    Texture birdTexture = getBirdTexture(pos.birdType);
-                    Body birdBody = createBird(pos.x, pos.y, pos.birdType);
-                    Bird bird;
 
-                    switch (pos.birdType) {
-                        case "RedBird":
-                            bird = new RedBird(birdTexture, birdBody);
-                            break;
-                        case "YellowBird":
-                            bird = new YellowBird(birdTexture, birdBody);
-                            break;
-                        case "BlueBird":
-                            bird = new BlueBird(birdTexture, birdBody);
-                            break;
-                        case "BlackBird":
-                            bird = new BlackBird(birdTexture, birdBody);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Unknown bird type: " + pos.birdType);
-                    }
 
-                    birds.add(bird);
-                    System.out.println("Loaded bird: " + pos.birdType + " at (" + pos.x + ", " + pos.y + ")");
-                }
-            }
-
-            // Load pigs
-            for (GameState1.SerializableVector2 pos : gameState.pigPositions) {
-                String pigKey = "Pig-" + pos.x + "-" + pos.y;
-                if (!gameState.destroyedEntities.contains(pigKey)) {
-                    Body pigBody = createPig(pos.x, pos.y);
-                    MafiaPig pig = new MafiaPig(new Texture("MafiaPig.png"), pigBody);
-                    pigs.add(pig);
-                    System.out.println("Loaded pig at (" + pos.x + ", " + pos.y + ")");
-                }
-            }
-
-            // Load wood obstacles
-            for (GameState1.SerializableVector2 pos : gameState.woodPositions) {
-                String woodKey = "Wood-" + pos.x + "-" + pos.y;
-                if (!gameState.destroyedEntities.contains(woodKey)) {
-                    Body woodBody = createObstacle(pos.x, pos.y, "Wood");
-                    VerticalWood13 wood = new VerticalWood13(new Texture("13.png"), woodBody);
-                    woodObstacles.add(wood);
-                    System.out.println("Loaded wood obstacle at (" + pos.x + ", " + pos.y + ")");
-                }
-            }
-
-            // Restore game variables
-            this.score = gameState.score;
-            this.birdcount = gameState.birdCount;
-
-            System.out.println("Score: " + score + ", Bird Count: " + birdcount);
-        } else {
-            System.out.println("No saved game state found. Starting fresh.");
-        }
     }
-
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
@@ -229,18 +169,22 @@ public class l extends ScreenAdapter implements Serializable {
                     if (redBird.getBounds().contains(touchPos)) {
                         currentBirdBody = redBird.getBody();
                         System.out.println("Red bird selected for dragging.");
+                        specialBird = 1;
                     }
                     if (yellowBird.getBounds().contains(touchPos)) {
                         currentBirdBody = yellowBird.getBody();
                         System.out.println("Yellow bird selected for dragging.");
+                        specialBird = 2;
                     }
                     if (blueBird.getBounds().contains(touchPos)) {
                         currentBirdBody = blueBird.getBody();
                         System.out.println("Blue bird selected for dragging.");
+                        specialBird = 3;
                     }
                     if (blackBird.getBounds().contains(touchPos)) {
                         currentBirdBody = blackBird.getBody();
                         System.out.println("Black bird selected for dragging.");
+                        specialBird = 4;
                     }
                     isDragging = true;
                     dragStartX = touchPos.x;
@@ -734,12 +678,17 @@ private Body createBird(float x, float y, String birdType) {
                 // Check if a bird is touched and set it as the current bird
                 if (isBirdTouched(redBird, touchPos)) {
                     setCurrentBird(redBird);
+                    specialBird = 1;
+                    System.out.println("Red bird is special");
                 } else if (isBirdTouched(yellowBird, touchPos)) {
                     setCurrentBird(yellowBird);
+                    specialBird = 2;
                 } else if (isBirdTouched(blueBird, touchPos)) {
                     setCurrentBird(blueBird);
+                    specialBird = 3;
                 } else if (isBirdTouched(blackBird, touchPos)) {
                     setCurrentBird(blackBird);
+                    specialBird = 4;
                 }
             }
         } else if (Gdx.input.isTouched() && isDragging) {
@@ -1134,7 +1083,26 @@ private Body createBird(float x, float y, String birdType) {
         stage.act(delta);
         stage.draw();
         checkGameState();
-        System.out.println("Bird Counter: " + birdcount);
+        //System.out.println("Bird Counter: " + birdcount);
+//        Vector2 extraVector = new Vector2();
+//        extraVector.set(20f, 20f);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            if(specialBird ==2 ){
+                yellowBird.getBody().setLinearVelocity(10, 0);
+                System.out.println("Extra vector applied on yellow");
+            }
+            if(specialBird==3){
+                blueBird.activateSpecialAbility(world,new Texture("BlueAngryBird.png"),stage);
+            }
+            if(specialBird==4){
+                blackBird.activateSpecialAbility();
+            }
+
+//            if(specialBird == 1) {
+//
+//            }
+        }
 //
 //        if(allWoodDestroyed && allPigsDestroyed) {
 //            main.setScreen(new SuccessfulEndScreen(main));
