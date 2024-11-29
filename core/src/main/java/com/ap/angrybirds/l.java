@@ -44,8 +44,12 @@ public class l extends ScreenAdapter implements Serializable {
     private Array<Body> bodiesToDestroy = new Array<>();
     private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
     private Map<Body, Boolean> groundedMap = new HashMap<>();
+
     private Array<MafiaPig> pigs; // Store all the pigs
     private Array<Bird> birds;
+    private boolean allWoodDestroyed = false;
+    private boolean allPigsDestroyed = false;
+    private boolean anyBirdsLeft = true;
     private int score = 0;
     private Rectangle pauseButton,endbutton, resumeButton, EndButton2, restartLevelButton;
     Music PauseButtonSound, ResumeButtonSound, EndButtonSound;
@@ -59,16 +63,19 @@ public class l extends ScreenAdapter implements Serializable {
     private Vector2 slingPosition = new Vector2(480, 181);
     private Array<Vector2> trajectoryPoints = new Array<>();
     private ShapeRenderer shapeRenderer;
-   // private static final float TRAJECTORY_POINTS = 10;
+    // private static final float TRAJECTORY_POINTS = 10;
     private boolean isDragging = false;
     private Body currentBirdBody;
     private float dragStartX, dragStartY;
+    private float maxDragDistance = 100f;
     private BitmapFont font;
     private static final short BIRD_CATEGORY = 0x0001;
     private static final short WOOD_CATEGORY = 0x0002;
     private static final short PIG_CATEGORY = 0x0003;
     private static final short GROUND_CATEGORY = 0x0004;
     private CollisionListener collisionListener;
+    private ShapeRenderer trajectoryRenderer = new ShapeRenderer();
+
     private Catapult catapult;
     private Texture pauseButtonTexture;
     private Texture endbuttonTexture;
@@ -88,7 +95,6 @@ public class l extends ScreenAdapter implements Serializable {
 
     public l(Main main,GameState1 gameState) { // Constructor
         this.main = main;
-
         this.gameState = gameState;
         this.world = new World(new Vector2(0, -9.81f), true);
         woodObstacles = new Array<>();
@@ -99,36 +105,11 @@ public class l extends ScreenAdapter implements Serializable {
         initializePigs();
         initializeWoodObstacles();
         initializeFromSavedState();
-        printDestroyedEntities();
 
 
 
 
     }
-    /**
-     * Prints all destroyed entities from the game state, categorized by type.
-     */
-    private void printDestroyedEntities() {
-        System.out.println("Destroyed Entities:");
-
-        if (gameState.destroyedEntities.isEmpty()) {
-            System.out.println("No destroyed entities recorded.");
-            return;
-        }
-
-        for (String entity : gameState.destroyedEntities) {
-            if (entity.startsWith("Bird-")) {
-                System.out.println("Bird Destroyed: " + entity);
-            } else if (entity.startsWith("Pig-")) {
-                System.out.println("Pig Destroyed: " + entity);
-            } else if (entity.startsWith("Wood-")) {
-                System.out.println("Wood Destroyed: " + entity);
-            } else {
-                System.out.println("Unknown Entity: " + entity);
-            }
-        }
-    }
-
     @Override
     public void show() { // Show method to creating all the attributes
         world=new World(new Vector2(0,-9.8f),true);
@@ -141,7 +122,7 @@ public class l extends ScreenAdapter implements Serializable {
         stage = new Stage(viewport);
         font = new BitmapFont();
         font.setColor(com. badlogic. gdx. graphics. Color.WHITE);
-        font.getData().setScale(2);
+        font.getData().setScale(3.2f);
         batch = new SpriteBatch();
         PauseButtonSound=Gdx.audio.newMusic(Gdx.files.internal("PauseButtonSound.mp3"));
         ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
@@ -176,7 +157,7 @@ public class l extends ScreenAdapter implements Serializable {
         createGround();
         createBirds();
         createBoundaries();
-        currentBirdBody = null;
+//        currentBirdBody = null;
         createWoodObstacles();
         setPigs();
         // Track wood and pigs
@@ -193,78 +174,78 @@ public class l extends ScreenAdapter implements Serializable {
 
 
         Gdx.input.setInputProcessor(stage);
-            Gdx.input.setInputProcessor(new InputAdapter() {
-                @Override
-                public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                    System.out.println("Touch down detected.");
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                System.out.println("Touch down detected.");
+                Vector2 touchPos = new Vector2(screenX, screenY);
+                viewport.unproject(touchPos);
+                if (redBird.getBounds().contains(touchPos)) {
+                    currentBirdBody = redBird.getBody();
+                    System.out.println("Red bird selected for dragging.");
+                    specialBird = 1;
+                }
+                if (yellowBird.getBounds().contains(touchPos)) {
+                    currentBirdBody = yellowBird.getBody();
+                    System.out.println("Yellow bird selected for dragging.");
+                    specialBird = 2;
+                }
+                if (blueBird.getBounds().contains(touchPos)) {
+                    currentBirdBody = blueBird.getBody();
+                    System.out.println("Blue bird selected for dragging.");
+                    specialBird = 3;
+                }
+                if (blackBird.getBounds().contains(touchPos)) {
+                    currentBirdBody = blackBird.getBody();
+                    System.out.println("Black bird selected for dragging.");
+                    specialBird = 4;
+                }
+                isDragging = true;
+                dragStartX = touchPos.x;
+                dragStartY = touchPos.y;
+                return true;
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                if (isDragging) {
                     Vector2 touchPos = new Vector2(screenX, screenY);
                     viewport.unproject(touchPos);
-                    if (redBird.getBounds().contains(touchPos)) {
-                        currentBirdBody = redBird.getBody();
-                        System.out.println("Red bird selected for dragging.");
-                        specialBird = 1;
+
+                    dragVector.set(touchPos.x - dragStartX, touchPos.y - dragStartY);
+
+                    // Limit the bird's movement within the slingshot range
+                    float maxDragDistance = 100f / PPM; // Adjust this value as needed
+                    if (dragVector.len() > maxDragDistance) {
+                        dragVector.nor().scl(maxDragDistance);
                     }
-                    if (yellowBird.getBounds().contains(touchPos)) {
-                        currentBirdBody = yellowBird.getBody();
-                        System.out.println("Yellow bird selected for dragging.");
-                        specialBird = 2;
+
+                    // Update bird's position while dragging
+                    if (currentBirdBody != null) {
+                        currentBirdBody.setTransform(slingPosition.x / PPM - dragVector.x, slingPosition.y / PPM - dragVector.y, 0);
+                        shapeRenderer.setProjectionMatrix(camera.combined);
+                        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                        shapeRenderer.line(slingPosition.x / PPM, slingPosition.y / PPM, touchPos.x, touchPos.y);
+                        shapeRenderer.end();
                     }
-                    if (blueBird.getBounds().contains(touchPos)) {
-                        currentBirdBody = blueBird.getBody();
-                        System.out.println("Blue bird selected for dragging.");
-                        specialBird = 3;
-                    }
-                    if (blackBird.getBounds().contains(touchPos)) {
-                        currentBirdBody = blackBird.getBody();
-                        System.out.println("Black bird selected for dragging.");
-                        specialBird = 4;
-                    }
-                    isDragging = true;
-                    dragStartX = touchPos.x;
-                    dragStartY = touchPos.y;
+                    // Calculate trajectory
+                    calculateTrajectory(dragVector);
                     return true;
                 }
+                return false;
+            }
 
-                @Override
-                public boolean touchDragged(int screenX, int screenY, int pointer) {
-                    if (isDragging) {
-                        Vector2 touchPos = new Vector2(screenX, screenY);
-                        viewport.unproject(touchPos);
-
-                        dragVector.set(touchPos.x - dragStartX, touchPos.y - dragStartY);
-
-                        // Limit the bird's movement within the slingshot range
-                        float maxDragDistance = 100f / PPM; // Adjust this value as needed
-                        if (dragVector.len() > maxDragDistance) {
-                            dragVector.nor().scl(maxDragDistance);
-                        }
-
-                        // Update bird's position while dragging
-                        if (currentBirdBody != null) {
-                            currentBirdBody.setTransform(slingPosition.x / PPM - dragVector.x, slingPosition.y / PPM - dragVector.y, 0);
-                            shapeRenderer.setProjectionMatrix(camera.combined);
-                            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-                            shapeRenderer.line(slingPosition.x / PPM, slingPosition.y / PPM, touchPos.x, touchPos.y);
-                            shapeRenderer.end();
-                        }
-                        // Calculate trajectory
-                        calculateTrajectory(dragVector);
-                        return true;
-                    }
-                    return false;
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                if (isDragging) {
+                    launchBird(dragVector);
+                    isDragging = false;
+                    return true;
                 }
-
-                @Override
-                public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                    if (isDragging) {
-                        launchBird(dragVector);
-                        isDragging = false;
-                        return true;
-                    }
-                    return false;
-                }
-            });
-        }
+                return false;
+            }
+        });
+    }
 
     private float alignLeft(float margin) {
         return margin;
@@ -439,28 +420,28 @@ public class l extends ScreenAdapter implements Serializable {
         return body;
     }
 
+    //
 //
-//
-private Body createBird(float x, float y, String birdType) {
-    BodyDef bodyDef = new BodyDef();
-    bodyDef.type = BodyDef.BodyType.DynamicBody;
-    bodyDef.position.set(x, y);
-    Body body = world.createBody(bodyDef);
-    CircleShape shape = new CircleShape();
-    shape.setRadius(25 / PPM); // Bird radius
-    FixtureDef fixtureDef = new FixtureDef();
-    fixtureDef.shape = shape;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 1f;
-    fixtureDef.restitution = 0.1f; // Bouncy effect
-    fixtureDef.filter.categoryBits = 0x0001; // Bird category
-    fixtureDef.filter.maskBits = 0x0002 | 0x0004; // Birds collide with obstacles and ground
+    private Body createBird(float x, float y, String birdType) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+        Body body = world.createBody(bodyDef);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(25 / PPM); // Bird radius
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 1f;
+        fixtureDef.restitution = 0.1f; // Bouncy effect
+        fixtureDef.filter.categoryBits = 0x0001; // Bird category
+        fixtureDef.filter.maskBits = 0x0002 | 0x0004; // Birds collide with obstacles and ground
 
-    body.createFixture(fixtureDef);
-    body.setUserData(birdType); // Set the bird type as user data
-    shape.dispose();
-    return body;
-}
+        body.createFixture(fixtureDef);
+        body.setUserData(birdType); // Set the bird type as user data
+        shape.dispose();
+        return body;
+    }
 
     private Body createObstacle(float x, float y, String obstacleType, int sizeX, int sizeY) {
         BodyDef bodyDef = new BodyDef();
@@ -491,7 +472,7 @@ private Body createBird(float x, float y, String birdType) {
         //createBoundary(5 / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Right boundary
-       // createBoundary((viewport.getWorldWidth() - 5) / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
+        // createBoundary((viewport.getWorldWidth() - 5) / PPM, viewport.getWorldHeight() / 2f, 10 / PPM, viewport.getWorldHeight() / 2f);
 
         // Top boundary
         //createBoundary(viewport.getWorldWidth() / 2f, (viewport.getWorldHeight() - 5) / PPM, viewport.getWorldWidth() / 2f, 10 / PPM);
@@ -522,7 +503,7 @@ private Body createBird(float x, float y, String birdType) {
     private static final float LAUNCH_SPEED_MULTIPLIER = 15f;
     private static final float GRAVITY = -9.8f; // Gravity constant
 
-     //catapultPosition.y = 600;
+    //catapultPosition.y = 600;
 
     private void setCurrentBird(Bird bird) {
         currentBirdBody = bird.getBody();
@@ -547,12 +528,13 @@ private Body createBird(float x, float y, String birdType) {
         }
         // If all obstacles are destroyed, go to successful end screen
         else if (!pigsRemaining) {
-            main.setScreen(new SuccessfulEndScreen(main));
+            main.setScreen(new SuccessfulEndScreen(main,gameState));
         }
     }
 
     private class CollisionListener implements ContactListener {
-        private Array<Body> bodiesToDestroy;
+        public Array< Body> bodiesToDestroy;
+
 
         public CollisionListener(Array<Body> bodiesToDestroy) {
             this.bodiesToDestroy = bodiesToDestroy;
@@ -597,10 +579,13 @@ private Body createBird(float x, float y, String birdType) {
                         Bird birdActor = (Bird) bird.getUserData();
 
                         // Remove the bird from the stage
-                        String birdKey = "Bird-" + birdActor.getPosition().x + "-" + birdActor.getPosition().y;
-                        gameState.recordDestroyed(birdKey);
-                        stage.getActors().removeValue(birdActor, true);
-                        birds.removeValue(birdActor, true);
+                        if (birdActor != null) {
+                            // Remove the bird from the stage
+                            String birdKey = "Bird-" + birdActor.getPosition().x + "-" + birdActor.getPosition().y;
+                            gameState.recordDestroyed(birdKey);
+                            stage.getActors().removeValue(birdActor, true);
+                            birds.removeValue(birdActor, true);
+                        }
 
                         // Check and remove the other object (Wood or Pig)
                         if (other.getUserData() instanceof WoodObstacles) {
@@ -735,7 +720,7 @@ private Body createBird(float x, float y, String birdType) {
     }
     private void renderScore() {
         String scoreText = "Score: " + score;
-        font.draw(batch, scoreText, 10, Gdx.graphics.getHeight() - 10); // Position it appropriately
+        font.draw(batch, scoreText, 880, 1030); // Position it appropriately
     }
 
     private void launchBird(Vector2 dragVector) {
@@ -1151,7 +1136,8 @@ private Body createBird(float x, float y, String birdType) {
                 saveGameState();
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 EndButtonSound.play();
-                main.setScreen(new SuccessfulEndScreen(main));
+                main.setScreen(new SuccessfulEndScreen(main,gameState));
+                saveGameState();
             }
             else if(EndButton2.contains(touchPos.x,touchPos.y)){
                 EndButtonSound.play();
@@ -1205,7 +1191,7 @@ private Body createBird(float x, float y, String birdType) {
 //            main.setScreen(new LoseEndScreen(main));
 //        }
     }
-//
+    //
     @Override
     public void resize(int width, int height) { // Rendering
         viewport.update(width, height, true);
