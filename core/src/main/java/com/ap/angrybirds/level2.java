@@ -313,7 +313,7 @@ public class level2 extends ScreenAdapter{
         groundBox.setAsBox(1920 / (2f * PPM), 10 / PPM);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = groundBox;
-        fixtureDef.density = 0f;
+        fixtureDef.density = 1f;
         fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = 0x0004; // Ground category
         fixtureDef.filter.maskBits = 0x0001;    // Collides with birds
@@ -353,9 +353,9 @@ public class level2 extends ScreenAdapter{
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1419 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
-        Body verticalWood2Body = createObstacle(1539 / PPM, 410 / PPM, "VerticalWood2",25, 250);
-        Body horizontalWood1Body = createObstacle(1480/PPM, 500/PPM, "HorizontalWood1",250,25);
+        Body verticalWood1Body = createObstacle(1411/ PPM, 370 / PPM, "VerticalWood1", 25, 250);
+        Body verticalWood2Body = createObstacle(1548 / PPM, 370 / PPM, "VerticalWood2",25, 250);
+        Body horizontalWood1Body = createObstacle(1480/PPM, 460/PPM, "HorizontalWood1",250,25);
 
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
@@ -440,9 +440,9 @@ public class level2 extends ScreenAdapter{
         shape.setAsBox(sizeX / (2f * PPM), sizeY / (2f * PPM));
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = 6.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.2f; // Bouncy effect
+        fixtureDef.restitution = 0.1f; // Bouncy effect
         fixtureDef.filter.categoryBits = WOOD_CATEGORY;
         fixtureDef.filter.maskBits = WOOD_CATEGORY | BIRD_CATEGORY | GROUND_CATEGORY;
 
@@ -681,7 +681,7 @@ public class level2 extends ScreenAdapter{
         Vector2 launchVector = dragVector.cpy().scl(-1); // Invert the direction
 
         // Calculate launch velocity based on drag vector length
-        float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * LAUNCH_SPEED_MULTIPLIER;
+        float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * (LAUNCH_SPEED_MULTIPLIER-2f);
 
         // Normalize the launch vector and scale by launch speed
         launchVector.nor().scl(launchSpeed / PPM);
@@ -717,7 +717,7 @@ public class level2 extends ScreenAdapter{
             Vector2 launchVector = dragVector.cpy().scl(-1);
 
             // Calculate launch velocity based on drag vector length
-            float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * LAUNCH_SPEED_MULTIPLIER;
+            float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * (LAUNCH_SPEED_MULTIPLIER-2f);
 
             // Normalize the launch vector and scale by launch speed
             launchVector.nor().scl(launchSpeed / PPM);
