@@ -541,7 +541,7 @@ public class level2 extends ScreenAdapter{
 
         // If all birds are destroyed and obstacles remain, go to lose screen
         if ((allBirdsDestroyed && pigsRemaining)||birdcount==0) {
-            main.setScreen(new LoseEndScreen(main));
+            main.setScreen(new RetryLevel2(main));
         }
         // If all obstacles are destroyed, go to successful end screen
         else if (!pigsRemaining) {
