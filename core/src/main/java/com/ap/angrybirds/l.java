@@ -119,7 +119,7 @@ public class l extends ScreenAdapter implements Serializable {
         stage = new Stage(viewport);
         font = new BitmapFont();
         font.setColor(com. badlogic. gdx. graphics. Color.WHITE);
-        font.getData().setScale(2);
+        font.getData().setScale(3.2f);
         batch = new SpriteBatch();
         PauseButtonSound=Gdx.audio.newMusic(Gdx.files.internal("PauseButtonSound.mp3"));
         ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
@@ -154,7 +154,7 @@ public class l extends ScreenAdapter implements Serializable {
         createGround();
         createBirds();
         createBoundaries();
-        currentBirdBody = null;
+//        currentBirdBody = null;
         createWoodObstacles();
         setPigs();
         // Track wood and pigs
@@ -575,10 +575,13 @@ private Body createBird(float x, float y, String birdType) {
                         Bird birdActor = (Bird) bird.getUserData();
 
                         // Remove the bird from the stage
-                        String birdKey = "Bird-" + birdActor.getPosition().x + "-" + birdActor.getPosition().y;
-                        gameState.recordDestroyed(birdKey);
-                        stage.getActors().removeValue(birdActor, true);
-                        birds.removeValue(birdActor, true);
+                        if (birdActor != null) {
+                            // Remove the bird from the stage
+                            String birdKey = "Bird-" + birdActor.getPosition().x + "-" + birdActor.getPosition().y;
+                            gameState.recordDestroyed(birdKey);
+                            stage.getActors().removeValue(birdActor, true);
+                            birds.removeValue(birdActor, true);
+                        }
 
                         // Check and remove the other object (Wood or Pig)
                         if (other.getUserData() instanceof WoodObstacles) {
@@ -713,7 +716,7 @@ private Body createBird(float x, float y, String birdType) {
     }
     private void renderScore() {
         String scoreText = "Score: " + score;
-        font.draw(batch, scoreText, 10, Gdx.graphics.getHeight() - 10); // Position it appropriately
+        font.draw(batch, scoreText, 880, 1030); // Position it appropriately
     }
 
     private void launchBird(Vector2 dragVector) {

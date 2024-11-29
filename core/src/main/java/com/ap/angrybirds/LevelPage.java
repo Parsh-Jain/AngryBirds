@@ -105,7 +105,10 @@ public class LevelPage extends ScreenAdapter {
             }else if(Level2Button.contains(touchPos.x,touchPos.y)){
                 Level1ButtonSound.play();
                 main.setScreen(new level2(main)); // switch to Level2screen
-            }
+            }else if(Level3Button.contains(touchPos.x,touchPos.y)) {
+                Level1ButtonSound.play();
+                main.setScreen(new level3(main));
+            }// switch to Level3screen
         }
     }
 
