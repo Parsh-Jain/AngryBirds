@@ -21,6 +21,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -32,6 +36,7 @@ public class level2 extends ScreenAdapter{
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Stage stage;  // Important Attributes
+    private Music SpecialAbility;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
@@ -85,6 +90,8 @@ public class level2 extends ScreenAdapter{
     private Texture EndButton2Texture;
     private SpriteBatch batch;
     private int birdcount;
+    int specialBird;
+
     public level2(Main main) { // Constructor
         this.main = main;
         woodObstacles = new Array<>();
@@ -108,6 +115,7 @@ public class level2 extends ScreenAdapter{
         batch = new SpriteBatch();
         PauseButtonSound=Gdx.audio.newMusic(Gdx.files.internal("PauseButtonSound.mp3"));
         ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
+        SpecialAbility=Gdx.audio.newMusic(Gdx.files.internal("Special Ability.mp3"));
         EndButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         BackgroundTexture = new Texture("level2Background.jpg");
         DulledBackground = new Texture("level2Background_dulled.jpg");
@@ -162,18 +170,22 @@ public class level2 extends ScreenAdapter{
                 if (redBird.getBounds().contains(touchPos)) {
                     currentBirdBody = redBird.getBody();
                     System.out.println("Red bird selected for dragging.");
+                    specialBird = 1;
                 }
                 if (yellowBird.getBounds().contains(touchPos)) {
                     currentBirdBody = yellowBird.getBody();
                     System.out.println("Yellow bird selected for dragging.");
+                    specialBird = 2;
                 }
                 if (blueBird.getBounds().contains(touchPos)) {
                     currentBirdBody = blueBird.getBody();
                     System.out.println("Blue bird selected for dragging.");
+                    specialBird = 3;
                 }
                 if (blackBird.getBounds().contains(touchPos)) {
                     currentBirdBody = blackBird.getBody();
                     System.out.println("Black bird selected for dragging.");
+                    specialBird = 4;
                 }
                 isDragging = true;
                 dragStartX = touchPos.x;
@@ -369,8 +381,6 @@ public class level2 extends ScreenAdapter{
 
         Vector2 bodyPosition3 = horizontalWood1Body.getPosition();
         woodHorizontal1.setPosition(bodyPosition3.x * PPM - woodHorizontal1.getWidth() / 2, bodyPosition3.y * PPM - woodHorizontal1.getHeight() / 2);
-
-
 
         verticalWood1Body.setUserData(woodVertical1);
         verticalWood2Body.setUserData(woodVertical2);
@@ -633,15 +643,6 @@ public class level2 extends ScreenAdapter{
             float otherHalfHeight = otherBody.getFixtureList().first().getShape().getRadius();
             float otherHalfWidth = otherBody.getFixtureList().first().getShape().getRadius();
 
-//            // Check if the bottom of the woodBody touches the top of the otherBody
-//            boolean verticalOverlap = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight) &&
-//                (woodPos.y - woodHalfHeight) > (otherPos.y - otherHalfHeight);
-//
-//            // Check if the woodBody and otherBody overlap horizontally
-//            boolean horizontalOverlap = Math.abs(woodPos.x - otherPos.x) <= (woodHalfWidth + otherHalfWidth);
-//
-//            return verticalOverlap && horizontalOverlap;
-
             boolean collision = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight);
             return collision;
         }
@@ -795,7 +796,7 @@ public class level2 extends ScreenAdapter{
 
     @Override
     public void render(float delta) { //Rendering
-        //super.render(delta);
+        super.render(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         world.step(1 / 60f, 6, 2);
@@ -869,20 +870,27 @@ public class level2 extends ScreenAdapter{
             shapeRenderer.end();
         }
 
-//        if (trajectoryPoints.size > 0) {
-//            shapeRenderer.setProjectionMatrix(camera.combined);
-//            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//            for (Vector2 point : trajectoryPoints) {
-//                shapeRenderer.circle(point.x, point.y, 5 / PPM); // Adjust radius for visibility
-//            }
-//            shapeRenderer.end();
-//        }
-
 
         checkGameState();
         //System.out.println("Bird Counter: " + birdcount);
         stage.act(delta);
         stage.draw();
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            if(specialBird ==2 ){
+                SpecialAbility.play();
+                yellowBird.getBody().setLinearVelocity(10, 0);
+                System.out.println("Extra vector applied on yellow");
+            }
+            if(specialBird==3){
+                SpecialAbility.play();
+                blueBird.activateSpecialAbility(world,new Texture("BlueAngryBird.png"),stage);
+            }
+            if(specialBird==4){
+                SpecialAbility.play();
+                blackBird.activateSpecialAbility();
+            }
+        }
     }
     //
     //

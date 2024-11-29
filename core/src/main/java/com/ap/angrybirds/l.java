@@ -21,6 +21,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.awt.*;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import static com.badlogic.gdx.graphics.Color.WHITE;
+
+import com.badlogic.gdx.math.MathUtils;
 
 import static com.badlogic.gdx.graphics.Color.*;
 
@@ -36,7 +42,9 @@ public class l extends ScreenAdapter implements Serializable {
     private Viewport viewport;
     private Main main;
     private Array<Body> bodiesToDestroy = new Array<>();
-    private Array<VerticalWood13> woodObstacles; // Store all the wood obstacles
+    private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
+    private Map<Body, Boolean> groundedMap = new HashMap<>();
+
     private Array<MafiaPig> pigs; // Store all the pigs
     private Array<Bird> birds;
     private boolean allWoodDestroyed = false;
@@ -63,7 +71,8 @@ public class l extends ScreenAdapter implements Serializable {
     private BitmapFont font;
     private static final short BIRD_CATEGORY = 0x0001;
     private static final short WOOD_CATEGORY = 0x0002;
-    private static final short PIG_CATEGORY = 0x0004;
+    private static final short PIG_CATEGORY = 0x0003;
+    private static final short GROUND_CATEGORY = 0x0004;
     private CollisionListener collisionListener;
     private ShapeRenderer trajectoryRenderer = new ShapeRenderer();
 
@@ -265,17 +274,34 @@ public class l extends ScreenAdapter implements Serializable {
         pig.setPosition(bodyPosition.x * PPM - pig.getWidth() / 2, bodyPosition.y * PPM - pig.getHeight() / 2);
     }
 
-    private void updateWoodObstaclePosition(VerticalWood13 wood, Body body) {
-        Vector2 bodyPosition = body.getPosition();
-        float groundY = 300 / PPM; // Ground level in world units
+    private void updateWoodObstaclePosition(WoodObstacles wood, Body body) {
+        Vector2 bodyPosition = body.getPosition(); // Center position of the body in world coordinates
+        float angle = body.getAngle(); // Rotation angle of the body
 
-        // Prevent wood obstacle from falling below the ground
-        if (bodyPosition.y < groundY) {
-            body.setLinearVelocity(0, 0); // Stop vertical movement
-            body.setTransform(bodyPosition.x, groundY, 0); // Reset to ground level
-        }
+        // Calculate the actual bottom of the body (considering its height)
+        float woodHalfHeight = (wood.getHeight() / 2) / PPM; // Half-height in meters
+        float woodBottom = bodyPosition.y - woodHalfHeight;  // Bottom-most point in meters
 
+        // Update the visual position and rotation of the wood obstacle
         wood.setPosition(bodyPosition.x * PPM - wood.getWidth() / 2, bodyPosition.y * PPM - wood.getHeight() / 2);
+        wood.setRotation(angle * MathUtils.radiansToDegrees);
+
+        // Ground level
+        float floorY = 185 / PPM; // Adjust to your ground level in world coordinates
+
+        // Check if the wood is grounded or needs to stop at the floor
+        boolean isGrounded = groundedMap.getOrDefault(body, false);
+
+        if (isGrounded) {
+            // Stop movement and stabilize position if grounded
+            body.setLinearVelocity(0, 0); // Stop all motion
+            body.setAngularVelocity(0); // Prevent rotation
+            body.setTransform(bodyPosition.x, Math.max(bodyPosition.y, floorY + woodHalfHeight), 0);
+        } else if (woodBottom <= floorY) {
+            // Stop the body when its bottom-most point touches the floor
+            body.setTransform(bodyPosition.x, floorY + woodHalfHeight, angle); // Adjust position to sit on the floor
+            body.setLinearVelocity(body.getLinearVelocity().x, 0); // Stop vertical movement
+        }
     }
 
     private Body createPig(float x, float y) {
@@ -347,8 +373,8 @@ public class l extends ScreenAdapter implements Serializable {
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1354 / PPM, 410 / PPM, "VerticalWood1");
-        Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2");
+        Body verticalWood1Body = createObstacle(1354 / PPM, 310 / PPM, "VerticalWood1", 25, 250);
+        Body verticalWood2Body = createObstacle(1554 / PPM, 310 / PPM, "VerticalWood2", 25, 250);
 
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
@@ -357,10 +383,15 @@ public class l extends ScreenAdapter implements Serializable {
         woodVertical1.setPosition(bodyPosition.x * PPM - woodVertical1.getWidth() / 2, bodyPosition.y * PPM - woodVertical1.getHeight() / 2);
         Vector2 bodyPosition2 = verticalWood2Body.getPosition();
         woodVertical2.setPosition(bodyPosition2.x * PPM - woodVertical2.getWidth() / 2, bodyPosition2.y * PPM - woodVertical2.getHeight() / 2);
+
         verticalWood1Body.setUserData(woodVertical1);
         verticalWood2Body.setUserData(woodVertical2);
         stage.addActor(woodVertical1);
         stage.addActor(woodVertical2);
+
+
+        woodObstacles.add(woodVertical1);
+        woodObstacles.add(woodVertical2);
     }
 
 
@@ -409,20 +440,20 @@ private Body createBird(float x, float y, String birdType) {
     return body;
 }
 
-    private Body createObstacle(float x, float y, String obstacleType) {
+    private Body createObstacle(float x, float y, String obstacleType, int sizeX, int sizeY) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
         Body body = world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(25 / PPM, 250 / PPM);
+        shape.setAsBox(sizeX / (2f * PPM), sizeY / (2f * PPM));
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.1f;
+        fixtureDef.density = 6.0f;
+        fixtureDef.friction = 1f;
         fixtureDef.restitution = 0.1f; // Bouncy effect
-        fixtureDef.filter.categoryBits = 0x0002; // Example category
-        fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
+        fixtureDef.filter.categoryBits = WOOD_CATEGORY;
+        fixtureDef.filter.maskBits = WOOD_CATEGORY | BIRD_CATEGORY | GROUND_CATEGORY;
 
         body.createFixture(fixtureDef);
 //        body.setUserData(obstacleType); // Set the obstacle type as user data
@@ -483,17 +514,17 @@ private Body createBird(float x, float y, String birdType) {
         boolean allBirdsDestroyed = birds.isEmpty();
 
         // Check if all obstacles are remaining
-        boolean obstaclesRemaining = !pigs.isEmpty() || !woodObstacles.isEmpty();
+        boolean pigsRemaining = !pigs.isEmpty();
 
         // Check if all obstacles are destroyed
         boolean allObstaclesDestroyed = pigs.isEmpty() && woodObstacles.isEmpty();
 
         // If all birds are destroyed and obstacles remain, go to lose screen
-        if ((allBirdsDestroyed && obstaclesRemaining)||birdcount==0) {
+        if ((allBirdsDestroyed && pigsRemaining)||birdcount==0) {
             main.setScreen(new LoseEndScreen(main));
         }
         // If all obstacles are destroyed, go to successful end screen
-        else if (allObstaclesDestroyed) {
+        else if (!pigsRemaining) {
             main.setScreen(new SuccessfulEndScreen(main));
         }
     }
@@ -516,6 +547,22 @@ private Body createBird(float x, float y, String birdType) {
                 score += 200; // 200 points for hitting pig
             }
 
+            System.out.println("contact1");
+
+            Body bodyA = fixtureA.getBody();
+            Body bodyB = fixtureB.getBody();
+
+            if (isWoodFixture(fixtureA) && isWoodFixture(fixtureB)) {
+                System.out.println("contact2");
+                if (isGroundBelow(bodyA, bodyB)) {
+                    groundedMap.put(bodyA, true);
+                    System.out.println("Put A in B");
+                } else if (isGroundBelow(bodyB, bodyA)) {
+                    groundedMap.put(bodyB, true);
+                    System.out.println("Put B in A");
+                }
+            }
+
             if (isBirdAndWoodCollision(fixtureA, fixtureB) || isBirdAndPigCollision(fixtureA, fixtureB)) {
                 Body bird = fixtureA.getBody().getUserData() instanceof Bird ? fixtureA.getBody() : fixtureB.getBody();
                 Body other = fixtureA.getBody().getUserData() instanceof Bird ? fixtureB.getBody() : fixtureA.getBody();
@@ -528,9 +575,9 @@ private Body createBird(float x, float y, String birdType) {
                         Bird birdActor = (Bird) bird.getUserData();
 
                         // Remove the bird from the stage
-                        stage.getActors().removeValue(birdActor, true);
                         String birdKey = "Bird-" + birdActor.getPosition().x + "-" + birdActor.getPosition().y;
                         gameState.recordDestroyed(birdKey);
+                        stage.getActors().removeValue(birdActor, true);
                         birds.removeValue((Bird)birdActor, true);
 
                         // Check and remove the other object (Wood or Pig)
@@ -575,7 +622,35 @@ private Body createBird(float x, float y, String birdType) {
 
 
         @Override
-        public void endContact(Contact contact) {}
+        public void endContact(Contact contact) {
+            Fixture fixtureA = contact.getFixtureA();
+            Fixture fixtureB = contact.getFixtureB();
+
+            Body bodyA = fixtureA.getBody();
+            Body bodyB = fixtureB.getBody();
+
+            // If the contact ends, update the grounded state
+            if (isWoodFixture(fixtureA)) {
+                groundedMap.put(bodyA, false);
+            }
+            if (isWoodFixture(fixtureB)) {
+                groundedMap.put(bodyB, false);
+            }
+        }
+
+        private boolean isGroundBelow(Body woodBody, Body otherBody) {
+            Vector2 woodPos = woodBody.getPosition();
+            Vector2 otherPos = otherBody.getPosition();
+
+            // Get the height and width of both bodies
+            float woodHalfHeight = woodBody.getFixtureList().first().getShape().getRadius();
+            float woodHalfWidth = woodBody.getFixtureList().first().getShape().getRadius();
+            float otherHalfHeight = otherBody.getFixtureList().first().getShape().getRadius();
+            float otherHalfWidth = otherBody.getFixtureList().first().getShape().getRadius();
+
+            boolean collision = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight);
+            return collision;
+        }
 
         @Override
         public void preSolve(Contact contact, Manifold oldManifold) {}
@@ -611,7 +686,7 @@ private Body createBird(float x, float y, String birdType) {
         Vector2 launchVector = dragVector.cpy().scl(-1); // Invert the direction
 
         // Calculate launch velocity based on drag vector length
-        float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * LAUNCH_SPEED_MULTIPLIER;
+        float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * (LAUNCH_SPEED_MULTIPLIER - 2f);
 
         // Normalize the launch vector and scale by launch speed
         launchVector.nor().scl(launchSpeed / PPM);
@@ -647,7 +722,7 @@ private Body createBird(float x, float y, String birdType) {
             Vector2 launchVector = dragVector.cpy().scl(-1);
 
             // Calculate launch velocity based on drag vector length
-            float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * LAUNCH_SPEED_MULTIPLIER;
+            float launchSpeed = Math.min(launchVector.len(), MAX_PULL_DISTANCE) * (LAUNCH_SPEED_MULTIPLIER - 2f);
 
             // Normalize the launch vector and scale by launch speed
             launchVector.nor().scl(launchSpeed / PPM);
@@ -787,7 +862,7 @@ private Body createBird(float x, float y, String birdType) {
         for (GameState1.SerializableVector2 pos : gameState.woodPositions) {
             String woodKey = "Wood-" + pos.x + "-" + pos.y;
             if (!gameState.destroyedEntities.contains(woodKey)) { // Skip destroyed wood
-                Body woodBody = createObstacle(pos.x, pos.y, "Wood");
+                Body woodBody = createObstacle(pos.x, pos.y, "Wood", 25, 250);
                 VerticalWood13 wood = new VerticalWood13(new Texture("13.png"), woodBody);
                 System.out.println("Loading wood with type: " + pos.birdType);
                 woodObstacles.add(wood);
@@ -835,13 +910,13 @@ private Body createBird(float x, float y, String birdType) {
     }
     private void initializeWoodObstacles() {
         // Create Wood 1
-        Body wood1Body = createObstacle(GameState1.WOOD1_POSITION.x, GameState1.WOOD1_POSITION.y, "Wood1");
+        Body wood1Body = createObstacle(GameState1.WOOD1_POSITION.x, GameState1.WOOD1_POSITION.y, "Wood1", 25 , 250);
         woodVertical1 = new VerticalWood13(new Texture("13.png"), wood1Body);
         wood1Body.setUserData(woodVertical1);
         woodObstacles.add(woodVertical1);
 
         // Create Wood 2
-        Body wood2Body = createObstacle(GameState1.WOOD2_POSITION.x, GameState1.WOOD2_POSITION.y, "Wood2");
+        Body wood2Body = createObstacle(GameState1.WOOD2_POSITION.x, GameState1.WOOD2_POSITION.y, "Wood2",25 ,250);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), wood2Body);
         wood2Body.setUserData(woodVertical2);
         woodObstacles.add(woodVertical2);
@@ -873,7 +948,7 @@ private Body createBird(float x, float y, String birdType) {
         }
 
         // Save current wood positions
-        for (VerticalWood13 wood : woodObstacles) {
+        for (WoodObstacles wood : woodObstacles) {
             Vector2 position = wood.getBody().getPosition();
             gameState.woodPositions.add(new GameState1.SerializableVector2( position.x, position.y,null));
         }
@@ -1085,9 +1160,6 @@ private Body createBird(float x, float y, String birdType) {
         stage.act(delta);
         stage.draw();
         checkGameState();
-        //System.out.println("Bird Counter: " + birdcount);
-//        Vector2 extraVector = new Vector2();
-//        extraVector.set(20f, 20f);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             if(specialBird ==2 ){
@@ -1103,10 +1175,6 @@ private Body createBird(float x, float y, String birdType) {
                 SpecialAbility.play();
                 blackBird.activateSpecialAbility();
             }
-
-//            if(specialBird == 1) {
-//
-//            }
         }
 //
 //        if(allWoodDestroyed && allPigsDestroyed) {
