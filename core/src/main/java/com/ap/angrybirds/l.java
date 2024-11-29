@@ -27,6 +27,7 @@ import static com.badlogic.gdx.graphics.Color.*;
 public class l extends ScreenAdapter implements Serializable {
     private static final float PPM=100f;
     private final GameState1 gameState;
+    private Music SpecialAbility;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Stage stage;// Important Attributes
@@ -113,6 +114,7 @@ public class l extends ScreenAdapter implements Serializable {
         batch = new SpriteBatch();
         PauseButtonSound=Gdx.audio.newMusic(Gdx.files.internal("PauseButtonSound.mp3"));
         ResumeButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
+        SpecialAbility=Gdx.audio.newMusic(Gdx.files.internal("Special Ability.mp3"));
         EndButtonSound=Gdx.audio.newMusic(Gdx.files.internal("NormalButtonSound.mp3"));
         BackgroundTexture = new Texture("GameScreenBackground.png");
         DulledBackground = new Texture("DulledBackground.png");
@@ -1089,13 +1091,16 @@ private Body createBird(float x, float y, String birdType) {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             if(specialBird ==2 ){
+                SpecialAbility.play();
                 yellowBird.getBody().setLinearVelocity(10, 0);
                 System.out.println("Extra vector applied on yellow");
             }
             if(specialBird==3){
+                SpecialAbility.play();
                 blueBird.activateSpecialAbility(world,new Texture("BlueAngryBird.png"),stage);
             }
             if(specialBird==4){
+                SpecialAbility.play();
                 blackBird.activateSpecialAbility();
             }
 
