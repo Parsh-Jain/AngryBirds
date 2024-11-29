@@ -35,7 +35,6 @@ public class level2 extends ScreenAdapter{
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
-    //
     private Array<Body> bodiesToDestroy = new Array<>();
     private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
     private Map<Body, Boolean> groundedMap = new HashMap<>();
@@ -66,7 +65,8 @@ public class level2 extends ScreenAdapter{
     private BitmapFont font;
     private static final short BIRD_CATEGORY = 0x0001;
     private static final short WOOD_CATEGORY = 0x0002;
-    private static final short PIG_CATEGORY = 0x0004;
+    private static final short PIG_CATEGORY = 0x0003;
+    private static final short GROUND_CATEGORY = 0x0004;
     private CollisionListener collisionListener;
     private ShapeRenderer trajectoryRenderer = new ShapeRenderer();
 
@@ -231,7 +231,7 @@ public class level2 extends ScreenAdapter{
     }
 
     private void setPigs() {
-        Body mafiapig1body = createPig(1460 / PPM, 220 / PPM);
+        Body mafiapig1body = createPig(1480 / PPM, 220 / PPM);
         mafiaPig1 = new MafiaPig(MafiaPig1Texture, mafiapig1body);
         mafiapig1body.setUserData(mafiaPig1);
         stage.addActor(mafiaPig1);
@@ -253,26 +253,36 @@ public class level2 extends ScreenAdapter{
     }
 
     private void updateWoodObstaclePosition(WoodObstacles wood, Body body) {
-        Vector2 bodyPosition = body.getPosition();
-        float angle = body.getAngle(); // Get the rotation angle
+        Vector2 bodyPosition = body.getPosition(); // Center position of the body in world coordinates
+        float angle = body.getAngle(); // Rotation angle of the body
 
-        boolean isGrounded = groundedMap.getOrDefault(body, false);
+        // Calculate the actual bottom of the body (considering its height)
+        float woodHalfHeight = (wood.getHeight() / 2) / PPM; // Half-height in meters
+        float woodBottom = bodyPosition.y - woodHalfHeight;  // Bottom-most point in meters
 
         // Update the visual position and rotation of the wood obstacle
         wood.setPosition(bodyPosition.x * PPM - wood.getWidth() / 2, bodyPosition.y * PPM - wood.getHeight() / 2);
         wood.setRotation(angle * MathUtils.radiansToDegrees);
 
-        // Prevent movement below if grounded
+        // Ground level
+        float floorY = 200 / PPM; // Adjust to your ground level in world coordinates
+
+        // Check if the wood is grounded or needs to stop at the floor
+        boolean isGrounded = groundedMap.getOrDefault(body, false);
+
         if (isGrounded) {
-            body.setLinearVelocity(body.getLinearVelocity().x, 0);
-        } else {
-            float floorY = 300 / PPM; // Adjust to your ground level
-            if (bodyPosition.y < floorY) {
-                body.setTransform(bodyPosition.x, floorY, angle);
-                body.setLinearVelocity(body.getLinearVelocity().x, 0);
-            }
+            // Stop movement and stabilize position if grounded
+            body.setLinearVelocity(0, 0); // Stop all motion
+            body.setAngularVelocity(0); // Prevent rotation
+            body.setTransform(bodyPosition.x, Math.max(bodyPosition.y, floorY + woodHalfHeight), 0);
+        } else if (woodBottom <= floorY) {
+            // Stop the body when its bottom-most point touches the floor
+            body.setTransform(bodyPosition.x, floorY + woodHalfHeight, angle); // Adjust position to sit on the floor
+            body.setLinearVelocity(body.getLinearVelocity().x, 0); // Stop vertical movement
         }
     }
+
+
 
     private Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
@@ -285,7 +295,7 @@ public class level2 extends ScreenAdapter{
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.1f; // Bouncy effect
+        fixtureDef.restitution = 0.3f; // Bouncy effect
         fixtureDef.filter.categoryBits = PIG_CATEGORY;
         fixtureDef.filter.maskBits = BIRD_CATEGORY | WOOD_CATEGORY;
         body.createFixture(fixtureDef);
@@ -343,9 +353,9 @@ public class level2 extends ScreenAdapter{
     }
 
     private void createWoodObstacles() {
-        Body verticalWood1Body = createObstacle(1354 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
-        Body verticalWood2Body = createObstacle(1554 / PPM, 410 / PPM, "VerticalWood2",25, 250);
-        Body horizontalWood1Body = createObstacle(1480/PPM, 600/PPM, "HorizontalWood1",250,25);
+        Body verticalWood1Body = createObstacle(1419 / PPM, 410 / PPM, "VerticalWood1", 25, 250);
+        Body verticalWood2Body = createObstacle(1539 / PPM, 410 / PPM, "VerticalWood2",25, 250);
+        Body horizontalWood1Body = createObstacle(1480/PPM, 500/PPM, "HorizontalWood1",250,25);
 
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
@@ -390,7 +400,7 @@ public class level2 extends ScreenAdapter{
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.1f;
+        fixtureDef.restitution = 0.3f;
 
         body.createFixture(fixtureDef);
         shape.dispose();
@@ -411,7 +421,7 @@ public class level2 extends ScreenAdapter{
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.1f; // Bouncy effect
+        fixtureDef.restitution = 0.4f; // Bouncy effect
         fixtureDef.filter.categoryBits = 0x0001; // Bird category
         fixtureDef.filter.maskBits = 0x0002 | 0x0004; // Birds collide with obstacles and ground
 
@@ -431,10 +441,10 @@ public class level2 extends ScreenAdapter{
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.1f;
-        fixtureDef.restitution = 0.1f; // Bouncy effect
-        fixtureDef.filter.categoryBits = 0x0002; // Example category
-        fixtureDef.filter.maskBits = 0x0001;    // Collides with bird category
+        fixtureDef.friction = 1f;
+        fixtureDef.restitution = 0.2f; // Bouncy effect
+        fixtureDef.filter.categoryBits = WOOD_CATEGORY;
+        fixtureDef.filter.maskBits = WOOD_CATEGORY | BIRD_CATEGORY | GROUND_CATEGORY;
 
         body.createFixture(fixtureDef);
 //        body.setUserData(obstacleType); // Set the obstacle type as user data
@@ -528,13 +538,20 @@ public class level2 extends ScreenAdapter{
                 score += 200; // 200 points for hitting pig
             }
 
+            System.out.println("contact1");
+
             Body bodyA = fixtureA.getBody();
             Body bodyB = fixtureB.getBody();
 
-            if (isWoodFixture(fixtureA) && isGroundBelow(bodyA, bodyB)) {
-                groundedMap.put(bodyA, true);
-            } else if (isWoodFixture(fixtureB) && isGroundBelow(bodyB, bodyA)) {
-                groundedMap.put(bodyB, true);
+            if (isWoodFixture(fixtureA) && isWoodFixture(fixtureB)) {
+                System.out.println("contact2");
+                if (isGroundBelow(bodyA, bodyB)) {
+                    groundedMap.put(bodyA, true);
+                    System.out.println("Put A in B");
+                } else if (isGroundBelow(bodyB, bodyA)) {
+                    groundedMap.put(bodyB, true);
+                    System.out.println("Put B in A");
+                }
             }
 
             if (isBirdAndWoodCollision(fixtureA, fixtureB) || isBirdAndPigCollision(fixtureA, fixtureB)) {
@@ -610,12 +627,25 @@ public class level2 extends ScreenAdapter{
             Vector2 woodPos = woodBody.getPosition();
             Vector2 otherPos = otherBody.getPosition();
 
-            float otherHeight = otherBody.getFixtureList().first().getShape().getRadius() * 2;
+            // Get the height and width of both bodies
+            float woodHalfHeight = woodBody.getFixtureList().first().getShape().getRadius();
+            float woodHalfWidth = woodBody.getFixtureList().first().getShape().getRadius();
+            float otherHalfHeight = otherBody.getFixtureList().first().getShape().getRadius();
+            float otherHalfWidth = otherBody.getFixtureList().first().getShape().getRadius();
 
-            // Check if other body is directly below the wood body
-            return (woodPos.y - (25 / PPM)) <= (otherPos.y + (otherHeight / 2)) // Adjust with size
-                && Math.abs(woodPos.x - otherPos.x) < (woodBody.getFixtureList().first().getShape().getRadius() * 2);
+//            // Check if the bottom of the woodBody touches the top of the otherBody
+//            boolean verticalOverlap = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight) &&
+//                (woodPos.y - woodHalfHeight) > (otherPos.y - otherHalfHeight);
+//
+//            // Check if the woodBody and otherBody overlap horizontally
+//            boolean horizontalOverlap = Math.abs(woodPos.x - otherPos.x) <= (woodHalfWidth + otherHalfWidth);
+//
+//            return verticalOverlap && horizontalOverlap;
+
+            boolean collision = (woodPos.y - woodHalfHeight) <= (otherPos.y + otherHalfHeight);
+            return collision;
         }
+
 
         @Override
         public void preSolve(Contact contact, Manifold oldManifold) {}

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 
 public class HorizontalWood13 extends WoodObstacles {
+    float height;
     static float PPM = 100f;
 
     public HorizontalWood13(Texture woodTexture, Body body) {
