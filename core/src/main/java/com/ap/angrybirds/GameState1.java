@@ -20,7 +20,7 @@ public class GameState1 implements Serializable {
     public static final SerializableVector2 WOOD2_POSITION = new SerializableVector2(15.54f, 4.1f, null);
 
     // Record destroyed entities
-    public HashSet<String> destroyedEntities = new HashSet<>();
+    public HashSet<String> destroyedEntities;
     public HashSet<SerializableVector2> birdPositions;
     public HashSet<SerializableVector2> pigPositions;
     public HashSet<SerializableVector2> woodPositions;
