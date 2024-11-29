@@ -401,7 +401,7 @@ public class level3 extends ScreenAdapter{
         Body verticalWood2Body = createObstacle(1548.35f / PPM, 370 / PPM, "VerticalWood2",25, 250);
         Body verticalWood3Body = createObstacle(1500 / PPM, 370 / PPM, "VerticalWood3",25, 250);
         Body horizontalWood1Body = createObstacle(1480/PPM, 460/PPM, "HorizontalWood1",250,25);
-
+//
         woodVertical1 = new VerticalWood13(new Texture("13.png"), verticalWood1Body);
         woodVertical2 = new VerticalWood13(new Texture("13.png"), verticalWood2Body);
         woodVertical3 = new VerticalWood13(new Texture("13_V_ice.png"), verticalWood2Body);
