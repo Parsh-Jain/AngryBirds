@@ -71,6 +71,11 @@ public class PreLoadingPage extends ScreenAdapter {
             enterSound.play();
             main.setScreen(new level2(main)); // Switch to LoadingPage
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
+            enterSound.play();
+            main.setScreen(new level3(main)); // Switch to LoadingPage
+        }
     }
     @Override
     public void resize(int width, int height) { // Resizing
