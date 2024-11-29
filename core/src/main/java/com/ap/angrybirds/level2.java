@@ -43,7 +43,7 @@ public class level2 extends ScreenAdapter{
     private Array<Body> bodiesToDestroy = new Array<>();
     private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
     private Map<Body, Boolean> groundedMap = new HashMap<>();
-    private Array<MafiaPig> pigs; // Store all the pigs
+    private Array<Pigs> pigs; // Store all the pigs
     private Array<Bird> birds;
     private boolean allWoodDestroyed = false;
     private boolean allPigsDestroyed = false;
@@ -56,6 +56,7 @@ public class level2 extends ScreenAdapter{
     private BlueBird blueBird;
     private BlackBird blackBird;
     private MafiaPig mafiaPig1;
+    private SoldierPig soldierPig1;
     private VerticalWood13 woodVertical1, woodVertical2;
     private HorizontalWood13 woodHorizontal1;
     private Vector2 dragVector = new Vector2();
@@ -79,6 +80,7 @@ public class level2 extends ScreenAdapter{
     private Texture pauseButtonTexture;
     private Texture endbuttonTexture;
     private Texture MafiaPig1Texture;
+    private Texture SoldierPig1Texture;
     private Texture BackgroundTexture;
     private Texture CatapultTexture;
     private Texture DulledBackground;
@@ -133,6 +135,7 @@ public class level2 extends ScreenAdapter{
         musicButtonTexture=new Texture("music.png");
         soundButtonTexture=new Texture("sound.png");
         MafiaPig1Texture = new Texture("MafiaPig.png");
+        SoldierPig1Texture = new Texture("soldierPig.png");
         CatapultTexture = new Texture(Gdx.files.internal("Catapult.png"));
         slingPosition = new Vector2(560, 280); // Adjust to match your catapult position
         dragVector = new Vector2();
@@ -154,6 +157,7 @@ public class level2 extends ScreenAdapter{
         woodObstacles.add(woodVertical2);
         woodObstacles.add(woodHorizontal1);
         pigs.add(mafiaPig1);
+        pigs.add(soldierPig1);
         // Add all birds
         birds.add(redBird);
         birds.add(yellowBird);
@@ -249,9 +253,16 @@ public class level2 extends ScreenAdapter{
         stage.addActor(mafiaPig1);
         updatePigPosition(mafiaPig1, mafiapig1body);
         mafiapig1body.setUserData(mafiaPig1);
+
+        Body soldierPig1body = createPig(1482 / PPM, 525 / PPM);
+        soldierPig1 = new SoldierPig(SoldierPig1Texture, soldierPig1body);
+        soldierPig1body.setUserData(soldierPig1);
+        stage.addActor(soldierPig1);
+        updatePigPosition(soldierPig1, soldierPig1body);
+        soldierPig1body.setUserData(soldierPig1);
     }
 
-    private void updatePigPosition(MafiaPig pig, Body body) {
+    private void updatePigPosition(Pigs pig, Body body) {
         Vector2 bodyPosition = body.getPosition();
         float groundY = 245 / PPM; // Ground level in world units
 
@@ -259,6 +270,15 @@ public class level2 extends ScreenAdapter{
         if (bodyPosition.y < groundY) {
             body.setLinearVelocity(0, 0); // Stop vertical movement
             body.setTransform(bodyPosition.x, groundY, 0); // Reset to ground level
+        }
+
+        if(pig instanceof SoldierPig) {
+            Body woodBody = woodHorizontal1.getBody();
+            Vector2 woodPosition = woodBody.getPosition();
+            float woodTopY = woodPosition.y + (woodHorizontal1.getHeight() / 2) / PPM;
+            float minX = woodPosition.x - (woodHorizontal1.getWidth() / 2) / PPM + (pig.getWidth() / 2) / PPM;
+            float maxX = woodPosition.x + (woodHorizontal1.getWidth() / 2) / PPM - (pig.getWidth() / 2) / PPM;
+            bodyPosition.x = MathUtils.clamp(bodyPosition.x, minX, maxX);
         }
 
         pig.setPosition(bodyPosition.x * PPM - pig.getWidth() / 2, bodyPosition.y * PPM - pig.getHeight() / 2);
@@ -305,9 +325,9 @@ public class level2 extends ScreenAdapter{
         shape.setRadius(25 / PPM); // Bird radius
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = 3.0f;
         fixtureDef.friction = 1f;
-        fixtureDef.restitution = 0.3f; // Bouncy effect
+        fixtureDef.restitution = 0f; // Bouncy effect
         fixtureDef.filter.categoryBits = PIG_CATEGORY;
         fixtureDef.filter.maskBits = BIRD_CATEGORY | WOOD_CATEGORY;
         body.createFixture(fixtureDef);
@@ -584,8 +604,8 @@ public class level2 extends ScreenAdapter{
                             WoodObstacles woodActor = (WoodObstacles) other.getUserData();
                             stage.getActors().removeValue(woodActor, true);
                             woodObstacles.removeValue(woodActor, true);
-                        } else if (other.getUserData() instanceof MafiaPig) {
-                            MafiaPig pigActor = (MafiaPig) other.getUserData();
+                        } else if (other.getUserData() instanceof Pigs) {
+                            Pigs pigActor = (Pigs) other.getUserData();
                             stage.getActors().removeValue(pigActor, true);
                             pigs.removeValue(pigActor, true);
                         }
@@ -611,8 +631,8 @@ public class level2 extends ScreenAdapter{
                 (fixtureB.getBody().getUserData() instanceof Bird && fixtureA.getBody().getUserData() instanceof WoodObstacles);
         }
         private boolean isBirdAndPigCollision(Fixture fixtureA, Fixture fixtureB) {
-            return (fixtureA.getBody().getUserData() instanceof Bird && fixtureB.getBody().getUserData() instanceof MafiaPig) ||
-                (fixtureB.getBody().getUserData() instanceof Bird && fixtureA.getBody().getUserData() instanceof MafiaPig);
+            return (fixtureA.getBody().getUserData() instanceof Bird && fixtureB.getBody().getUserData() instanceof Pigs) ||
+                (fixtureB.getBody().getUserData() instanceof Bird && fixtureA.getBody().getUserData() instanceof Pigs);
         }
 
 
@@ -856,6 +876,7 @@ public class level2 extends ScreenAdapter{
             System.out.println("X:" + Gdx.input.getX() + " Y: " + Gdx.input.getY());
         }
         updatePigPosition(mafiaPig1, mafiaPig1.getBody());
+        updatePigPosition(soldierPig1, soldierPig1.getBody());
         updateWoodObstaclePosition(woodVertical1, woodVertical1.getBody());
         updateWoodObstaclePosition(woodVertical2, woodVertical2.getBody());
         updateWoodObstaclePosition(woodHorizontal1, woodHorizontal1.getBody());
@@ -907,6 +928,7 @@ public class level2 extends ScreenAdapter{
         if (blueBird != null) blueBird.dispose();
         if (blackBird != null) blackBird.dispose();
         if (mafiaPig1 != null) mafiaPig1.dispose();
+        if (soldierPig1 != null) soldierPig1.dispose();
         if (shapeRenderer != null) shapeRenderer.dispose();
         if (woodVertical1 != null) woodVertical1.dispose();
         if (catapult != null) catapult.dispose();

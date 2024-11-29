@@ -435,7 +435,7 @@ private Body createBird(float x, float y, String birdType) {
     fixtureDef.filter.maskBits = 0x0002 | 0x0004; // Birds collide with obstacles and ground
 
     body.createFixture(fixtureDef);
-//    body.setUserData(birdType); // Set the bird type as user data
+    body.setUserData(birdType); // Set the bird type as user data
     shape.dispose();
     return body;
 }
@@ -578,7 +578,7 @@ private Body createBird(float x, float y, String birdType) {
                         String birdKey = "Bird-" + birdActor.getPosition().x + "-" + birdActor.getPosition().y;
                         gameState.recordDestroyed(birdKey);
                         stage.getActors().removeValue(birdActor, true);
-                        birds.removeValue((Bird)birdActor, true);
+                        birds.removeValue(birdActor, true);
 
                         // Check and remove the other object (Wood or Pig)
                         if (other.getUserData() instanceof WoodObstacles) {
