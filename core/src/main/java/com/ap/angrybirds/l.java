@@ -1178,7 +1178,9 @@ public class l extends ScreenAdapter implements Serializable {
             }
             if(specialBird==3){
                 SpecialAbility.play();
+                System.out.println("1");
                 blueBird.activateSpecialAbility(world,new Texture("BlueAngryBird.png"),stage);
+                System.out.println("2");
             }
             if(specialBird==4){
                 SpecialAbility.play();
