@@ -528,7 +528,7 @@ public class l extends ScreenAdapter implements Serializable {
         }
         // If all obstacles are destroyed, go to successful end screen
         else if (!pigsRemaining) {
-            main.setScreen(new SuccessfulEndScreen(main,gameState));
+            main.setScreen(new SuccessfulEndScreen(main));
         }
     }
 
@@ -1136,7 +1136,7 @@ public class l extends ScreenAdapter implements Serializable {
                 saveGameState();
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 EndButtonSound.play();
-                main.setScreen(new SuccessfulEndScreen(main,gameState));
+                main.setScreen(new SuccessfulEndScreen(main));
                 saveGameState();
             }
             else if(EndButton2.contains(touchPos.x,touchPos.y)){

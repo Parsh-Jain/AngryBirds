@@ -545,7 +545,7 @@ public class level2 extends ScreenAdapter{
         }
         // If all obstacles are destroyed, go to successful end screen
         else if (!pigsRemaining) {
-            main.setScreen(new SuccessfulEndScreen(main,new GameState1()));
+            main.setScreen(new SuccessfulEndScreen(main));
         }
     }
 
@@ -863,7 +863,7 @@ public class level2 extends ScreenAdapter{
                 isPaused = true;
             } else if (endbutton.contains(touchPos.x,touchPos.y)) {
                 EndButtonSound.play();
-                main.setScreen(new SuccessfulEndScreen(main,new GameState1()));
+                main.setScreen(new SuccessfulEndScreen(main));
             }
             else if(EndButton2.contains(touchPos.x,touchPos.y)){
                 EndButtonSound.play();
