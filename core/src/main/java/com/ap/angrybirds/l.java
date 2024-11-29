@@ -102,7 +102,7 @@ public class l extends ScreenAdapter implements Serializable {
         birds = new Array<>();
         stage = new Stage(new ScreenViewport());
         initializeBirds();
-        initializePigs();
+        //initializePigs();
         initializeWoodObstacles();
         initializeFromSavedState();
 
@@ -515,6 +515,7 @@ public class l extends ScreenAdapter implements Serializable {
     private void checkGameState() {
         // Check if all birds are destroyed
         boolean allBirdsDestroyed = birds.isEmpty();
+        System.out.println("Pigs remaining: " + pigs.size);
 
         // Check if all obstacles are remaining
         boolean pigsRemaining = !pigs.isEmpty();
