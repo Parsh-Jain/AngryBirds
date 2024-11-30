@@ -34,7 +34,7 @@ public class l extends ScreenAdapter implements Serializable {
     private static final float PPM=100f;
     private final GameState1 gameState;
     private Music SpecialAbility;
-    private World world;
+    World world;
     private Box2DDebugRenderer debugRenderer;
     private Stage stage;// Important Attributes
     private  Stage stage2;
@@ -307,7 +307,7 @@ public class l extends ScreenAdapter implements Serializable {
         }
     }
 
-    private Body createPig(float x, float y) {
+    Body createPig(float x, float y) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
@@ -422,7 +422,7 @@ public class l extends ScreenAdapter implements Serializable {
 
     //
 //
-    private Body createBird(float x, float y, String birdType) {
+    Body createBird(float x, float y, String birdType) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
@@ -443,7 +443,7 @@ public class l extends ScreenAdapter implements Serializable {
         return body;
     }
 
-    private Body createObstacle(float x, float y, String obstacleType, int sizeX, int sizeY) {
+    Body createObstacle(float x, float y, String obstacleType, int sizeX, int sizeY) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
