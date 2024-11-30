@@ -102,7 +102,7 @@ public class l extends ScreenAdapter implements Serializable {
         birds = new Array<>();
         stage = new Stage(new ScreenViewport());
         initializeBirds();
-        initializePigs();
+        //initializePigs();
         initializeWoodObstacles();
         initializeFromSavedState();
 
@@ -515,6 +515,7 @@ public class l extends ScreenAdapter implements Serializable {
     private void checkGameState() {
         // Check if all birds are destroyed
         boolean allBirdsDestroyed = birds.isEmpty();
+        System.out.println("Pigs remaining: " + pigs.size);
 
         // Check if all obstacles are remaining
         boolean pigsRemaining = !pigs.isEmpty();
@@ -928,7 +929,7 @@ public class l extends ScreenAdapter implements Serializable {
         wood2Body.setUserData(woodVertical2);
         woodObstacles.add(woodVertical2);
     }
-
+//
 
 
     private void saveGameState() {
@@ -1177,7 +1178,9 @@ public class l extends ScreenAdapter implements Serializable {
             }
             if(specialBird==3){
                 SpecialAbility.play();
+                System.out.println("1");
                 blueBird.activateSpecialAbility(world,new Texture("BlueAngryBird.png"),stage);
+                System.out.println("2");
             }
             if(specialBird==4){
                 SpecialAbility.play();

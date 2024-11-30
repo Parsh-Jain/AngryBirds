@@ -35,20 +35,20 @@ public class level2 extends ScreenAdapter{
     private static final float PPM=100f;
     private World world;
     private Box2DDebugRenderer debugRenderer;
-    private Stage stage;  // Important Attributes
+    Stage stage;  // Important Attributes
     private Music SpecialAbility;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Main main;
-    private Array<Body> bodiesToDestroy = new Array<>();
+    Array<Body> bodiesToDestroy = new Array<>();
     private Array<WoodObstacles> woodObstacles; // Store all the wood obstacles
     private Map<Body, Boolean> groundedMap = new HashMap<>();
-    private Array<Pigs> pigs; // Store all the pigs
-    private Array<Bird> birds;
+    Array<Pigs> pigs; // Store all the pigs
+    Array<Bird> birds;
     private boolean allWoodDestroyed = false;
     private boolean allPigsDestroyed = false;
     private boolean anyBirdsLeft = true;
-    private int score = 0;
+    int score = 0;
     private Rectangle pauseButton,endbutton, resumeButton, EndButton2, restartLevelButton;
     Music PauseButtonSound, ResumeButtonSound, EndButtonSound;
     private RedBird redBird;
@@ -547,6 +547,9 @@ public class level2 extends ScreenAdapter{
         else if (!pigsRemaining) {
             main.setScreen(new SuccessfulEndScreen(main));
         }
+    }
+
+    public void handleBirdAndPigCollision(Bird bird, Pigs pig) {
     }
 
 
