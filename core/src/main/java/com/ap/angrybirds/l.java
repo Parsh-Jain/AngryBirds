@@ -929,7 +929,7 @@ public class l extends ScreenAdapter implements Serializable {
         wood2Body.setUserData(woodVertical2);
         woodObstacles.add(woodVertical2);
     }
-
+//
 
 
     private void saveGameState() {
